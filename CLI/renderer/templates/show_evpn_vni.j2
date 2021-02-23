@@ -9,6 +9,19 @@
 {{'  Originator IP: '}}{{vars.vni['originator']}}
 {{'  Mcast group: '}}{{vars.vni['mcast-group']}}
 {{'  Advertise-gw-macip: '}}{{vars.vni['advertise-gw-mac']}}
+{{'  Advertise-svi-macip: '}}{{vars.vni['advertise-svi-ip']}}
+{% if 'advertise-pip' in vars.vni %}
+{{'  Advertise-pip: '}}{{vars.vni['advertise-pip']}}
+{% endif %}
+{% if 'advertise-pip-ip' in vars.vni %}
+{{'  System-IP: '}}{{vars.vni['advertise-pip-ip']}}
+{% endif %}
+{% if 'advertise-pip-mac' in vars.vni %}
+{{'  System-MAC: '}}{{vars.vni['advertise-pip-mac']}}
+{% endif %}
+{% if 'router-mac' in vars.vni %}
+{{'  Router-MAC: '}}{{vars.vni['router-mac']}}
+{% endif %}
 {{'  Import Route Target:'}}
 {% for key1 in vars.vni['import-rts'] %}
 {{'   '}}{{key1}}

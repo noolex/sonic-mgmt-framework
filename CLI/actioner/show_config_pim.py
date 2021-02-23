@@ -1,10 +1,12 @@
 def show_pim_ipv4_gbl(render_tables):
     cmd_list = ''
 
+    get_vrf_name = render_tables['vrfname'] if 'vrf_name' in render_tables else None
     if 'sonic-pim:sonic-pim/PIM_GLOBALS/PIM_GLOBALS_LIST' in render_tables:
         for vrf_inst in render_tables['sonic-pim:sonic-pim/PIM_GLOBALS/PIM_GLOBALS_LIST']:
             if 'vrf-name' not in vrf_inst: continue
             if not ((vrf_inst['vrf-name'] == 'default') or (vrf_inst['vrf-name'].find('Vrf') == 0)): continue
+            if get_vrf_name and vrf_inst['vrf-name'] != get_vrf_name: continue
             if 'address-family' not in vrf_inst: continue
             if (vrf_inst['address-family'] != 'ipv4'): continue
             vrf_inst_cmd_prfx = 'ip pim vrf ' + vrf_inst['vrf-name']

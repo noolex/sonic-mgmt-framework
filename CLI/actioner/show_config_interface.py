@@ -68,19 +68,26 @@ def show_if_vrf_binding(render_tables):
 
 def show_if_switchport_access(render_tables):
     cmd_str = ''
-
     if 'name' in render_tables:
        ifname_key = render_tables['name']
-       if 'sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST' in render_tables:
-           for vlan_member in render_tables['sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST']:
-              if 'ifname' in vlan_member:
-                  if ifname_key == vlan_member['ifname'] and vlan_member['tagging_mode']=='untagged':
-                      vlan_id = vlan_member['name'].lstrip('Vlan')
-                      cmd_str = 'switchport access Vlan ' + vlan_id
+       if 'sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST' in render_tables:
+           portList = render_tables['sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST']
+           if 'name' in portList:
+               if ifname_key == portList['name']:
+                   access_vlan = portList['access_vlan']
+                   vlan_id = access_vlan.lstrip('Vlan')
+		   cmd_str = 'switchport access Vlan ' + vlan_id
+
+       if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
+           portList = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
+	   for tables in portList:
+               if 'ifname' in portList:
+                   if ifname_key == tables['ifname']:
+                       access_vlan = tables['access_vlan']
+                       vlan_id = access_vlan.lstrip('Vlan')
+                       cmd_str = 'switchport access Vlan ' + vlan_id
 
     return 'CB_SUCCESS', cmd_str
-
-
 
 def find_ranges(vlan_lst):
     ranges = []
@@ -98,22 +105,36 @@ def find_ranges(vlan_lst):
            vlan_list_str = vlan_list_str + str(range[0]) + "-" + str(range[1])
     return vlan_list_str
 
-
 def show_if_switchport_trunk(render_tables):
     cmd_str = ''
     vlan_lst = []
     if 'name' in render_tables:
        ifname_key = render_tables['name']
-       if 'sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST' in render_tables:
-           for vlan_member in render_tables['sonic-vlan:sonic-vlan/VLAN_MEMBER/VLAN_MEMBER_LIST']:
-              if 'ifname' in vlan_member:
-                if ifname_key == vlan_member['ifname'] and vlan_member['tagging_mode']=='tagged':
-                   vlan_id = vlan_member['name'].lstrip('Vlan')
-                   vlan_lst.append(int(vlan_id))
+
+       if 'sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST' in render_tables:
+           portList = render_tables['sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST']
+           for tables in portList:
+               if 'name' in tables:
+                   if ifname_key == tables['name']:
+                       vlan_list = tables['tagged_vlans']
+                       for vlan_id in vlan_list:
+                           vlan_id = vlan_id.lstrip('Vlan')
+                           vlan_lst.append(vlan_id)
+
+       if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
+           portList = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
+	   for tables in portList:
+               if 'ifname' in tables:
+                   if ifname_key == tables['ifname']:
+                       vlan_list = tables['tagged_vlans']
+                       for vlan_id in vlan_list:
+                           vlan_id = vlan_id.lstrip('Vlan')
+                           vlan_lst.append(vlan_id)
+
     if vlan_lst:
-       vstr = find_ranges(vlan_lst)
+       vstr = ','.join(vlan_lst)
        if vstr:
-          cmd_str = 'switchport trunk allowed Vlan add ' + vstr
+          cmd_str = 'switchport trunk allowed Vlan ' + vstr
 
     return 'CB_SUCCESS', cmd_str
 
@@ -202,8 +223,65 @@ def show_if_loopback(render_tables):
       cmd_str = "interface Loopback " + ifname.lstrip('Loopback')
   return 'CB_SUCCESS', cmd_str
 
+def show_ipv4_dhcp_relay_options(intf, cmd_prfx):
 
+   cmd_str = ''
 
+   if 'dhcp_relay_src_intf' in intf:
+       cmd_str += ';'
+       cmd_str += cmd_prfx
+       cmd_str += str(' source-interface ')
+       cmd_str += str(intf['dhcp_relay_src_intf'])
+
+   if 'dhcp_relay_link_select' in intf:
+       if intf['dhcp_relay_link_select'] == 'enable':
+           cmd_str += ';'
+           cmd_str += cmd_prfx
+           cmd_str += str(' link-select')
+
+   if 'dhcp_relay_max_hop_count' in intf:
+       cmd_str += ';'
+       cmd_str += cmd_prfx
+       cmd_str += str(' max-hop-count ')
+       cmd_str += str(intf['dhcp_relay_max_hop_count'])
+
+   if 'dhcp_relay_vrf_select' in intf:
+       if intf['dhcp_relay_vrf_select'] == 'enable':
+           cmd_str += ';'
+           cmd_str += cmd_prfx
+           cmd_str += str(' vrf-select')
+
+   if 'dhcp_relay_policy_action' in intf:
+       cmd_str += ';'
+       cmd_str += cmd_prfx
+       cmd_str += str(' policy-action ')
+       cmd_str += str(intf['dhcp_relay_policy_action'])
+
+   return  cmd_str
+
+def show_ipv6_dhcp_relay_options(intf, cmd_prfx):
+
+   cmd_str = ''
+
+   if 'dhcpv6_relay_src_intf' in intf:
+       cmd_str += ';'
+       cmd_str += cmd_prfx
+       cmd_str += str(' source-interface ')
+       cmd_str += str(intf['dhcpv6_relay_src_intf'])
+
+   if 'dhcpv6_relay_max_hop_count' in intf:
+       cmd_str += ';'
+       cmd_str += cmd_prfx
+       cmd_str += str(' max-hop-count ')
+       cmd_str += str(intf['dhcpv6_relay_max_hop_count'])
+
+   if 'dhcpv6_relay_vrf_select' in intf:
+       if intf['dhcpv6_relay_vrf_select'] == 'enable':
+           cmd_str += ';'
+           cmd_str += cmd_prfx
+           cmd_str += str(' vrf-select')
+
+   return  cmd_str
 
 def show_dhcp_relay(if_name, intf, if_name_key, cmd_str, cmd_prfx):
 
@@ -225,6 +303,8 @@ def show_dhcp_relay(if_name, intf, if_name_key, cmd_str, cmd_prfx):
                    cmd_str += " "
                    cmd_str += 'vrf '
                    cmd_str += intf['dhcp_server_vrf']
+               options_str = show_ipv4_dhcp_relay_options(intf, cmd_prfx)
+               cmd_str += options_str
          if 'dhcpv6_servers' in intf and cmd_prfx== 'ipv6 dhcp-relay':
            for server in intf['dhcpv6_servers']:
                dhcp_server_str += ' '
@@ -236,7 +316,8 @@ def show_dhcp_relay(if_name, intf, if_name_key, cmd_str, cmd_prfx):
                    cmd_str += " "
                    cmd_str += 'vrf '
                    cmd_str += intf['dhcpv6_server_vrf']               
-
+               options_str = show_ipv6_dhcp_relay_options(intf, cmd_prfx)
+               cmd_str += options_str
 
    return  cmd_str
 
@@ -306,6 +387,19 @@ def show_ipv6_vlan_dhcp_relay(render_tables):
                              'ipv6 dhcp-relay')
 
 
+def show_ipv4_subintf_dhcp_relay(render_tables):
+   return show_ip_dhcp_relay(render_tables,
+                             'sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST',
+                             'name',
+                             'id',
+                             'ip dhcp-relay')
+
+def show_ipv6_subintf_dhcp_relay(render_tables):
+   return show_ip_dhcp_relay(render_tables,
+                             'sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST',
+                             'name',
+                             'id',
+                             'ipv6 dhcp-relay')
 
 def show_ip_address(render_tables, table_name, key_name, table_key_name, cmd_prfx):
 

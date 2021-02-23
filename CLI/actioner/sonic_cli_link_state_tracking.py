@@ -161,19 +161,36 @@ def set_link_state_tracking_group_upstream(args):
 
 
 def delete_link_state_tracking_group_upstream(args):
-    if len(args) == 2:
-        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups/upstream-group={grp_name}',
-                      grp_name=args[0], upstr=args[1])
-    else:
+    group_name = None
+    if "name=" in args[0]:
+        name=args[0].split("=",1)
+        group_name = name[1]
+        
+    if group_name is None:
         uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups',
                       upstr=args[0])
+    else:
+        uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/interfaces/interface={upstr}/upstream-groups/upstream-group={grp_name}',
+                      grp_name=group_name, upstr=args[1])
     return lst_client.delete(uri)
 
 def delete_link_state_tracking_group_binding(args):
-    if args[0] == 'upstream':
-        return delete_link_state_tracking_group_upstream(args[1:])
+    intf_dir = None
+    next_arg_index = 1
+
+    if "grp_dir=" in args[0]:
+        temp=args[0].split("=",1)
+        intf_dir = temp[1]
+
+    if not intf_dir and "name=" in args[1]:
+        temp=args[1].split("=",1)
+        intf_dir = temp[1]
+        next_arg_index = 2
+
+    if intf_dir == 'upstream':
+        return delete_link_state_tracking_group_upstream(args[next_arg_index:])
     else:
-        return delete_link_state_tracking_group_downstream(args[1:])
+        return delete_link_state_tracking_group_downstream(args[next_arg_index:])
 
 def set_link_state_tracking_group_threshold(args):
     uri = cc.Path('/restconf/data/openconfig-lst-ext:lst/lst-groups/lst-group={grp_name}/config', grp_name=args[0])

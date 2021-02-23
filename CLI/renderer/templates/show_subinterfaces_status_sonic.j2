@@ -1,19 +1,25 @@
 {% if ("sonic-interface:VLAN_SUB_INTERFACE_LIST" in json_output) %}
 -----------------------------------------------------------------------------------------------
-{{'%-20s'|format("Sub port interface")}}{{'%-10s'|format("Speed")}}{{'%-10s'|format("MTU")}}{{'%-10s'|format("Vlan")}}{{'%-10s'|format("Admin")}}{{'%-30s'|format("Type")}}
+{{'%-20s'|format("Sub port interface")}} {{'%-10s'|format("Speed")}}{{'%-10s'|format("MTU")}}{{'%-10s'|format("Vlan")}}{{'%-10s'|format("Admin")}}{{'%-30s'|format("Type")}}
 -----------------------------------------------------------------------------------------------
-{% for key in json_output %}
     {% set subIntfList = json_output["sonic-interface:VLAN_SUB_INTERFACE_LIST"] %}
     {% for subIntf in subIntfList %}
-        {% set subintfvars = ({'speed':'','mtu':'','vlan':'','admin_state':'down','type':'802.1Q'}) %}
+        {% set subintfvars = ({'speed':'','mtu':'','vlan':'','admin_state':'down','type':'dot1q-encapsulation'}) %}
         {% if subintfvars.update({'name':subIntf["id"]}) -%}{% endif -%}
         {% if "vlan" in subIntf -%}
             {% if subintfvars.update({'vlan':subIntf["vlan"]}) -%}{% endif -%}
         {% endif -%}
-        {% if "enabled" in subIntf and subIntf["enabled"] == "true" -%}
-            {% if subintfvars.update({'admin_state':'up'}) -%}{% endif -%}
+        {% if "admin_status" in subIntf-%}
+            {% if subintfvars.update({'admin_state':subIntf["admin_status"]}) -%}{% endif -%}
         {% endif -%}
-{{'%-20s'|format(subintfvars.name)}}{{'%-10s'|format(subintfvars.speed)}}{{'%-10s'|format(subintfvars.mtu)}}{{'%-10s'|format(subintfvars.vlan)}}{{'%-10s'|format(subintfvars.admin_state)}}{{'%-30s'|format(subintfvars.type)}}
+        {% if "mtu" in subIntf-%}
+            {% if subintfvars.update({'mtu':subIntf["mtu"]}) -%}{% endif -%}
+        {% elif subintfvars.name.split('.')[0] in json_output['aux_info'] %}
+            {% if subintfvars.update({'mtu':json_output['aux_info'][subintfvars.name.split('.')[0]]["mtu"]}) -%}{% endif -%}
+        {% endif -%}
+        {% if subintfvars.name.split('.')[0] in json_output['aux_info'] %}
+            {% if subintfvars.update({'speed':json_output['aux_info'][subintfvars.name.split('.')[0]]["speed"]}) -%}{% endif -%}
+        {% endif -%}
+{{'%-20s'|format(subintfvars.name)}} {{'%-10s'|format(subintfvars.speed)}}{{'%-10s'|format(subintfvars.mtu)}}{{'%-10s'|format(subintfvars.vlan)}}{{'%-10s'|format(subintfvars.admin_state)}}{{'%-30s'|format(subintfvars.type)}}
     {% endfor %}
-{% endfor %}
 {% endif %}

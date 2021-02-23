@@ -24,14 +24,19 @@ TOPDIR := $(abspath .)
 BUILD_DIR := $(TOPDIR)/build
 MGMT_COMMON_DIR := $(abspath ../sonic-mgmt-common)
 
-GO      ?= /usr/local/go/bin/go
-GOPATH  ?= /tmp/go
+export GO      ?= /usr/local/go/bin/go
+export GOPATH  ?= /tmp/go
+
+# GOPATH is overriten by Version Cache framework
+export GOPATH := $(shell GOPATH=$(GOPATH) ${GO} env GOPATH)
+
 INSTALL := /usr/bin/install
 
 MAIN_TARGET = sonic-mgmt-framework_1.0-01_amd64.deb
 
 GO_MOD   = go.mod
 GO_DEPS  = vendor/.done
+GO_CODEGEN_INIT := $(BUILD_DIR)/rest_server/dist/.init_done
 
 export TOPDIR MGMT_COMMON_DIR GO GOPATH 
 
@@ -41,7 +46,7 @@ all: rest cli ham
 $(GO_MOD):
 	$(GO) mod init github.com/Azure/sonic-mgmt-framework
 
-$(GO_DEPS): $(GO_MOD) models-init
+$(GO_DEPS): $(GO_MOD) $(GO_CODEGEN_INIT)
 	$(GO) mod vendor
 	$(MGMT_COMMON_DIR)/patches/apply.sh vendor
 	touch  $@
@@ -85,11 +90,11 @@ rest-server: go-deps-clean
 rest-clean: go-deps-clean models-clean
 	$(MAKE) -C rest clean
 
-models-init:
+$(GO_CODEGEN_INIT):
 	$(MAKE) -C models -f openapi_codegen.mk go-server-init
 
 .PHONY: models
-models: | models-init
+models: | $(GO_CODEGEN_INIT)
 	$(MAKE) -C models
 
 models-clean:

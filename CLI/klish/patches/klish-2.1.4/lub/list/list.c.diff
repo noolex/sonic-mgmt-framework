@@ -1,0 +1,9 @@
+167c167,172
+< 			return (find ? iter : NULL);
+---
+> 			if (find) {
+> 				return iter;
+> 			} else {
+> 				lub_list_node_free(node);
+> 				return NULL;
+> 			}

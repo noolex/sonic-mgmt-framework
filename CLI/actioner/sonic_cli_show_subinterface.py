@@ -20,6 +20,31 @@
 import cli_client as cc
 from scripts.render_cli import show_cli_output
 import syslog as log
+from natsort import natsorted
+
+def add_speed_and_mtu(data_in):
+    api = cc.ApiClient()
+    keypath = []
+    if 'sonic-interface:VLAN_SUB_INTERFACE_LIST' not in data_in:
+        return
+    parent_if_list = set([d['parent'] for d in data_in['sonic-interface:VLAN_SUB_INTERFACE_LIST']])
+    parent_data = dict()
+    for item in parent_if_list:
+        if item.startswith('Eth'):
+            keypath = cc.Path('/restconf/data/sonic-port:sonic-port/PORT_TABLE/PORT_TABLE_LIST={name}', name=item)
+            response = api.get(keypath)
+            if response.ok() and response.content is not None:
+                parent_data[item] = dict()
+                parent_data[item]['mtu'] = response.content['sonic-port:PORT_TABLE_LIST'][0]['mtu']
+                parent_data[item]['speed'] = response.content['sonic-port:PORT_TABLE_LIST'][0]['speed']
+        elif item.startswith('Po'):
+            keypath = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/LAG_TABLE/LAG_TABLE_LIST={name}', name=item)
+            response = api.get(keypath)
+            if response.ok() and response.content is not None:
+                parent_data[item] = dict()
+                parent_data[item]['mtu'] = response.content['sonic-portchannel:LAG_TABLE_LIST'][0]['mtu']
+                parent_data[item]['speed'] = response.content['sonic-portchannel:LAG_TABLE_LIST'][0]['speed']
+    data_in['aux_info'] = parent_data
 
 def invoke_api(func, args=[]):
     api = cc.ApiClient()
@@ -40,6 +65,10 @@ def run(func, args):
     if response.ok():
         if response.content is not None:
             api_response = response.content
+            add_speed_and_mtu(api_response)
+            tbl_key = "sonic-interface:VLAN_SUB_INTERFACE_LIST"
+            if tbl_key in api_response:
+                api_response[tbl_key] = natsorted(api_response[tbl_key],key=lambda t: t["id"])
             show_cli_output(renderer, api_response)
         else:
             print("Empty response")

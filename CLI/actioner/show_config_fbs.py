@@ -210,33 +210,54 @@ def show_running_fbs_policy(render_tables):
                             cmd_str += '  police {};'.format(pstr)
                         cmd_str += ' !;'
                     elif match_type == 'forwarding':
+                        all_egress = list()
+                        for nhop in flow_data.get("SET_IP_NEXTHOP", list()):
+                            vrf_str = ""
+                            prio_str = ""
+                            prio = 0
+                            if "VRF" in nhop:
+                                vrf_str = "vrf " + str(nhop["VRF"])
+                            if "PRIORITY" in nhop:
+                                prio_str = "priority " + str(nhop["PRIORITY"])
+                                prio = int(nhop["PRIORITY"])
+                            all_egress.append((prio, 'set ip next-hop {} {} {};'.format(nhop["IP_ADDRESS"], vrf_str, prio_str).replace('  ', ' ')))
+                        for nhop in flow_data.get('SET_IP_NEXTHOP_GROUP', list()):
+                            prio_str = ""
+                            prio = 0
+                            if 'PRIORITY' in nhop:
+                                prio_str = "priority " + str(nhop["PRIORITY"])
+                                prio = int(nhop["PRIORITY"])
+                            all_egress.append((prio, 'set ip next-hop-group {} {};'.format(nhop["GROUP_NAME"], prio_str).replace('  ', ' ')))
+                        for nhop in flow_data.get("SET_IPV6_NEXTHOP", list()):
+                            vrf_str = ""
+                            prio_str = ""
+                            prio = 0
+                            if "VRF" in nhop:
+                                vrf_str = "vrf " + str(nhop["VRF"])
+                            if "PRIORITY" in nhop:
+                                prio_str = "priority " + str(nhop["PRIORITY"])
+                                prio = int(nhop["PRIORITY"])
+                            all_egress.append((prio, 'set ipv6 next-hop {} {} {};'.format(nhop["IP_ADDRESS"], vrf_str, prio_str).replace('  ', ' ')))
+                        for nhop in flow_data.get('SET_IPV6_NEXTHOP_GROUP', list()):
+                            prio_str = ""
+                            prio = 0
+                            if 'PRIORITY' in nhop:
+                                prio_str = "priority " + str(nhop["PRIORITY"])
+                                prio = int(nhop["PRIORITY"])
+                            all_egress.append((prio, 'set ipv6 next-hop-group {} {};'.format(nhop["GROUP_NAME"], prio_str).replace('  ', ' ')))
+                        for intf in  flow_data.get("SET_INTERFACE", list()):
+                            prio_str = ""
+                            prio = 0
+                            if "PRIORITY" in intf:
+                                prio_str = "priority " + str(intf["PRIORITY"])
+                                prio = int(intf["PRIORITY"])
+                            all_egress.append((prio, 'set interface {} {};'.format(intf["INTERFACE"], prio_str)))
+
+                        all_egress.sort(key=lambda x: 0xffff-x[0])
+                        for egr in all_egress:
+                            cmd_str += '  {};'.format(egr[1])
                         if 'DEFAULT_PACKET_ACTION' in flow_data:
-                            cmd_str += ' set interface null;'
-                        if 'SET_INTERFACE' in flow_data:
-                            for intf in  flow_data["SET_INTERFACE"]:
-                                prio_str = ""
-                                if "PRIORITY" in intf:
-                                    prio_str = "priority " + str(intf["PRIORITY"])
-                                cmd_str += '  set interface {} {};'.format(intf["INTERFACE"], prio_str)
-                        if 'SET_IP_NEXTHOP' in flow_data:
-                            for nhop in flow_data["SET_IP_NEXTHOP"]:
-                                vrf_str = "" 
-                                prio_str = ""
-                                if "VRF" in nhop:
-                                    vrf_str = "vrf " + str(nhop["VRF"])
-                                if "PRIORITY" in nhop:
-                                    prio_str = "priority " + str(nhop["PRIORITY"])
-                                cmd_str += '  set ip next-hop {} {} {};'.format(nhop["IP_ADDRESS"], vrf_str, prio_str)
-                        if 'SET_IPV6_NEXTHOP' in flow_data:
-                            for nhop in flow_data["SET_IPV6_NEXTHOP"]:
-                                vrf_str = "" 
-                                prio_str = ""
-                                if "VRF" in nhop:
-                                    vrf_str = "vrf " + str(nhop["VRF"])
-                                if "PRIORITY" in nhop:
-                                    prio_str = "priority " + str(nhop["PRIORITY"])
-                                cmd_str += '  set ipv6 next-hop {} {} {};'.format(nhop["IP_ADDRESS"], vrf_str,
-                                                                                   prio_str)
+                            cmd_str += '  set interface null;'
                         cmd_str += ' !;'
                     elif match_type == 'monitoring':
                         if 'SET_MIRROR_SESSION' in flow_data:
@@ -293,14 +314,24 @@ def show_running_fbs_service_policy_interface(render_tables):
 def run(opstr, args):
     if opstr == "show_running_class_map":
         show_running_class_map(args)
+    elif opstr == "show_running_next_hop_group_by_name":
+        show_running_next_hop_group_by_name(args)
 
 
-def show_running_class_map(class_name):
+def show_running_class_map(args):
     import sonic_cli_show_config 
     sonic_cli_show_config.run("show_view",
                               ["views=configure-${fbs-class-type}-classifier",
                                'view_keys="fbs-class-name={class_name}"'.format(
-                                   class_name=class_name[0] if len(class_name) == 1 else "")])
+                                   class_name=args[0] if len(args) == 1 else "")])
+
+
+def show_running_next_hop_group_by_name(args):
+    import sonic_cli_show_config 
+    sonic_cli_show_config.run("show_view",
+                              ["views=configure-pbf-${fbs-dynamic-nhgrp-type}-nh-grp",
+                               'view_keys="fbs-nhgrp-name={grp_name}"'.format(
+                                   grp_name=args[0] if len(args) == 1 else "")])
 
 
 def show_running_config_fbs_start_callback(context, cache):
@@ -310,3 +341,66 @@ def show_running_config_fbs_start_callback(context, cache):
     if response.ok():
         for binding in response.content.get('sonic-flow-based-services:POLICY_BINDING_TABLE_LIST', []):
             cache[binding.pop('INTERFACE_NAME')] = binding
+
+
+def show_running_next_hop_group(render_tables):
+    fbs_client = cc.ApiClient()
+    if 'fbs-nhgrp-name' in render_tables:
+        path = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/next-hop-groups/next-hop-group={group_name}', 
+                group_name=render_tables["fbs-nhgrp-name"])
+    else:
+        path = cc.Path('/restconf/data/openconfig-fbs-ext:fbs/next-hop-groups/next-hop-group')
+    
+    response = fbs_client.get(path, ignore404=False)
+    if not response.ok():
+        return 'CB_SUCCESS', "%Error: No pbf next-hop group found", True
+
+    all_groups = response.content.get("openconfig-fbs-ext:next-hop-group", list())
+    data = dict()
+    runn_config = ''
+    for grp_data in all_groups:
+        item = dict()
+        group_name = grp_data["group-name"]
+        grp_type = (grp_data["state"].get("group-type", "")).replace("openconfig-fbs-ext:NEXT_HOP_GROUP_TYPE_",
+                                                                     "").replace("V4", "").lower()
+        data[(grp_type, group_name)] = item
+
+        if 'description' in grp_data["config"]:
+            item["DESCRIPTION"] = grp_data["config"]['description']
+            if ' ' in item["DESCRIPTION"]:
+                item["DESCRIPTION"] = '"{}"'.format(item["DESCRIPTION"])
+        thr_cli = ''
+        if 'threshold-type' in grp_data["config"]:
+            thr_cli += 'threshold type {}'.format(grp_data["config"]['threshold-type'].replace("openconfig-fbs-ext:NEXT_HOP_GROUP_THRESHOLD_", "").lower())
+            if 'threshold-up' in grp_data["config"]:
+                thr_cli += ' up {}'.format(grp_data["config"]['threshold-up'])
+            if 'threshold-down' in grp_data["config"]:
+                thr_cli += ' down {};'.format(grp_data["config"]['threshold-down'])
+            item['THRESHOLD'] = thr_cli
+
+        nhops = list()
+        for nh in grp_data.get("next-hops", dict()).get("next-hop", list()):
+            eid = int(nh["entry-id"])
+            cli_str = "entry {} next-hop {}".format(eid, nh["state"]["ip-address"])
+            if "network-instance" in nh["state"]:
+                cli_str = "{} vrf {}".format(cli_str, nh["state"]["network-instance"])
+            if "next-hop-type" in nh["state"]:
+                cli_str = "{} {}".format(cli_str, nh["state"]["next-hop-type"].split(":")[-1].
+                                         replace('NEXT_HOP_TYPE_', '').lower().replace('_', '-'))
+            nhops.append((eid, cli_str))
+            nhops.sort(key=lambda x: x[0])
+            item['NEXT_HOPS'] = nhops
+
+    for grp_name in natsorted(data.keys()):
+        grp_data = data[grp_name]
+        runn_config += 'pbf next-hop-group {} type {};'.format(grp_name[1], grp_name[0])
+        if 'DESCRIPTION' in grp_data:
+            runn_config += '  description {};'.format(grp_data['DESCRIPTION'])
+        if 'THRESHOLD' in grp_data:
+            runn_config += '  {}'.format(grp_data['THRESHOLD'])
+        for nh in grp_data.get('NEXT_HOPS', list()):
+            runn_config += '  {};'.format(nh[1])
+        runn_config += '!;'
+
+    return 'CB_SUCCESS', runn_config, True
+

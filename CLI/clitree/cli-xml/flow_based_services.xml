@@ -29,7 +29,7 @@ limitations under the License.
     <PTYPE name="POLICER_RATE_BITS" pattern="^((&UINT_32_RANGE;)([kmgt]?bps)?)$" help="" />
     <PTYPE name="POLICER_RATE_BYTES" pattern="^((&UINT_32_RANGE;)([KMGT]?B)?)$" help="" />
     <PTYPE name="DESCRIPTION" pattern=".{1,256}" help="String (Max: 256 characters)"/>
-    <PTYPE name="TRAP_QUEUE" method="integer" pattern="0..47" help=""/>
+    <PTYPE name="TRAP_QUEUE" method="integer" pattern="0..31" help=""/>
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
         <!-- show policy-map [NAME] | [type qos|monitoring|forwarding|copp|acl-copp] -->
@@ -410,16 +410,6 @@ limitations under the License.
                 <PARAM name="show-fbs-group-name" help="Shows next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
                 <PARAM name="type" help="Shows all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
-            <PARAM name="show-fbs-group-interface-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true" test='( "${show-fbs-group-name}" != "type" ) -a ( "${show-fbs-group-name}" != "" )'>
-                <PARAM name="interface" help="Show fbs next-hop group state for policies applied for interface" mode="subcommand" ptype="SUBCOMMAND">
-                    <PARAM name="show-fbs-group-interface" help="" ptype="SUBCOMMAND" mode="switch">
-                        <PARAM name="eth-if-id" help="Ethernet interface" ptype="PHY_INTERFACE"/>
-                        <PARAM name="po-if-id" help="PortChannel interface" ptype="PO_INTERFACE"/>
-                        <PARAM name="vlan-if-id" help="Vlan interface" ptype="VLAN_INTERFACE"/>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
-            </PARAM>
             <PARAM name="show-fbs-group-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-group-name}" = "type"'>
                 <PARAM name="ip" help="Shows all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
                 <PARAM name="ipv6" help="Shows all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
@@ -433,6 +423,8 @@ limitations under the License.
                 <PARAM name="eth-if-id" help="Ethernet interface" ptype="PHY_INTERFACE"/>
                 <PARAM name="po-if-id" help="PortChannel interface" ptype="PO_INTERFACE"/>
                 <PARAM name="vlan-if-id" help="Vlan interface" ptype="VLAN_INTERFACE"/>
+                <PARAM name="eth-sub-if-id" help="Ethernet sub-interface" ptype="PHY_INTERFACE_SUBIF"/>
+                <PARAM name="po-sub-if-id" help="PortChannel sub-interface" ptype="PO_INTERFACE_SUBIF"/>
             </PARAM>
             <PARAM name="show-fbs-nh-grp-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="show-fbs-group-name" help="Shows next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
@@ -455,6 +447,12 @@ limitations under the License.
                 <PARAM name="ipv6" help="Shows all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_pbf_next_hop_group_status Switch ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="show running-configuration pbf" help="Show current PBF next-hop groups configuration"/>
+        <COMMAND name="show running-configuration pbf next-hop-group" help="Show current PBF next-hop groups configuration">
+            <PARAM name="show-fbs-group-name" help="Shows next-hop group information using name (Max: 63 characters)" ptype="STRING_63" optional="true"/>
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_next_hop_group_by_name ${show-fbs-group-name}</ACTION>
         </COMMAND>
     </VIEW>
 
@@ -543,7 +541,8 @@ limitations under the License.
         </COMMAND>
 
         <COMMAND name="pbf" help="Policy based forwarding" />
-        <COMMAND name="pbf next-hop-group" help="configure next hop group" view="configure-pbf-${fbs-dynamic-nhgrp-type}-nh-grp-view" viewid="fbs-nh-grp-name=${fbs-nhgrp-name}">
+        <COMMAND name="pbf next-hop-group" help="configure next hop group" view="configure-pbf-${fbs-dynamic-nhgrp-type}-nh-grp-view" viewid="fbs-nh-grp-name=${fbs-nhgrp-name}"
+            data_and_render_cb="show_running_next_hop_group">
             <PARAM name="fbs-nhgrp-name" help="Name of the Next-hop group (Max: 63 characters)" ptype="STRING_63"/>
             <PARAM name="type" help="Next hop group type" ptype="SUBCOMMAND" mode="subcommand" optional="true">
                 <PARAM name="fbs-next-hop-group-type" help="" ptype="SUBCOMMAND" mode="switch">
@@ -1300,9 +1299,9 @@ limitations under the License.
     <!--===================================================================================-->
     <!--                            Flow view for CoPP actions                              -->
     <!--===================================================================================-->
-    <VIEW name="configure-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="2">
-        <NAMESPACE ref="configure-view" help="false" completion="false" />
-        <COMMAND name="no" help="Negate a command or set its defaults"/>
+    <VIEW name="configure-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
+        <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+        <COMMAND name="set" help="Set parameters" />
 
         <MACRO name="POLICY-FLOW-DESCRIPTION" />
 
@@ -1333,7 +1332,7 @@ limitations under the License.
         <MACRO name="POLICY-FLOW-DESCRIPTION" />
 
         <COMMAND name="set trap-queue" help="Set CoPP queue id">
-            <PARAM name="trap-queue-id-value" help="Queue ID value (0-47)" ptype="TRAP_QUEUE" />
+            <PARAM name="trap-queue-id-value" help="CPU queue ID value (0-31)" ptype="TRAP_QUEUE" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_acl_copp_queue_id_action ${fbs-policy-name} ${fbs-class-name} ${trap-queue-id-value}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -1362,13 +1361,19 @@ limitations under the License.
         </COMMAND>
 
         <MACRO name="POLICER-PARAM-OPTIONS" arg="acl-copp,set_acl_copp_policer_action,clear_acl_copp_policer_action"/>
-
     </VIEW>
     <!--===================================================================================-->
 
     <!--                            Policy binding CLIs for Ethernet                       -->
     <!--===================================================================================-->
     <VIEW name="configure-if-view">
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Ethernet,interface"/>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Policy binding CLIs for subinterface                   -->
+    <!--===================================================================================-->
+    <VIEW name="configure-subif-view">
         <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Ethernet,interface"/>
     </VIEW>
 

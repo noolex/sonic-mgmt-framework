@@ -117,7 +117,7 @@ def show_mroute_src_info(response):
 
         inIntf = srcState.get('incoming-interface')
         if inIntf is None:
-            inIntf = ""
+            inIntf = "-"
 
         installed = srcState.get('installed')
         if installed is None or installed == False:
@@ -125,29 +125,35 @@ def show_mroute_src_info(response):
         else:
             installed = "*"
 
-        oilList = srcState.get('oil-info-entries').get('oif-info')
-        if oilList is None:
-            return
-
-        for oil in oilList:
-            outIntf = oil.get('outgoing-interface')
-            if  outIntf is None:
-                continue
-
-            oilState = oil.get('state')
-            if  oilState is None:
-                continue
-
-            oilUpTime = oilState.get('uptime')
-            if oilUpTime is None:
-                oilUpTime = "--:--:--"
-            else:
-                oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
-
-            oilEntry = {'outIntf': outIntf,
-                        'oilUpTime': oilUpTime
-                       }
+        oilContainer = srcState.get('oil-info-entries')
+        if oilContainer is None:
+            oilEntry = {'outIntf': "-", 'oilUpTime': "--:--:--"}
             oilList2.append(oilEntry)
+        else:
+            oilList = oilContainer.get('oif-info')
+            if oilList is None:
+                oilEntry = {'outIntf': "-", 'oilUpTime': "--:--:--"}
+                oilList2.append(oilEntry)
+            else:
+                for oil in oilList:
+                    outIntf = oil.get('outgoing-interface')
+                    if  outIntf is None:
+                        continue
+
+                    oilState = oil.get('state')
+                    if  oilState is None:
+                        continue
+
+                    oilUpTime = oilState.get('uptime')
+                    if oilUpTime is None:
+                        oilUpTime = "--:--:--"
+                    else:
+                        oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
+
+                    oilEntry = {'outIntf': outIntf,
+                                'oilUpTime': oilUpTime
+                               }
+                    oilList2.append(oilEntry)
 
         srcEntry = {'grpAddr': grpAddr,
                     'srcAddr': srcAddr,
@@ -201,7 +207,11 @@ def show_mroute_info(response):
             if state is None:
                 continue
 
-            srcList = state.get('src-entries').get('src-entry')
+            srcEntries = state.get('src-entries')
+            if srcEntries is None:
+                continue
+
+            srcList = srcEntries.get('src-entry')
             if srcList is None:
                 continue
 
@@ -217,7 +227,7 @@ def show_mroute_info(response):
 
                 inIntf = srcState.get('incoming-interface')
                 if inIntf is None:
-                    inIntf = ""
+                    inIntf = "-"
 
                 installed = srcState.get('installed')
                 if installed is None or installed == False:
@@ -225,29 +235,35 @@ def show_mroute_info(response):
                 else:
                     installed = "*"
 
-                oilList = srcState.get('oil-info-entries').get('oif-info')
-                if oilList is None:
-                    continue
-
-                for oil in oilList:
-                    outIntf = oil.get('outgoing-interface')
-                    if  outIntf is None:
-                        continue
-
-                    oilState = oil.get('state')
-                    if  oilState is None:
-                        continue
-
-                    oilUpTime = oilState.get('uptime')
-                    if oilUpTime is None:
-                        oilUpTime = "--:--:--"
-                    else:
-                        oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
-
-                    oilEntry = {'outIntf': outIntf,
-                                'oilUpTime': oilUpTime
-                               }
+                oilContainer = srcState.get('oil-info-entries')
+                if oilContainer is None:
+                    oilEntry = {'outIntf': "-", 'oilUpTime': "--:--:--"}
                     oilList2.append(oilEntry)
+                else:
+                    oilList = oilContainer.get('oif-info')
+                    if oilList is None:
+                        oilEntry = {'outIntf': "-", 'oilUpTime': "--:--:--"}
+                        oilList2.append(oilEntry)
+                    else:
+                        for oil in oilList:
+                            outIntf = oil.get('outgoing-interface')
+                            if  outIntf is None:
+                                continue
+
+                            oilState = oil.get('state')
+                            if  oilState is None:
+                                continue
+
+                            oilUpTime = oilState.get('uptime')
+                            if oilUpTime is None:
+                                oilUpTime = "--:--:--"
+                            else:
+                                oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
+
+                            oilEntry = {'outIntf': outIntf,
+                                        'oilUpTime': oilUpTime
+                                       }
+                            oilList2.append(oilEntry)
 
                 srcEntry = {'grpAddr': grpAddr,
                             'srcAddr': srcAddr,

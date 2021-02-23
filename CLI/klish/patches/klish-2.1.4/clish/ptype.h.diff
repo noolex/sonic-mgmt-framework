@@ -33,7 +33,7 @@
 84c97
 < 	lub_argv_t *matches, const char *text);
 ---
-> 	lub_argv_t *matches, const char *text, const char *penultimate_text);
+> 	lub_argv_t *matches, const char *text, const char *penultimate_text, bool_t order);
 95c108,126
 < 	const char *pattern, clish_ptype_method_e method);
 ---
@@ -52,7 +52,7 @@
 > char *clish_ptype_regexp_select__get_name(const clish_ptype_t * instance, unsigned index);
 > int clish_ptype_regexp_select__get_argv_count(const clish_ptype_t * instance);
 > char *clish_ptype_regexp_select__get_ext_help(const clish_ptype_t * instance, unsigned index);
-> int clish_ptype_select__get_help(const clish_ptype_t *instance, clish_help_t *help, const char *pval);
+> int clish_ptype_select__get_help(const clish_ptype_t *instance, clish_help_t *help, const char *pval, bool_t order);
 > void clish_ptype__set_usename(clish_ptype_t * instance, help_type_t val);
 > extern bool nos_use_alt_name(void);
 > char *clish_ptype_method_select__get_name(const clish_ptype_t *instance,unsigned int index);

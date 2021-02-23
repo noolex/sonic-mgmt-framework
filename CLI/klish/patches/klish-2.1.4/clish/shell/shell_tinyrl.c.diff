@@ -276,12 +276,13 @@
 > 
 363a540
 >     clish_context_t local_context;
-374a552,553
-> 
-> 	/* Search for COMMAND completions */
-376c555,563
+375,377d551
+< 	clish_shell_iterator_init(&iter, CLISH_NSPACE_COMPLETION);
 < 	while ((cmd = clish_shell_find_next_completion(this, text, &iter)))
----
+< 		lub_argv_add(matches, clish_command__get_suffix(cmd));
+378a553,565
+> 	/* Search for COMMAND completions */
+> 	clish_shell_iterator_init(&iter, CLISH_NSPACE_COMPLETION);
 >     	clish_context_init(&local_context, this);
 > 	while ((cmd = clish_shell_find_next_completion(this, text, &iter))) {
 >         	clish_context__set_cmd(&local_context, cmd);
@@ -291,9 +292,7 @@
 > 			continue;
 >         	if(clish_command__get_enabled(cmd) == BOOL_FALSE)
 > 			continue;
-378c565
-< 
----
+> 		lub_argv_add(matches, clish_command__get_suffix(cmd),BOOL_FALSE);
 > 	}
 380c567
 < 	cmd = clish_shell_resolve_command(this, text);

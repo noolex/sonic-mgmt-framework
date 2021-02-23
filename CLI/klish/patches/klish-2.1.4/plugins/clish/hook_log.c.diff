@@ -1,16 +1,25 @@
-diff --git a/plugins/clish/hook_log.c b/plugins/clish/hook_log.c
-index cafd29e..da59419 100644
---- a/plugins/clish/hook_log.c
-+++ b/plugins/clish/hook_log.c
-@@ -37,8 +37,9 @@ CLISH_HOOK_LOG(clish_hook_log)
- 		if (!(uname = getenv("LOGNAME")))
- 			uname = user ? user->pw_name : "unknown";
- 	}
--	syslog(LOG_INFO, "%u(%s) %s : %d",
--		user ? user->pw_uid : getuid(), uname, line, retcode);
-+
-+        int facility = LOG_LOCAL4;
-+        syslog(LOG_INFO|facility, "User \"%s\" command \"%s\" status - %s", uname, line, retcode ? "failure" : "success");
- 
- 	return 0;
- }
+13a14
+> #include "clish/plugin/mgmt_clish_utils.h"
+15c16
+< #define SYSLOG_IDENT "klish"
+---
+> #define SYSLOG_IDENT "clish"
+40,41c41,55
+< 	syslog(LOG_INFO, "%u(%s) %s : %d",
+< 		user ? user->pw_uid : getuid(), uname, line, retcode);
+---
+> 
+>         int facility = LOG_LOCAL4;
+>         char *masked_line = NULL;
+> 
+>         mask_password(line, &masked_line);
+> 
+>         if (masked_line) {
+>             char u[32];
+>             strncpy(u, uname, sizeof(u) -1);
+>             u[sizeof(u)-1] = '\0'; 
+>             syslog(LOG_INFO|facility, "User \"%s\" command \"%s\" status - %s",
+>                    u, masked_line, retcode ? "failure" : "success");
+>             free(masked_line);
+>             masked_line = NULL;
+>         }

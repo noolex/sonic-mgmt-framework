@@ -676,11 +676,14 @@ def clear_policer_action_internal(args, keypath=None):
                     elif feat == 'pbs':
                         delete_params.append('pbs')
 
+            put_needed = False
             for feat in delete_params:
-                if feat in data['openconfig-fbs-ext:config'].keys():
+                if feat in data.get('openconfig-fbs-ext:config', dict()).keys():
+                    put_needed = True
                     del data['openconfig-fbs-ext:config'][feat]
 
-            return fbs_client.put(keypath, data)
+            if put_needed:
+                return fbs_client.put(keypath, data)
         else:
             print(response.error_message())
 
@@ -785,7 +788,16 @@ def set_next_hop_group_action(args):
 
 
 def clear_next_hop_group_action(args):
-    pass
+    ip_type = args[2].upper()
+    if len(args) == 7:
+        next_hop = '{}|{}'.format(args[4], args[6])
+        keypath = cc.Path('/restconf/data/sonic-flow-based-services:sonic-flow-based-services/POLICY_SECTIONS_TABLE/POLICY_SECTIONS_TABLE_LIST={policy_name},{classifier_name}/SET_{ip_type}_NEXTHOP_GROUP={next_hop}',
+                          policy_name=args[0], classifier_name=args[1], ip_type=args[2].upper(), next_hop=next_hop)
+    else:
+        keypath = cc.Path("/restconf/data/openconfig-fbs-ext:fbs/policies/policy={policy_name}/sections/section={class_name}/forwarding/next-hop-groups/next-hop-group={grp_name}",
+                          policy_name=args[0], class_name=args[1], grp_name=args[4])
+
+    return fbs_client.delete(keypath)
 
 
 def set_egress_interface_action(args):
@@ -970,7 +982,7 @@ def clear_details_by_policy(args):
         body["sonic-flow-based-services:input"]["POLICY_NAME"] = args[0]
     if len(args) > 1:
         if args[1] == "interface":
-            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2] + args[3]
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2]
         else:
             body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
 
@@ -985,9 +997,14 @@ def clear_details_by_interface(args):
         if len(args) == 3:
             body["sonic-flow-based-services:input"]["TYPE"] = args[2]
     else:
-        body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
-        if len(args) == 3:
-            body["sonic-flow-based-services:input"]["TYPE"] = args[2]
+        if args[0] == "Vlan":
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0] + args[1]
+            if len(args) == 5:
+                body["sonic-flow-based-services:input"]["TYPE"] = args[4]
+        else:
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[0]
+            if len(args) == 4:
+                body["sonic-flow-based-services:input"]["TYPE"] = args[3]
 
     keypath = cc.Path('/restconf/operations/sonic-flow-based-services:clear-service-policy-counters')
     return fbs_client.post(keypath, body)
@@ -1359,15 +1376,19 @@ def create_next_hop_group_member(args):
         body["openconfig-fbs-ext:next-hop"][0]["config"]["network-instance"] = args[5]
         if args[6] == "non-recursive":
             body["openconfig-fbs-ext:next-hop"][0]["config"]["next-hop-type"] = "NEXT_HOP_TYPE_NON_RECURSIVE"
-        else:
+        elif args[6] == "recursive":
             body["openconfig-fbs-ext:next-hop"][0]["config"]["next-hop-type"] = "NEXT_HOP_TYPE_RECURSIVE"
+        elif args[6] == "overlay":
+            body["openconfig-fbs-ext:next-hop"][0]["config"]["next-hop-type"] = "NEXT_HOP_TYPE_OVERLAY"
     elif len(args) == 6:
         body["openconfig-fbs-ext:next-hop"][0]["config"]["network-instance"] = args[5]
     elif len(args) == 5:
         if args[4] == "non-recursive":
             body["openconfig-fbs-ext:next-hop"][0]["config"]["next-hop-type"] = "NEXT_HOP_TYPE_NON_RECURSIVE"
-        else:
+        elif args[4] == "recursive":
             body["openconfig-fbs-ext:next-hop"][0]["config"]["next-hop-type"] = "NEXT_HOP_TYPE_RECURSIVE"
+        elif args[4] == "overlay":
+            body["openconfig-fbs-ext:next-hop"][0]["config"]["next-hop-type"] = "NEXT_HOP_TYPE_OVERLAY"
 
     return fbs_client.put(keypath, body)
 
@@ -1436,7 +1457,7 @@ def get_next_hop_group_type(args):
     if len(args) == 2:
         return args[1]
     else:
-        keypath = cc.Path("/restconf/data/sonic-flow-based-services:sonic-flow-based-services/PBF_NEXTHOP_GROUP_TABLE/PBF_NEXTHOP_GROUP_TABLE_LIST={grp_name}/TYPE",
+        keypath = cc.Path("/restconf/data/sonic-flow-based-services:sonic-flow-based-services/PBF_NEXTHOP_GROUP/PBF_NEXTHOP_GROUP_LIST={grp_name}/TYPE",
                           grp_name=args[0])
         return fbs_client.get(keypath, ignore404=False)
 
@@ -1503,7 +1524,7 @@ def handle_generic_set_response(response, args, op_str):
                     return 0
             else:
                 try:
-                    if (1003 == error_data['error-info']['cvl-error']['error-code']) and (op_str in ['create_flow_qos', 'create_flow_monitoring', 'create_flow_forwarding']):
+                    if (1003 == error_data['error-info']['cvl-error']['error-code']) and (op_str in ['create_flow_qos', 'create_flow_monitoring', 'create_flow_forwarding', 'create_flow_acl-copp']):
                         print("%Error: Priority must be specified for create")
                     elif (1003 == error_data['error-info']['cvl-error']['error-code']) and (op_str == "create_next_hop_group"):
                         print("%Error: Next-hop group type must be specified for create")
@@ -1725,20 +1746,20 @@ def handle_show_service_policy_details_response(response, args, op_str):
                                     for ent in flow.get(field, list()):
                                         selected = True
                                         if field == 'SET_IP_NEXTHOP':
-                                            out = 'ip next-hop {}'.format(ent['IP_ADDRESS'])
+                                            out = 'ip nexthop {}'.format(ent['IP_ADDRESS'])
                                             selected = selected and (ent['IP_ADDRESS'] == fwd_selected.get('IP_ADDRESS'))
                                         elif field == 'SET_IP_NEXTHOP_GROUP':
                                             out = 'ip next-hop-group {}'.format(ent['GROUP_NAME'])
                                             selected = selected and (ent['GROUP_NAME'] == fwd_selected.get('GROUP_NAME'))
                                         elif field == 'SET_IPV6_NEXTHOP':
-                                            out = 'ipv6 next-hop {}'.format(ent['IP_ADDRESS'])
+                                            out = 'ipv6 nexthop {}'.format(ent['IP_ADDRESS'])
                                             selected = selected and (ent['IP_ADDRESS'] == fwd_selected.get('IP_ADDRESS'))
                                         elif field == 'SET_IPV6_NEXTHOP_GROUP':
                                             out = 'ipv6 next-hop-group {}'.format(ent['GROUP_NAME'])
                                             selected = selected and (ent['GROUP_NAME'] == fwd_selected.get('GROUP_NAME'))
                                         else:
                                             out = 'interface {}'.format(ent['INTERFACE'])
-                                            selected = selected and (ent['INTERFACE_NAME'] == fwd_selected.get('INTERFACE_NAME'))
+                                            selected = selected and (ent['INTERFACE'] == fwd_selected.get('INTERFACE_NAME'))
 
                                         if 'VRF' in ent:
                                             out = '{} vrf {}'.format(out, ent['VRF'])
@@ -1898,7 +1919,7 @@ def show_pbf_next_hop_group_status_response(response, args, op_str):
                 if "network-instance" in nh["state"]:
                     cli_str = "{} vrf {}".format(cli_str, nh["state"]["network-instance"])
                 if "next-hop-type" in nh["state"]:
-                    cli_str = "{} {}".format(cli_str, "recursive" if nh["state"]["next-hop-type"] == "openconfig-fbs-ext:NEXT_HOP_TYPE_RECURSIVE" else "non-recursive")
+                    cli_str = "{} {}".format(cli_str, nh["state"]["next-hop-type"].split(":")[-1].replace('NEXT_HOP_TYPE_', '').lower().replace('_', '-'))
                 if "active" in nh["state"] and nh["state"]["active"]:
                     cli_str = "{} (Active)".format(cli_str)
                 nh_dict[eid] = cli_str

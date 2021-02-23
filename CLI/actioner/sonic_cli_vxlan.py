@@ -198,7 +198,15 @@ def invoke(func, args):
         func == 'delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_primary_ip'):
         keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}/primary_ip', name=args[0][6:])
 
+        if is_vlan_vni_mapping_exists() is True:
+           return aa._make_error_response("Error: Please delete all VLAN VNI mappings.");
+
         if (func.startswith("patch") is True):
+            pip_response = aa.get(keypath)
+            if pip_response.ok():
+               pip_content = pip_response.content
+               if pip_content is not None and 'sonic-vxlan:primary_ip' in pip_content:
+                  return aa._make_error_response("Error: Primary IP already set");
             body = {
                     "sonic-vxlan:primary_ip": args[1]
                   }
@@ -362,6 +370,8 @@ def vxlan_show_vxlan_interface(args):
     response = None
     print ""
     sip_configured = False
+    pip_configured = False
+    pip = '0.0.0.0'
     api_response = invoke("get_list_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list", args)
     if api_response.ok():
         response = api_response.content
@@ -374,6 +384,9 @@ def vxlan_show_vxlan_interface(args):
               if 'src_ip' in item:
                 source_vtep_ip = item['src_ip']
                 sip_configured = True
+              if 'primary_ip' in item:
+                pip = item['primary_ip']
+                pip_configured = True
             #if sip_configured is True:
             show_cli_output(args[0],response)
 
@@ -397,6 +410,7 @@ def vxlan_show_vxlan_interface(args):
         elif response is not None:
             if len(response) != 0:
                 found = False
+                pip_found = False
                 if 'sonic-loopback-interface:LOOPBACK_INTERFACE' in response:
                     loopback_intf_container = response['sonic-loopback-interface:LOOPBACK_INTERFACE']
                     if 'LOOPBACK_INTERFACE_IPADDR_LIST' in loopback_intf_container:
@@ -408,9 +422,15 @@ def vxlan_show_vxlan_interface(args):
                             if source_vtep_ip == loop_if_ipaddr:
                                 response['sonic-loopback-interface:LOOPBACK_INTERFACE']['src_if'] = item['loIfName']
                                 found = True
+                            if pip == loop_if_ipaddr:
+                                response['sonic-loopback-interface:LOOPBACK_INTERFACE']['pip_if'] = item['loIfName']
+                                pip_found = True
+                            if found is True and (pip_found or pip_configured is False):
                                 break 
                 if found is False: 
                     response['sonic-loopback-interface:LOOPBACK_INTERFACE']['src_if'] = "Not Configured"
+                if pip_found is False: 
+                    response['sonic-loopback-interface:LOOPBACK_INTERFACE']['pip_if'] = "Not Configured"
                 show_cli_output(args[0],response)
     return
 

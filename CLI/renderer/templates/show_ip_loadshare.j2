@@ -1,57 +1,65 @@
 {% if json_output %}
 
-{% set lb_entry = json_output['openconfig-loadshare-mode-ext:loadshare'] ['state'] %}
-{% set ipvars = {'ip': ""} %}
-{% set ipv6vars = {'ipv6': ""} %}
-{% set seedvars = {'Hash Seed': ""} %}
+{% set v4_lb_entry = json_output['openconfig-loadshare-mode-ext:loadshare']['ipv4-attrs']['state'] %}
+{% set v6_lb_entry = json_output['openconfig-loadshare-mode-ext:loadshare']['ipv6-attrs']['state'] %}
+{% set seed_lb_entry = json_output['openconfig-loadshare-mode-ext:loadshare']['seed-attrs']['state'] %}
+
+{% if "ipv4-symmetric" in v4_lb_entry and v4_lb_entry['ipv4-symmetric'] > 0 -%}
+{{ 'IP Hash Mode: Symmetric'}}
+{% else %}
+{{ 'IP Hash Mode: Default'}}
+{% endif %}
+
+{% if "ipv6-symmetric" in v6_lb_entry and v6_lb_entry['ipv6-symmetric'] > 0 -%}
+{{ 'IPv6 Hash Mode: Symmetric'}}
+{% else %}
+{{ 'IPv6 Hash Mode: Default'}}
+{% endif %}
 
 {{'Packet Header Fields:'}}
 
-{% if "ipv4-src-ip" in lb_entry or "ipv4-dst-ip" in lb_entry or "ipv4-l4-src-port" in lb_entry or "ipv4-l4-dst-port" in lb_entry or "ipv4-ip-proto" in lb_entry  %}
-{{ 'ip:' -}}
-{% if "ipv4-src-ip" in lb_entry and lb_entry['ipv4-src-ip'] > 0 -%}
+{% if "ipv4-src-ip" in v4_lb_entry or "ipv4-dst-ip" in v4_lb_entry or "ipv4-l4-src-port" in v4_lb_entry or "ipv4-l4-dst-port" in v4_lb_entry or "ipv4-ip-proto" in v4_lb_entry  %}
+{{ 'IP:' -}}
+{% if "ipv4-src-ip" in v4_lb_entry and v4_lb_entry['ipv4-src-ip'] > 0 -%}
  {{' ipv4-src-ip ' -}}
 {% endif %}
-{% if "ipv4-dst-ip" in lb_entry and lb_entry['ipv4-dst-ip'] > 0 -%}
+{% if "ipv4-dst-ip" in v4_lb_entry and v4_lb_entry['ipv4-dst-ip'] > 0 -%}
  {{' ipv4-dst-ip ' -}}
 {% endif %}
-{% if "ipv4-l4-src-port" in lb_entry and lb_entry['ipv4-l4-src-port'] > 0 -%}
+{% if "ipv4-l4-src-port" in v4_lb_entry and v4_lb_entry['ipv4-l4-src-port'] > 0 -%}
  {{' ipv4-l4-src-port ' -}}
 {% endif %}
-{% if "ipv4-l4-dst-port" in lb_entry and lb_entry['ipv4-l4-dst-port'] > 0 -%}
+{% if "ipv4-l4-dst-port" in v4_lb_entry and v4_lb_entry['ipv4-l4-dst-port'] > 0 -%}
  {{' ipv4-l4-dst-port ' -}}
 {% endif %}
-{% if "ipv4-ip-proto" in lb_entry and lb_entry['ipv4-ip-proto'] > 0 -%}
+{% if "ipv4-ip-proto" in v4_lb_entry and v4_lb_entry['ipv4-ip-proto'] > 0 -%}
  {{' ipv4-ip-proto' -}}
 {% endif %}
 {% endif %}
 
 
 
-{% if "ipv6-src-ip" in lb_entry or "ipv6-dst-ip" in lb_entry or "ipv6-l4-src-port" in lb_entry or "ipv6-l4-dst-port" in lb_entry or "ipv6-next-hdr" in lb_entry  %}
-{{ 'Ipv6:' -}}
-{% if "ipv6-src-ip" in lb_entry and lb_entry['ipv6-src-ip'] > 0 -%}
+{% if "ipv6-src-ip" in v6_lb_entry or "ipv6-dst-ip" in v6_lb_entry or "ipv6-l4-src-port" in v6_lb_entry or "ipv6-l4-dst-port" in v6_lb_entry or "ipv6-next-hdr" in v6_lb_entry  %}
+{{ 'IPv6:' -}}
+{% if "ipv6-src-ip" in v6_lb_entry and v6_lb_entry['ipv6-src-ip'] > 0 -%}
  {{' ipv6-src-ip ' -}}
 {% endif %}
-{% if "ipv6-dst-ip" in lb_entry and lb_entry['ipv6-dst-ip'] > 0 -%}
+{% if "ipv6-dst-ip" in v6_lb_entry and v6_lb_entry['ipv6-dst-ip'] > 0 -%}
  {{' ipv6-dst-ip ' -}}
 {% endif %}
-{% if "ipv6-l4-src-port" in lb_entry and lb_entry['ipv6-l4-src-port'] > 0 -%}
+{% if "ipv6-l4-src-port" in v6_lb_entry and v6_lb_entry['ipv6-l4-src-port'] > 0 -%}
  {{' ipv6-l4-src-port ' -}}
 {% endif %}
-{% if "ipv6-l4-dst-port" in lb_entry and lb_entry['ipv6-l4-dst-port'] > 0 -%}
+{% if "ipv6-l4-dst-port" in v6_lb_entry and v6_lb_entry['ipv6-l4-dst-port'] > 0 -%}
  {{' ipv6-l4-dst-port ' -}}
 {% endif %}
-{% if "ipv6-next-hdr" in lb_entry and lb_entry['ipv6-next-hdr'] > 0 -%}
+{% if "ipv6-next-hdr" in v6_lb_entry and v6_lb_entry['ipv6-next-hdr'] > 0 -%}
  {{' ipv6-next-hdr' -}}
 {% endif %}
 {% endif %}
 
-{% if "ecmp-hash-seed" in lb_entry %}
-{% if lb_entry['ecmp-hash-seed'] > 0 -%}
- {{'Hash seed: %s'|format(lb_entry['ecmp-hash-seed'])}}
-{% endif %}
-
+{% if "ecmp-hash-seed" in seed_lb_entry %}
+{{'Hash seed: %s'|format(seed_lb_entry['ecmp-hash-seed'])}}
 {% endif %}
 
 {% endif %}

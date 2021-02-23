@@ -21,9 +21,12 @@ import sys
 import time
 import json
 import ast
+import re
+import os
 from rpipe_utils import pipestr
 import cli_client as cc
-from scripts.render_cli import show_cli_output
+from scripts.render_cli import show_cli_output, write
+from sonic_cli_show_config import showconfig_views_to_buffer
 import sonic_intf_utils as ifutils
 import collections
 from natsort import natsorted, ns
@@ -97,7 +100,12 @@ def build_intf_vrf_binding (intf_vrf_binding):
                      "LOOPBACK_INTERFACE_LIST",
                      "loIfName")
 
-    requests = [tIntf, tLoopbackIntf, tPortChannelIntf, tVlanIntf]
+    tVlanSubIntf = ("/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/",
+                 "sonic-interface:VLAN_SUB_INTERFACE",
+                 "VLAN_SUB_INTERFACE_LIST",
+                 "id")
+
+    requests = [tIntf, tLoopbackIntf, tPortChannelIntf, tVlanIntf, tVlanSubIntf]
 
     for request in requests:
         keypath = cc.Path(request[0])
@@ -124,9 +132,9 @@ def build_intf_vrf_binding (intf_vrf_binding):
                 vrfName = intf.get('vrf_name')
 
                 if vrfName is None:
-                    continue
-
-                intf_vrf_binding.setdefault(vrfName, []).append(intfName)
+                    intf_vrf_binding.setdefault("default", []).append(intfName)
+                else:
+                    intf_vrf_binding.setdefault(vrfName, []).append(intfName)
 
             for vrf in intf_vrf_binding:
                 intf_vrf_binding[vrf] = natsorted(intf_vrf_binding[vrf], alg=ns.IGNORECASE)
@@ -166,8 +174,7 @@ def invoke_api(func, args=[]):
                     vrf_list = sonic_vrfs.content['sonic-vrf:VRF_LIST']
                     for vrf in vrf_list:
                        vrf_name = vrf['vrf_name']
-                       if vrf_name != "default":
-                           intf_vrf_binding.setdefault(vrf_name, [])
+                       intf_vrf_binding.setdefault(vrf_name, [])
 
             # build the dictionary with vrf name as key and list of interfaces as value
             build_intf_vrf_binding(intf_vrf_binding)
@@ -254,6 +261,47 @@ def run(func, args):
                 response = invoke_api(subfunc, intfargs)
                 if not response.ok():
                     print (response.error_message(), " Interface:", intf)
+
+        elif func == 'showrun':
+            api = cc.ApiClient()
+            keypath = []
+            if args[0] == 'mgmt':
+                keypath = cc.Path('/restconf/data/sonic-mgmt-vrf:sonic-mgmt-vrf/MGMT_VRF_CONFIG/MGMT_VRF_CONFIG_LIST')
+                showrun_list = [ ('show_multi_views', "views=renderCfg_ipvrfmgmt,configure"), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if-mgmt,configure-if,configure-subif,renderCfg_iprtemgmt,renderCfg_ntp,renderCfg_ipdns,renderCfg_tacacs,renderCfg_radius") ]
+            else:
+                keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST={}'.format(args[0]))
+                if args[0] == 'default':
+                    showrun_list = [ ('show_view', "views=renderCfg_ipvrf", 'view_keys="name=default"'), ('show_view', "views=renderCfg_ippim", 'view_keys="vrfname=default"'), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if,configure-subif,renderCfg_iprte"), ('show_view', "views=configure-router-bgp", 'view_keys="vrf-name=default"') ]
+                else:
+                    showrun_list = [ ('show_view', "views=renderCfg_ipvrf", 'view_keys="name={}"'.format(args[0])), ('show_view', "views=configure"), ('show_view', "views=renderCfg_ippim", 'view_keys="vrfname={}"'.format(args[0])), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if,configure-subif,renderCfg_iprte"), ('show_view', "views=configure-router-bgp", 'view_keys="vrf-name={}"'.format(args[0])) ]
+            response = api.get(keypath)
+            if response.content == None or not response.content:
+                 # vrf not found
+                 return 0
+            rcfgall = showconfig_views_to_buffer(showrun_list)
+            vrfcfgs = ''
+            gotSep = False
+            for cfgl in rcfgall.replace('\n ', '\t ').splitlines():
+                if cfgl == '!':
+                   gotSep = True
+                   continue
+                if args[0] != 'default':
+                   if not re.search('\\bvrf (forwarding )?{}\\b'.format(args[0]), cfgl):
+                      if args[0] != 'mgmt' or not cfgl.startswith('interface Management 0'):
+                         continue
+                else:
+                   if re.search('\\bvrf\\b', cfgl) and not re.search('\\bvrf (forwarding )?default\\b', cfgl):
+                      continue
+                if gotSep:
+                   vrfcfgs += '\n!\n' + cfgl
+                   gotSep = False
+                else:
+                   vrfcfgs += '\n' + cfgl
+            full_cmd = os.getenv('USER_COMMAND', None)
+            if full_cmd is not None:
+                pipestr().write(full_cmd.split())
+            write(vrfcfgs.replace('\t', '\n'))
+
         else:
             api_response = invoke_api(func, args)
 

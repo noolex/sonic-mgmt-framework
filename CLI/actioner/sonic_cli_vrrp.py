@@ -55,10 +55,16 @@ def invoke(func, args):
                 else:
                     keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=args[2], ip=addr6, vrid=args[3])
             else:
+                parent_if = args[2]
+                sub_if = "0"
+                if '.' in parent_if:
+                    parent_if = args[2].split('.')[0]
+                    sub_if = args[2].split('.')[1]
+
                 if args[0] == "ipv4":
-                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=args[2], index="0", ip=addr4, vrid=args[3])
+                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=parent_if, index=sub_if, ip=addr4, vrid=args[3])
                 else:
-                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=args[2], index="0", ip=addr6, vrid=args[3])
+                    keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=parent_if, index=sub_if, ip=addr6, vrid=args[3])
             return aa.get(keypath)
 
     # VRRP delete
@@ -69,10 +75,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=args[0], ip=addr6, vrid=args[1])
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[2] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=args[0], index="0", ip=addr4, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=args[0], index="0", ip=addr6, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}', name=parent_if, index=sub_if, ip=addr6, vrid=args[1])
         return aa.delete(keypath)
 
     # VRRP set
@@ -84,10 +96,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp', name=args[0], ip=addr6)
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[2] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp', name=args[0], index="0", ip=addr4)
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp', name=parent_if, index=sub_if, ip=addr4)
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp', name=args[0], index="0", ip=addr6)
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp', name=parent_if, index=sub_if, ip=addr6)
 
         body=collections.defaultdict(dict)
         body = {"openconfig-if-ip:vrrp": {"vrrp-group": [{"virtual-router-id": int(args[1]),"config": {"virtual-router-id": int(args[1])}}]}}
@@ -105,11 +123,17 @@ def invoke(func, args):
                 body = {"name": args[0], "ip": addr6, "vrid": args[1], "vip": args[2]}
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/virtual-address={vip}', **body)
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[3] == "ipv4":
-                body = {"name": args[0], "index": "0", "ip": addr4, "vrid": args[1], "vip": args[2]}
+                body = {"name": parent_if, "index": sub_if, "ip": addr4, "vrid": args[1], "vip": args[2]}
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/virtual-address={vip}', **body)
             else:
-                body = {"name": args[0], "index": "0", "ip": addr6, "vrid": args[1], "vip": args[2]}
+                body = {"name": parent_if, "index": sub_if, "ip": addr6, "vrid": args[1], "vip": args[2]}
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/virtual-address={vip}', **body)
 
         return aa.delete(keypath)
@@ -122,10 +146,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/virtual-address', name=args[0], ip=addr6, vrid=args[1])
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[3] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/virtual-address', name=args[0], index="0", ip=addr4, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/virtual-address', name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/virtual-address', name=args[0], index="0", ip=addr6, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/virtual-address', name=parent_if, index=sub_if, ip=addr6, vrid=args[1])
         body=collections.defaultdict(dict)
         body = {"openconfig-if-ip:virtual-address": [args[2]]}
 
@@ -143,11 +173,17 @@ def invoke(func, args):
                 body = {"name": args[0], "ip": addr6, "vrid": args[1], "trackif": args[2]}
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track/vrrp-track-interface={trackif}', **body)
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[3] == "ipv4":
-                body = {"name": args[0], "index": "0", "ip": addr4, "vrid": args[1], "trackif": args[2]}
+                body = {"name": parent_if, "index": sub_if, "ip": addr4, "vrid": args[1], "trackif": args[2]}
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track/vrrp-track-interface={trackif}', **body)
             else:
-                body = {"name": args[0], "index": "0", "ip": addr6, "vrid": args[1], "trackif": args[2]}
+                body = {"name": parent_if, "index": sub_if, "ip": addr6, "vrid": args[1], "trackif": args[2]}
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track/vrrp-track-interface={trackif}', **body)
         return aa.delete(keypath)
 
@@ -159,10 +195,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track', name=args[0], ip=addr6, vrid=args[1])
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[4] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track', name=args[0], index="0", ip=addr4, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track', name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track', name=args[0], index="0", ip=addr6, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/openconfig-interfaces-ext:vrrp-track', name=parent_if, index=sub_if, ip=addr6, vrid=args[1])
         body=collections.defaultdict(dict)
         body = {"openconfig-interfaces-ext:vrrp-track": {"vrrp-track-interface": [{"track-intf": args[2],"config": {"track-intf": args[2],"priority-increment": int(args[3])}}]}}
         return aa.patch(keypath, body)
@@ -176,10 +218,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/priority', name=args[0], ip=addr6, vrid=args[1])
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[2] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/priority',name=args[0], index="0", ip=addr4, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/priority',name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/priority', name=args[0], index="0", ip=addr6, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/priority', name=parent_if, index=sub_if, ip=addr6, vrid=args[1])
         return aa.delete(keypath)
 
     # VRRP set priority
@@ -190,10 +238,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/priority', name=args[0], ip=addr6, vrid=args[1])
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[3] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/priority', name=args[0], index="0", ip=addr4, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/priority', name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/priority', name=args[0], index="0", ip=addr6, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/priority', name=parent_if, index=sub_if, ip=addr6, vrid=args[1])
 
         body=collections.defaultdict(dict)
         body = {"openconfig-if-ip:priority": int(args[2])}
@@ -208,10 +262,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/preempt', name=args[0], ip=addr6, vrid=args[1])
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[3] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/preempt', name=args[0], index="0", ip=addr4, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/preempt', name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/preempt', name=args[0], index="0", ip=addr6, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/preempt', name=parent_if, index=sub_if, ip=addr6, vrid=args[1])
 
         body=collections.defaultdict(dict)
         if args[2] == "true":
@@ -226,7 +286,13 @@ def invoke(func, args):
         if "Vlan" in args[0]:
             keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:use-v2-checksum', name=args[0], ip=addr4, vrid=args[1])
         else:
-            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:use-v2-checksum', name=args[0], index="0", ip=addr4, vrid=args[1])
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:use-v2-checksum', name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
 
         body=collections.defaultdict(dict)
         if args[2] == "true":
@@ -244,10 +310,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/advertisement-interval', name=args[0], ip=addr6, vrid=args[1])
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[2] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/advertisement-interval', name=args[0], index="0", ip=addr4, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/advertisement-interval', name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/advertisement-interval', name=args[0], index="0", ip=addr6, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/advertisement-interval', name=parent_if, index=sub_if, ip=addr6, vrid=args[1])
 
         return aa.delete(keypath)
 
@@ -259,10 +331,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/advertisement-interval', name=args[0], ip=addr6, vrid=args[1])
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[3] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/advertisement-interval', name=args[0], index="0", ip=addr4, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/advertisement-interval', name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/advertisement-interval', name=args[0], index="0", ip=addr6, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/advertisement-interval', name=parent_if, index=sub_if, ip=addr6, vrid=args[1])
 
         body=collections.defaultdict(dict)
         body = {"openconfig-if-ip:advertisement-interval": int(args[2])}
@@ -276,10 +354,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:version', name=args[0], ip=addr6, vrid=args[1])
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[2] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:version', name=args[0], index="0", ip=addr4, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:version', name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:version', name=args[0], index="0", ip=addr6, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:version', name=parent_if, index=sub_if, ip=addr6, vrid=args[1])
 
         return aa.delete(keypath)
 
@@ -291,10 +375,16 @@ def invoke(func, args):
             else:
                 keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:version', name=args[0], ip=addr6, vrid=args[1])
         else:
+            parent_if = args[0]
+            sub_if = "0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+
             if args[3] == "ipv4":
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:version', name=args[0], index="0", ip=addr4, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:version', name=parent_if, index=sub_if, ip=addr4, vrid=args[1])
             else:
-                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:version', name=args[0], index="0", ip=addr6, vrid=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/addresses/address={ip}/vrrp/vrrp-group={vrid}/config/openconfig-interfaces-ext:version', name=parent_if, index=sub_if, ip=addr6, vrid=args[1])
 
         body=collections.defaultdict(dict)
         body = {"openconfig-interfaces-ext:version": int(args[2])}
@@ -320,7 +410,7 @@ def run(func, args):
                 pass
             # is it correct
             elif 'openconfig-if-ip:vrrp-group' in response.keys():
-
+                # check for subif
                 response[u'ifname'] = args[2]
                 response[u'vrid'] = args[3]
 

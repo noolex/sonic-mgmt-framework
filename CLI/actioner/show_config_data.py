@@ -66,11 +66,14 @@ view_dependency= \
 
 config_view_hierarchy= \
       ['configure',
+       'renderCfg_ipvrfmgmt',
+       'renderCfg_ipvrf',
        'renderCfg_v4prefix_lists',
        'renderCfg_v6prefix_lists',
        'renderCfg_bgp_com_list',
        'renderCfg_bgp_extcom_list',
        'renderCfg_bgp_aspath_list',
+       'renderCfg_ippim',
        'configure-nat',
        'configure-tam',
        'configure-wred',
@@ -96,16 +99,22 @@ config_view_hierarchy= \
        'configure-if',
        'configure-subif',
        'configure-route-map',
+       'renderCfg_iprtemgmt',
+       'renderCfg_iprte',
        'configure-router-bgp',
        'configure-router-ospf',
        'configure-vxlan',
        'configure-${fbs-class-type}-classifier',
        'copp-action',
+       'configure-pbf-${fbs-dynamic-nhgrp-type}-nh-grp',
        'configure-policy',
        'configure-mclag',
        'configure-mirror',
        'configure-ipsla',
        'configure-bfd',
+       'renderCfg_ntp',
+       'renderCfg_ipdns',
+       'renderCfg_tacacs',
        'configure-switch-resource',
        'configure-vrrp']
 
@@ -126,6 +135,7 @@ module_startup_cb = {
     'configure-ipv4-acl': [show_running_config_acl_start_callback],
     'configure-ipv6-acl': [show_running_config_acl_start_callback],
     'configure-if': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
+    'configure-subif': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
     'configure-lag': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback],
     'configure-vlan': [show_running_config_acl_start_callback, show_running_config_lst_start_callback, show_running_config_fbs_start_callback]
 }
@@ -160,6 +170,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'dns_server_source_if'    : show_dns_source_if,
                   'ntp_server_source_if'    : show_ntp_source_if,
                   'ntp_trusted_key'         : show_ntp_trusted_key,
+                  'ntp_authentication_key'  : show_ntp_authentication_key,
                   'ptp_mode'                : show_ptp_mode,
                   'ptp_domain_profile'      : show_ptp_domain_profile,
                   'ptp_domain_two_step'     : show_ptp_two_step,
@@ -313,7 +324,10 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'show_runn_hardware_cb'   : show_running_config_hardware,
                   'show_runn_hardware_acl_cb' : show_running_config_hardware_acl,
                   'show_runn_hardware_acl_counter_cb': show_running_config_hardware_acl_counter_mode,
-                  'line_vty_view_cb'        : show_running_config_line_vty_view_cb
+                  'line_vty_view_cb'        : show_running_config_line_vty_view_cb,
+                  'ipv4_subintf_dhcp_relay'     : show_ipv4_subintf_dhcp_relay,
+                  'ipv6_subintf_dhcp_relay'     : show_ipv6_subintf_dhcp_relay,
+                  'show_running_next_hop_group': show_running_next_hop_group 
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
