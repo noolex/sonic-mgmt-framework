@@ -5,28 +5,22 @@ from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 import cli_client as cc
 
-def run(args):
-    if args[1] == 'rpc_sonic_auditlog_get_auditlog' or args[1] == 'rpc_sonic_auditlog_clear_auditlog':
-        func = args[1]
-        itype = "brief"
-    else:
-        itype = args[1]
-        func = args[2]
-    
+def run(func, args):
     aa = cc.ApiClient()
 
     if func == 'rpc_sonic_auditlog_get_auditlog':
         keypath = cc.Path('/restconf/operations/sonic-auditlog:get-auditlog')
-        if (itype == "all"):
-            body = { "sonic-auditlog:input": {"content-type" : "all"} }
-        else:
+        if len(args) == 0:
             body = { "sonic-auditlog:input": {"content-type" : ""} }
+        else:
+            body = { "sonic-auditlog:input": {"content-type" : "all"} }
         response = aa.post(keypath, body)
         if response.ok():
             api_response = response.content["sonic-get-auditlog:output"]["audit-content"]
             show_cli_output("show_audit_log_rpc.j2", api_response)
         else:
             print(response.error_message())
+            return 1
 
     if func == 'rpc_sonic_auditlog_clear_auditlog':
         keypath = cc.Path('/restconf/operations/sonic-auditlog:clear-auditlog')
@@ -34,8 +28,12 @@ def run(args):
         response = aa.post(keypath, body)
         if not response.ok():
             print(response.error_message())
+            return 1
 
 if __name__ == '__main__':
 
     pipestr().write(sys.argv)
-    run(sys.argv)
+    func = sys.argv[1]
+
+    run(func, sys.argv[2:])
+

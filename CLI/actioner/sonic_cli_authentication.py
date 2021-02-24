@@ -69,12 +69,14 @@ def run(func, args):
 
                 if api_response is None:
                     print("%Error: api_response is None")
+                    return 1
                 elif func in ['get_sonic_client_auth_rest', 'get_sonic_client_auth_telemetry']:
                     show_cli_output(temp, api_response)
                 else:
                     return
         else:
-            print("%Error: invoke_api failed")
+            print(response.error_message())
+            return 1
 
 if __name__ == '__main__':
 
