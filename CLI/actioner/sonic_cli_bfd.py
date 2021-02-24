@@ -280,11 +280,12 @@ def run(func, args):
 				api_response = response.content
 				if api_response is None:
 					print("Failed")
-					return
+					return 1
 				show_cli_output(args[0], api_response)
 		else:
                         if response.status_code not in [404]:
                                 print(response.error_message())
+                                return 1
                         return
 
 	else:
@@ -293,6 +294,7 @@ def run(func, args):
 		if response.ok():
 			if response.content is not None:
 				print("Failed")
+                                return 1
 		else:
 			print(response.error_message())
 			return 1
