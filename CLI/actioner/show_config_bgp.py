@@ -426,3 +426,88 @@ def show_router_bgp_af_l2vpn_rt_cmd(render_tables):
 
 def show_router_bgp_af_l2vpn_vni_rt_cmd(render_tables):
     return util_show_router_bgp_af_rt(render_tables, 'sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_EVPN_VNI/BGP_GLOBALS_EVPN_VNI_LIST')
+
+
+def show_router_bgp_af_l2vpn_advertise_pip_cmd(render_tables):
+    #print("show_router_bgp_af_l2vpn_advertise_pip_cmd  render tables - {}".format(render_tables))
+    cmd_str = ''
+
+    if 'vrf-name' not in render_tables:
+        print("show_router_bgp_af_l2vpn_advertise_pip_cmd - vrf-name not in render tables")
+        return 'CB_SUCCESS', ''
+
+    if 'sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST' not in render_tables:
+        print("show_router_bgp_af_l2vpn_advertise_pip_cmd - BGP_GLOBALS_AF_LIST not in render tables")
+        return 'CB_SUCCESS', ''
+
+    l2vpn_rec_list = render_tables['sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST']
+
+    if not isinstance(l2vpn_rec_list, list) :
+        l2vpn_rec_list = [ l2vpn_rec_list ]
+
+    curr_vrf = render_tables['vrf-name']
+    for l2vpn_rec in l2vpn_rec_list :
+
+        if 'vrf_name' not in l2vpn_rec :
+            continue
+        if 'afi_safi'  not in l2vpn_rec :
+            continue
+        if l2vpn_rec['vrf_name'] != curr_vrf :
+            continue
+        if l2vpn_rec['afi_safi'] != 'l2vpn_evpn' :
+            continue
+
+        pip_enable_present = False
+        pip_enable = True
+        pip_ip = ""
+        pip_mac = ""
+        pip_peer_ip = ""
+
+        #default vrf: advertise-pip is disabled by default
+        #user vrf: advertise-pip is enabled by default
+        pip_enable = True
+        if curr_vrf == 'default' :
+            pip_enable = False 
+
+        if 'advertise-pip' in l2vpn_rec:
+            pip_enable_present = True
+            if l2vpn_rec['advertise-pip'] == True:
+                pip_enable = True
+            else :
+                pip_enable = False
+
+        if 'advertise-pip-ip' in l2vpn_rec :
+            pip_ip = l2vpn_rec['advertise-pip-ip']
+        if 'advertise-pip-peer-ip' in l2vpn_rec :
+            pip_peer_ip = l2vpn_rec['advertise-pip-peer-ip']
+        if 'advertise-pip-mac' in l2vpn_rec :
+            pip_mac = l2vpn_rec['advertise-pip-mac']
+
+        if pip_enable_present and pip_enable == False :
+            if curr_vrf != 'default' :
+                cmd_str = cmd_str + "no advertise-pip" + ";"
+            #return 'CB_SUCCESS', cmd_str
+
+        if pip_ip != "" :
+            if pip_peer_ip == '' and pip_mac == '' :
+                cmd_str = cmd_str + "advertise-pip ip {}".format(pip_ip) + ";"
+            if pip_peer_ip != "" :
+                cmd_str = cmd_str + "advertise-pip ip {} peer-ip {}".format(pip_ip, pip_peer_ip) + ";"
+            if pip_mac != "" :
+                cmd_str = cmd_str + "advertise-pip ip {} mac {}".format(pip_ip, pip_mac) + ";"
+        else :
+            if pip_peer_ip != "" :
+                cmd_str = cmd_str + "advertise-pip peer-ip {}".format(pip_peer_ip) + ";"
+            if pip_mac != "" :
+                cmd_str = cmd_str + "advertise-pip mac {}".format(pip_mac) + ";"
+
+        if curr_vrf == 'default' and  cmd_str != '' :
+            if pip_enable_present and pip_enable == False :
+                cmd_str = cmd_str + "no advertise-pip" + ";"
+
+        if curr_vrf == 'default' and  cmd_str == '' :
+            if pip_enable_present and pip_enable == True :
+                cmd_str = cmd_str + "advertise-pip" + ";"
+
+    return 'CB_SUCCESS', cmd_str
+
