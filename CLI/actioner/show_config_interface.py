@@ -116,20 +116,22 @@ def show_if_switchport_trunk(render_tables):
            for tables in portList:
                if 'name' in tables:
                    if ifname_key == tables['name']:
-                       vlan_list = tables['tagged_vlans']
-                       for vlan_id in vlan_list:
-                           vlan_id = vlan_id.lstrip('Vlan')
-                           vlan_lst.append(vlan_id)
+		       if 'tagged_vlans' in tables:
+                           vlan_list = tables['tagged_vlans']
+                           for vlan_id in vlan_list:
+                               vlan_id = vlan_id.lstrip('Vlan')
+                               vlan_lst.append(vlan_id)
 
        if 'sonic-port:sonic-port/PORT/PORT_LIST' in render_tables:
            portList = render_tables['sonic-port:sonic-port/PORT/PORT_LIST']
 	   for tables in portList:
                if 'ifname' in tables:
                    if ifname_key == tables['ifname']:
-                       vlan_list = tables['tagged_vlans']
-                       for vlan_id in vlan_list:
-                           vlan_id = vlan_id.lstrip('Vlan')
-                           vlan_lst.append(vlan_id)
+		       if 'tagged_vlans' in tables:
+                           vlan_list = tables['tagged_vlans']
+                           for vlan_id in vlan_list:
+                               vlan_id = vlan_id.lstrip('Vlan')
+                               vlan_lst.append(vlan_id)
 
     if vlan_lst:
        vstr = ','.join(vlan_lst)
