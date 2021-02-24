@@ -299,18 +299,18 @@ limitations under the License.
     </DOCGEN>
   </COMMAND>
 
-  <COMMAND name="advertise-pip" help="Configures PIP advertise parameters" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-pip=true">
+  <COMMAND name="advertise-pip" help="Configures PIP advertise parameters" command_keys="vrf-name=sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/vrf_name,afi-safi=l2vpn_evpn,afi-safi-name=L2VPN_EVPN" command_tables="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/vrf_name={vrf-name},afi-safi=l2vpn_evpn" render_command_cb="bgp_af_l2vpn_advertise_pip">
     <PARAM name="advertise-pip-choices" help="Configures PIP advertise parameters" optional="true" mode="switch" ptype="SUBCOMMAND">
       <PARAM name="ip" help="Configures PIP IP address" optional="true" mode="subcommand" ptype="SUBCOMMAND">
-        <PARAM name="advertise-pip-ip" help="Configures PIP advertise IPv4 address" ptype="IP_ADDR" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-pip-ip">
+        <PARAM name="advertise-pip-ip" help="Configures PIP advertise IPv4 address" ptype="IP_ADDR">
           <PARAM name="advertise-pip-ip-choices" help="Configures PIP advertise IPv4 address" optional="true" mode="switch" ptype="SUBCOMMAND">
             <PARAM name="peer-ip" help="Configures PIP peer IP address" optional="true" mode="subcommand" ptype="SUBCOMMAND">
-              <PARAM name="advertise-pip-peer-ip" help="Configures PIP peer IP address" ptype="IP_ADDR" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-pip-peer-ip">
+              <PARAM name="advertise-pip-peer-ip" help="Configures PIP peer IP address" ptype="IP_ADDR"> 
               </PARAM>
             </PARAM>
             <!--
             <PARAM name="mac" help="Configures PIP peer MAC address" optional="true" mode="subcommand" ptype="SUBCOMMAND">
-              <PARAM name="advertise-pip-mac" help="Configures PIP MAC address" ptype="MAC_ADDR" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-pip-mac">
+              <PARAM name="advertise-pip-mac" help="Configures PIP MAC address" ptype="MAC_ADDR">
               </PARAM>
             </PARAM>
             -->
@@ -318,12 +318,12 @@ limitations under the License.
         </PARAM>
       </PARAM>
       <PARAM name="peer-ip" help="Configures PIP peer IP address" optional="true" mode="subcommand" ptype="SUBCOMMAND">
-        <PARAM name="advertise-pip-peer-ip" help="Configures PIP peer IP address" ptype="IP_ADDR" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-pip-peer-ip">
+        <PARAM name="advertise-pip-peer-ip" help="Configures PIP peer IP address" ptype="IP_ADDR">
         </PARAM>
       </PARAM>
       <!--
       <PARAM name="mac" help="Configures PIP peer MAC address" optional="true" mode="subcommand" ptype="SUBCOMMAND">
-        <PARAM name="advertise-pip-mac" help="Configures PIP MAC address" ptype="MAC_ADDR" dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/advertise-pip-mac">
+        <PARAM name="advertise-pip-mac" help="Configures PIP MAC address" ptype="MAC_ADDR">
         </PARAM>
       </PARAM>
       -->
@@ -423,7 +423,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_bgp_evpn delete_bgp_evpn_vni ${vrf-name} L2VPN_EVPN ${vninum}</ACTION>
   </COMMAND>
 
-  <COMMAND name="no advertise-pip" help="Configures PIP advertise parameters" >
+  <COMMAND name="no advertise-pip" help="Configures PIP advertise parameters">
     <PARAM name="advertise-pip-choices" help="Unconfigures PIP advertise parameters" optional="true" mode="switch" ptype="SUBCOMMAND">
       <PARAM name="ip" help="Unconfigures PIP IP address" optional="true" mode="subcommand" ptype="SUBCOMMAND">
         <PARAM name="advertise-pip-ip-choices" help="Unconfigures PIP advertise IPv4 address" optional="true" mode="switch" ptype="SUBCOMMAND">

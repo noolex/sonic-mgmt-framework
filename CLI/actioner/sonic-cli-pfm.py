@@ -43,6 +43,9 @@ def decodePsuStats(psu):
     if 'openconfig-platform-psu:output-voltage' in psu['power-supply']['state']:
         psu['power-supply']['state']['openconfig-platform-psu:output-voltage'] = \
             convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-psu:output-voltage'])
+    if 'openconfig-platform-psu:temperature' in psu['power-supply']['state']:
+        psu['power-supply']['state']['openconfig-platform-psu:temperature'] = \
+            convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-psu:temperature'])
 
 def run(func, args):
 

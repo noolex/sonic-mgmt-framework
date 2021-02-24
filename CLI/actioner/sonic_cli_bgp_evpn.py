@@ -376,7 +376,7 @@ def invoke_api(func, args=[]):
 
     #Delete PIP cases
     elif func == 'delete_bgp_evpn_advertise_pip':
-        # fetch parameter values
+        #fetch parameter values
         #print("PIP cmd input args {}", args)
         arg_map = {}
         for i in range(len(args)):
@@ -385,6 +385,7 @@ def invoke_api(func, args=[]):
             if arg_val:
                 arg_map[arg_name] = arg_val
         #print("PIP cmd arg map {}", arg_map)
+        #{'peer': 'peer-ip', 'ip': 'ip', 'enable': 'False', 'vrf': 'default', 'af': 'L2VPN_EVPN'}
 
         if 'enable' not in arg_map.keys() :
             print("PIP comamnd option enable not present")
@@ -407,9 +408,6 @@ def invoke_api(func, args=[]):
             keypath = cc.Path(keypath_str + 'advertise-pip-ip')
             response = api.delete(keypath)
             if response.ok() == False : return response
-            #keypath = cc.Path(keypath_str + 'advertise-pip-mac')
-            #response = api.delete(keypath)
-            return response
 
         if 'peer' in arg_map.keys() :
             unconfig_pip_all = False
@@ -424,8 +422,23 @@ def invoke_api(func, args=[]):
             if response.ok() == False : return response
 
         if unconfig_pip_all :
-            keypath = cc.Path(keypath_str + 'advertise-pip')
+            keypath = cc.Path(keypath_str + 'advertise-pip-ip')
             response = api.delete(keypath)
+            if response.ok() == False : return response
+            if arg_map['vrf'] == 'default' : 
+                keypath = cc.Path(keypath_str + 'advertise-pip-peer-ip')
+                response = api.delete(keypath)
+                if response.ok() == False : return response
+            if arg_map['vrf'] != 'default' :
+                 keypath = cc.Path(keypath_str + 'advertise-pip-mac')
+                 response = api.delete(keypath)
+                 if response.ok() == False : return response
+            keypath = cc.Path(keypath_str)
+            pip_cfg_data = {'openconfig-bgp-evpn-ext:advertise-pip': False }
+            body = { 'openconfig-bgp-evpn-ext:config' : pip_cfg_data }
+            response = api.patch(keypath, body)
+            #keypath = cc.Path(keypath_str + 'advertise-pip')
+            #response = api.delete(keypath)
             if response.ok() == False : return response
 
         return response

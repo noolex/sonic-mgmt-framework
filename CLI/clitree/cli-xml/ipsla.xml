@@ -163,7 +163,7 @@ limitations under the License.
    <COMMAND
          name="ip sla"
          view_keys="ip_sla_id=*"
-         view_tables="sonic-ip-sla:sonic-ip-sla/IP_SLA/IP_SLA_LIST/ip_sla_id={sla-id}"        
+         view_tables="sonic-ip-sla:sonic-ip-sla/IP_SLA/IP_SLA_LIST/ip_sla_id={sla-id}"
          render_command_cb="ip_sla_config"
          help="Configures IP SLA"
          view="configure-ipsla-view"
@@ -231,11 +231,17 @@ limitations under the License.
                 completion="false"/>
 
      <!-- show configuration -->
-     <COMMAND
-         name="show configuration"
-         help="Current configuration"
-     >
-     <ACTION builtin="clish_nop"> </ACTION>
+     <COMMAND name="show configuration" help="Displays current IP SLA configuration">
+       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipsla view_keys="sla-id=${sla-id}"</ACTION>
+       <DOCGEN>
+         <DESCRIPTION>
+           Displays current IP SLA configuration
+         </DESCRIPTION>
+         <USAGE>
+           Use this command to display running configurations.
+         </USAGE>
+         <FEATURE> IPSLA </FEATURE>
+       </DOCGEN>
      </COMMAND>
 
      <COMMAND name="no"
@@ -513,11 +519,17 @@ limitations under the License.
                 completion="false"/>
 
      <!-- show configuration -->
-     <COMMAND
-         name="show configuration"
-         help="Current configuration"
-     >
-     <ACTION builtin="clish_nop"> </ACTION>
+     <COMMAND name="show configuration" help="Displays current IP SLA configuration">
+       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipsla view_keys="sla-id=${sla-id}"</ACTION>
+       <DOCGEN>
+         <DESCRIPTION>
+           Displays current IP SLA configuration
+         </DESCRIPTION>
+         <USAGE>
+           Use this command to display running configurations.
+         </USAGE>
+         <FEATURE> IPSLA </FEATURE>
+       </DOCGEN>
      </COMMAND>
 
      <COMMAND name="no"
@@ -841,11 +853,17 @@ limitations under the License.
                 completion="false"/>
 
      <!-- show configuration -->
-     <COMMAND
-         name="show configuration"
-         help="Current configuration"
-     >
-     <ACTION builtin="clish_nop"> </ACTION>
+     <COMMAND name="show configuration" help="Displays current IP SLA configuration">
+       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipsla view_keys="sla-id=${sla-id}"</ACTION>
+       <DOCGEN>
+         <DESCRIPTION>
+           Displays current IP SLA configuration
+         </DESCRIPTION>
+         <USAGE>
+           Use this command to display running configurations.
+         </USAGE>
+         <FEATURE> IPSLA </FEATURE>
+       </DOCGEN>
      </COMMAND>
 
      <COMMAND name="no"
