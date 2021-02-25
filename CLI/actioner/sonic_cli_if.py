@@ -1118,9 +1118,6 @@ def getSonicId(item):
 
 def get_all_eth_intfs_list():
     response = cc.ApiClient().get(cc.Path('/restconf/data/sonic-port:sonic-port/PORT/PORT_LIST'))
-    if not response.ok():
-	print(response.error_message())
-	return 1
     if not(response and response.ok() and (response.content is not None) and ('sonic-port:PORT_LIST' in response.content)):
         return None
 
@@ -1137,18 +1134,11 @@ def get_all_eth_intfs_list():
 def hdl_get_all_ethernet(args):
     get_response = []
     response = {}
-    
-    intf_list = get_all_eth_intfs_list()
-    if type(intf_list) == int:
-        if intf_list == 1:
-	    return 1
-    for intf in intf_list:
+
+    for intf in get_all_eth_intfs_list():
         func = "get_openconfig_interfaces_interfaces_interface"
         intfargs = [intf]+args[0:]
         response = invoke_api(func, intfargs)
-	if not response.ok():
-	    return 1
-
         if response and response.ok() and (response.content is not None) and ('openconfig-interfaces:interface' in response.content):
             get_response.append(response.content['openconfig-interfaces:interface'][0])
 
@@ -1258,10 +1248,8 @@ def run(func, args):
                     if value["status"] != 0:
                         if value["status-detail"] != '':
                             print("%Error: {}".format(value["status-detail"]))
-			    return 1
                         else:
                             print("%Error: Internal error.")
-			    return 1
 
             elif func == 'rpc_replace_vlan':
                 if 'openconfig-interfaces-ext:output' in api_response:
@@ -1269,10 +1257,8 @@ def run(func, args):
                     if value["status"] != 0:
                         if value["status-detail"] != '':
                             print("%Error: {}".format(value["status-detail"]))
-			    return 1
                         else:
                             print("%Error: Internal error.")
-			    return 1
 
             if func == 'get_openconfig_interfaces_interfaces_interface':
                 show_cli_output(args[1], api_response)
