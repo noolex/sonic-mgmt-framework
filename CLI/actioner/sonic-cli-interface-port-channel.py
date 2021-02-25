@@ -112,9 +112,6 @@ def get_lag_data(lagName):
                         output['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] = api_response['sonic-portchannel:LAG_TABLE_LIST']
                 else:
                     output = api_response
-        else:
-            print(response.error_message())
-            return response
 
         responseIp = invoke_api(portchannel_ip,args)
         if responseIp.ok():
@@ -124,9 +121,6 @@ def get_lag_data(lagName):
                     output_filter = filter_address(api_response,lagName)
                     output['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv4'] = output_filter['ipv4']
                     output['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv6'] = output_filter['ipv6']
-        else:
-            print(responseIp.error_message())
-            return responseIp
 
         # GET Config params
         resp = invoke_api(portchannel_conf_func, args)
@@ -141,9 +135,6 @@ def get_lag_data(lagName):
                         output['sonic-portchannel:PORTCHANNEL']['PORTCHANNEL_LIST'] = api_resp['sonic-portchannel:PORTCHANNEL_LIST']
                 else:
                     output.update( api_resp )
-        else:
-            print(resp.error_message())
-            return resp
 
         # GET LAG Members
         resp2 = invoke_api('get_sonic_portchannel_sonic_portchannel_lag_member_table', args)
@@ -152,9 +143,6 @@ def get_lag_data(lagName):
                 # Get Command Output
                 api_resp2 = resp2.content
                 output.update( api_resp2 )
-        else:
-            print(resp2.error_message())
-            return resp2
 
     except Exception as e:
         print("Exception when calling get_lag_data : %s\n" %(e))
@@ -186,9 +174,6 @@ def get_lacp_data(lagName):
                         resp['openconfig-lacp:interfaces']['interface'] = api_response1['openconfig-lacp:interface']
                 else:
                      resp = api_response1
-        else:
-            print(response.error_message())
-            return resp
 
     except Exception as e:
         print("Exception when calling get_lacp_data : %s\n" %(e))
@@ -215,10 +200,6 @@ def get_counters(api_response):
                     # Get Command Output
                     resp = resp.content
                     po_intf["counters"] = resp
-            else:
-                print(resp.error_message())
-                return resp
-        return response
 
     except Exception as e:
         print("Exception when calling get_counters : %s\n" %(e))
@@ -238,9 +219,6 @@ def get_global_config_data():
             elif response is not None:
                 if 'sonic-portchannel:PORTCHANNEL_GLOBAL' in response:
                     value = response['sonic-portchannel:PORTCHANNEL_GLOBAL']['PORTCHANNEL_GLOBAL_LIST']
-        else:
-            print(api_response.error_message())
-            return api_response
 
     except Exception as e:
         print("Exception when calling get_global_config_data : %s\n" %(e))
@@ -261,8 +239,6 @@ def run():
         template_file = sys.argv[3]
 
     global_config_response = get_global_config_data()
-    if not global_config_resonse.ok():
-        return 1
 
     lag_list =[]
     pc_list =[]
@@ -274,16 +250,8 @@ def run():
 
     for intf in iflist:
         api_response = get_lag_data(intf)
-        if not api_response.ok():
-            return 1
-
         api_response1 = get_lacp_data(intf)
-        if not api_response1.ok():
-            return 1
-
-        api_response2 = get_counters(api_response)
-        if not api_response2.ok():
-            return 1
+        get_counters(api_response)
 
         if intf is not 'all':
             checkAll = False
