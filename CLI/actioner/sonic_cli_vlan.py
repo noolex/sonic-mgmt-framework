@@ -193,7 +193,8 @@ def run(func, args):
                                  updateVxlanMembers(iter['vlan'][4:],iter['remote_vtep'])
                                #Add the remote_ip in the corresponding vlan member list
                                #iter['vlan'] iter['remote_vtep']
-
+		else:
+		    return 1
             if 'sonic-vxlan:sonic-vxlan' in api_response:
                 value = api_response['sonic-vxlan:sonic-vxlan']
                 if 'SUPPRESS_VLAN_NEIGH' not in value:
@@ -225,6 +226,7 @@ def run(func, args):
 
     else:
         print response.error_message()
+	return 1
 
 if __name__ == '__main__':
 

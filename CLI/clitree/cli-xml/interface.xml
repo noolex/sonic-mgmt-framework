@@ -478,9 +478,7 @@ limitations under the License.
         name="show PortChannel summary"
         help="LAG status and configurationn"
         mode="subcommand">
-       <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-portchannel.py get_sonic_portchannel_sonic_portchannel_lag_table show_portchannel.j2 ${__full_line}&#xA;
-       </ACTION>
+       <ACTION builtin="clish_pyobj">sonic_cli_portchannel get_sonic_portchannel_sonic_portchannel_lag_table show_portchannel.j2 ${__full_line}</ACTION>
    </COMMAND>
    </VIEW>
    <VIEW
