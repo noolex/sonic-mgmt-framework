@@ -102,6 +102,9 @@ def eth_intf_range_expand(givenifrange):
     iftype = res[0]
     rangelst = res[1].split(',') #ex: [1-20,40,44-80] or [1/1-1/10,1/2/3]
     iflist = invoke_api("get_available_interface_names_list", [iftype])
+    if type(iflist) == int:
+        if  iflist == 1:
+	    return 1
     for p in iflist:
         #store the interfaces that fall inside any subset in the range
         if check_in_range(p, rangelst):
@@ -395,6 +398,9 @@ def invoke_api(func, args=[]):
                 tbl_key = "sonic-port:PORT_TABLE_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["ifname"] for i in intf_map[tbl_key] if i["ifname"].startswith("Eth")]
+	    else:
+		print(responsePortTbl.error_message())
+		return 1
 	elif args[0] == "Vlan":
             path = cc.Path('/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST')
             responseVlanTbl = api.get(path)
@@ -404,6 +410,9 @@ def invoke_api(func, args=[]):
                 tbl_key = "sonic-vlan:VLAN_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("Vlan")]
+	    else:
+		print(responseVlanTbl.error_message())
+		return 1
 	elif args[0] == "PortChannel":
             path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL/PORTCHANNEL_LIST')
             responseLagTbl = api.get(path)
@@ -413,6 +422,9 @@ def invoke_api(func, args=[]):
 	    	tbl_key = "sonic-portchannel:PORTCHANNEL_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("PortChannel")]
+	    else:
+		print(responseLagTbl.error_message())
+		return 1
 	elif args[0] == "SubInterface":
             path = cc.Path('/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST')
             responseSubIntfTbl = api.get(path)
@@ -422,6 +434,9 @@ def invoke_api(func, args=[]):
 	    	tbl_key = "sonic-interface:VLAN_SUB_INTERFACE_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["id"] for i in intf_map[tbl_key] if i["id"].startswith("Po")]
+	    else:
+		print(responseSubIntfTbl.error_message())
+		return 1
         
 	return iflist
 
@@ -502,9 +517,15 @@ def run(func, args):
             givenifrange = args[0]
             if givenifrange.startswith("Eth"):
                 iflist = eth_intf_range_expand(givenifrange)
+		if type(iflist) == int:
+		    if iflist == 1:
+		        return 1
             else:
                 iftype, ifrangelist = rangetolst(givenifrange)
                 iflist = invoke_api("get_available_interface_names_list", [iftype])
+		if type(iflist) == int:
+		    if iflist == 1:
+		        return 1
                 iflist = intersection(iflist, ifrangelist)
             res = ",".join(natsorted(iflist)).encode('ascii', 'ignore')
             return res
@@ -612,6 +633,8 @@ def run(func, args):
                 func = "get_openconfig_interfaces_interfaces_interface"
                 intfargs = [intf]+args[1:]
                 response = invoke_api(func, intfargs)
+		if not response.ok():
+		    return 1
                 if response and response.ok() and (response.content is not None) and ('openconfig-interfaces:interface' in response.content):
                     get_response.append(response.content['openconfig-interfaces:interface'][0])
             if response and response.ok() and (response.content is not None) and ('openconfig-interfaces:interface' in response.content):
@@ -659,8 +682,10 @@ def run(func, args):
                     if value["status"] != 0:
                         if value["status-detail"] != '':
                             print("%Error: {}".format(value["status-detail"]))
+			    return 1
                         else:
                             print "%Error: replacing VLANs for interface range failed"
+			    return 1
 
         else:
             response = invoke_api(func, args)

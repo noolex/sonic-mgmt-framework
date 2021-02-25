@@ -102,6 +102,7 @@ def run(func, args):
                 return
     else:
         print response.error_message()
+	return 1
 
 if __name__ == '__main__':
 
