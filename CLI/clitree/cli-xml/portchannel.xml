@@ -15,7 +15,7 @@
             command_keys="key=GLOBAL"
             command_tables="sonic-portchannel:sonic-portchannel/PORTCHANNEL_GLOBAL/PORTCHANNEL_GLOBAL_LIST/keyleaf=${key}"
             dbpath="sonic-portchannel:sonic-portchannel/PORTCHANNEL_GLOBAL/PORTCHANNEL_GLOBAL_LIST/graceful_shutdown_mode=enable">
-            <ACTION builtin="clish_pyobj">sonic_cli_portchannel patch_sonic_portchannel_sonic_portchannel_portchannel_global graceful_shutdown_mode enable</ACTION>
+            <ACTION builtin="clish_pyobj">sonic-cli-portchannel patch_sonic_portchannel_sonic_portchannel_portchannel_global graceful_shutdown_mode enable</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Enable portchannel graceful shutdown
@@ -30,7 +30,7 @@
         </COMMAND>
         <COMMAND name = "no portchannel graceful-shutdown"
             help = "Disable portchannel graceful shutdown">
-            <ACTION builtin="clish_pyobj">sonic_cli_portchannel patch_sonic_portchannel_sonic_portchannel_portchannel_global graceful_shutdown_mode disable</ACTION>
+            <ACTION builtin="clish_pyobj">sonic-cli-portchannel patch_sonic_portchannel_sonic_portchannel_portchannel_global graceful_shutdown_mode disable</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
                     Disable portchannel graceful shutdown
