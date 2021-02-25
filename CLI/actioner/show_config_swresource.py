@@ -27,4 +27,7 @@ def show_switch_resource_flow_scale_entry(render_tables):
         elif entries['flows'] == 'MIN' :
             cmd = cmd + "min"
 
+	if entries['routes'] == 'MAX':
+            cmd = cmd + "max"	
+
         return 'CB_SUCCESS', cmd
