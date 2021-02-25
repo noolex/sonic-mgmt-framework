@@ -378,7 +378,7 @@ def show_running_next_hop_group(render_tables):
             if 'threshold-up' in grp_data["config"]:
                 thr_cli += ' up {}'.format(grp_data["config"]['threshold-up'])
             if 'threshold-down' in grp_data["config"]:
-                thr_cli += ' down {};'.format(grp_data["config"]['threshold-down'])
+                thr_cli += ' down {}'.format(grp_data["config"]['threshold-down'])
             item['THRESHOLD'] = thr_cli
 
         nhops = list()
@@ -400,7 +400,7 @@ def show_running_next_hop_group(render_tables):
         if 'DESCRIPTION' in grp_data:
             runn_config += '  description {};'.format(grp_data['DESCRIPTION'])
         if 'THRESHOLD' in grp_data:
-            runn_config += '  {}'.format(grp_data['THRESHOLD'])
+            runn_config += '  {};'.format(grp_data['THRESHOLD'])
         for nh in grp_data.get('NEXT_HOPS', list()):
             runn_config += '  {};'.format(nh[1])
         runn_config += '!;'
