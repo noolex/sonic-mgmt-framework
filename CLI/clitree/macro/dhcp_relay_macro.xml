@@ -51,8 +51,13 @@ limitations under the License.
            name="ip dhcp-relay source-interface"
            help="Configures DHCP relay source interface"
            command_tables="arg2" >
-           <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING">  </PARAM>
-           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${ifName} ${__full_line}</ACTION>
+           <PARAM help="Interface subcommands" name="if-subcommands" mode="switch" ptype="SUBCOMMAND" optional="false">
+               <PARAM help="Physical Interface/Subinterface" name="intfName" ptype="PHY_INTERFACE_SUBIF" optional="false"/>
+               <PARAM help="PortChannel Interface/Subinterface" name="pchName" ptype="PO_INTERFACE_SUBIF" optional="false"/>
+               <PARAM help="Vlan Interface" name="vlanName" ptype="VLAN_INTERFACE" optional="false"/>
+               <PARAM help="Loopback Interface" name="loName" ptype="LOOPBACK_INTERFACE" optional="false"/>
+           </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${intfName} ${pchName} ${vlanName} ${loName} ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
                    Configures the source IP address to be used for relaying the DHCP packets.
@@ -176,9 +181,13 @@ limitations under the License.
            name="ipv6 dhcp-relay source-interface"
            help="Configures DHCPv6 relay source interface"
            command_tables="arg2" >
-           
-           <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING" >  </PARAM>
-           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${ifName} ${__full_line}</ACTION>
+           <PARAM help="Interface subcommands" name="if-subcommands" mode="switch" ptype="SUBCOMMAND" optional="false">
+               <PARAM help="Physical Interface/Subinterface" name="intfName" ptype="PHY_INTERFACE_SUBIF" optional="false"/>
+               <PARAM help="PortChannel Interface/Subinterface" name="pchName" ptype="PO_INTERFACE_SUBIF" optional="false"/>
+               <PARAM help="Vlan Interface" name="vlanName" ptype="VLAN_INTERFACE" optional="false"/>
+               <PARAM help="Loopback Interface" name="loName" ptype="LOOPBACK_INTERFACE" optional="false"/>
+           </PARAM>
+           <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_relay_agent_relay_agent_dhcpv6_interfaces_interface_relay_agent_config ${iface} ${vlan_name} ${po_name}  ${intfName} ${pchName} ${vlanName} ${loName} ${__full_line}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
                    Configure the source IPv6 address to be used for relaying the DHCPv6 packets.
@@ -428,10 +437,18 @@ limitations under the License.
        <PARAM   help="Show IP DHCP relay information" name="relay-cmd"  mode="switch"  ptype="SUBCOMMAND"  optional="false">
            <PARAM help="Show IP DHCP relay information in brief" name="brief" optional="true" mode="subcommand" ptype="SUBCOMMAND"/>
            <PARAM help="Show IP DHCP relay information in detail" name="detailed" optional="true" mode="subcommand" ptype="SUBCOMMAND">
-               <PARAM help="Interface Name" optional="true" name="ifName1"  ptype="STRING"/>
+               <PARAM help="Interface subcommands" name="if-subcommands" mode="switch" ptype="SUBCOMMAND" optional="false">
+                   <PARAM help="Physical Interface/Subinterface" name="intfName1" ptype="PHY_INTERFACE_SUBIF" optional="false"/>
+                   <PARAM help="PortChannel Interface/Subinterface" name="pchName1" ptype="PO_INTERFACE_SUBIF" optional="false"/>
+                   <PARAM help="Vlan Interface" name="vlanName1" ptype="VLAN_INTERFACE" optional="false"/>
+               </PARAM>
            </PARAM>
            <PARAM help="Show IP DHCP relay statistics" name="statistics" optional="true" mode="subcommand" ptype="SUBCOMMAND">
-               <PARAM help="Interface Name" optional="false" name="ifName" ptype="STRING"/>
+               <PARAM help="Interface subcommands" name="if-subcommands" mode="switch" ptype="SUBCOMMAND" optional="false">
+                   <PARAM help="Physical Interface/Subinterface" name="intfName" ptype="PHY_INTERFACE_SUBIF" optional="false"/>
+                   <PARAM help="PortChannel Interface/Subinterface" name="pchName" ptype="PO_INTERFACE_SUBIF" optional="false"/>
+                   <PARAM help="Vlan Interface" name="vlanName" ptype="VLAN_INTERFACE" optional="false"/>
+               </PARAM>
            </PARAM>
         </PARAM>
     </MACRODEF>

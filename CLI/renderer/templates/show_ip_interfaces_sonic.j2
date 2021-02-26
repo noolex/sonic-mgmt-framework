@@ -108,7 +108,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
         {% set vlanSubIntfList = json_output["sonic-interface:VLAN_SUB_INTERFACE_LIST"] -%}
         {% set portTblList = json_output["sonic-port:PORT_TABLE_LIST"] %}
         {% set lagTblList = json_output["sonic-portchannel:LAG_TABLE_LIST"] %}
-        {% if vars.update({'name':ifKey["ifName"]}) %}{% endif %}
+        {% if vars.update({'name':ifKey["ifName"], 'flags':""}) %}{% endif %}
         {% if vars.name.startswith('Eth') or vars.name.startswith('PortChannel') -%}
             {% for vlanSubIntf in vlanSubIntfList -%}
                 {% if (vlanSubIntf["id"] != vars.name) %}

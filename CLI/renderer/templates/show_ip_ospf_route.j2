@@ -30,10 +30,15 @@ VRF Name: {{list_elem['vrfName']}}
 {% if vars.network_table_data != " " %}
 {% for single_route in vars.network_table_data %}
 {% if 'state' in single_route %}
+{% if 'inter-area' in single_route['state'] and single_route['state']['inter-area'] == True %}
+{% if vars.update({'inter_area_info':'IA'}) %}{% endif -%}
+{% else %}
+{% if vars.update({'inter_area_info':'  '}) %}{% endif -%}
+{% endif -%}
 {% if vars.update({'last_area_id':' '}) %}{% endif -%}
 {% for nexthop  in single_route['state']['next-hops-list']['next-hops'] %}
 {% if vars.last_area_id != nexthop['area-id'] %}
-N    {{'%-18s'|format(single_route['prefix'])}}    [{{single_route['state']['cost']}}] area: {{nexthop['area-id']}}
+{{'%s %2s'|format('N',vars.inter_area_info)}} {{'%-18s'|format(single_route['prefix'])}}    [{{single_route['state']['cost']}}] area: {{nexthop['area-id']}}
 {% if vars.update({'last_area_id':nexthop['area-id']}) %}{% endif -%}
 {% endif -%}
 {% if nexthop['next-hop'] == '0.0.0.0' %}
