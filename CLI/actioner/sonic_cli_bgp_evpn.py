@@ -422,6 +422,8 @@ def invoke_api(func, args=[]):
             if response.ok() == False : return response
 
         if unconfig_pip_all :
+            if arg_map['vrf'] != 'default' :
+                return api._make_error_response("no advertise-pip command not allowed for non default VRFs")
             keypath = cc.Path(keypath_str + 'advertise-pip-ip')
             response = api.delete(keypath)
             if response.ok() == False : return response
