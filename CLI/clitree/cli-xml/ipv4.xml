@@ -143,12 +143,20 @@ limitations under the License.
         help="Show IP DHCP relay information"
         name="show ip dhcp-relay">
         <MACRO name="DHCP-RELAY-SHOW-OPTIONS" arg=""/>
-        <ACTION> if test -n "${ifName}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state show_ip_dhcp_relay_statistics.j2 ${ifName}&#xA;
+        <ACTION> if test -n "${intfName}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state show_ip_dhcp_relay_statistics.j2 ${intfName}&#xA;
+ elif test -n "${vlanName}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state show_ip_dhcp_relay_statistics.j2 ${vlanName}&#xA;
+ elif test -n "${pchName}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_dhcp_interfaces_interface_state show_ip_dhcp_relay_statistics.j2 ${pchName}&#xA;
  elif test -n "${brief}"; then&#xA;
  python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent show_ip_dhcp_relay_brief.j2&#xA;
- elif test -n "${ifName1}"; then&#xA;
- python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_detail show_ip_dhcp_relay_detailed.j2 ${ifName1}&#xA;
+ elif test -n "${intfName1}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_detail show_ip_dhcp_relay_detailed.j2 ${intfName1}&#xA;
+ elif test -n "${vlanName1}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_detail show_ip_dhcp_relay_detailed.j2 ${vlanName1}&#xA;
+ elif test -n "${pchName1}"; then&#xA;
+ python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_detail show_ip_dhcp_relay_detailed.j2 ${pchName1}&#xA;
  elif test -n "${detailed}"; then&#xA;
  python $SONIC_CLI_ROOT/sonic_cli_if.py get_openconfig_relay_agent_relay_agent_detail show_ip_dhcp_relay_detailed.j2&#xA;
  fi&#xA;
