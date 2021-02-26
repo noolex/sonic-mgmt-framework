@@ -222,11 +222,11 @@ def run(func, args):
             api_response = response.content
             if api_response is None:
                 print ("%Error: Internal error.")
-                sys.exit(1)
+                return 1
             show_cli_output(args[0], api_response)
     else:
         print response.error_message()
-        sys.exit(1)
+        return 1
 
 if __name__ == '__main__':
 

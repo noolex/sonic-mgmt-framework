@@ -325,6 +325,7 @@ limitations under the License.
             command_tables="sonic-pim:sonic-pim/PIM_GLOBALS/PIM_GLOBALS_LIST/vrf-name={vrf_name},address-family={address-family}"
             command_keys="address-family=ipv4"
             render_command_cb="pim_ipv4_gbl"
+            render_command_viewid="renderCfg_ippim"
             help="Configure PIM">
             <PARAM
                 name="vrf"

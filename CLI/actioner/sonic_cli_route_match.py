@@ -240,8 +240,10 @@ def run(func, args):
             api_response = response.content
             if api_response is None:
                 print ("%Error: Internal error.")
+                return 1
     else:
         print response.error_message()
+        return 1
 
 if __name__ == '__main__':
 

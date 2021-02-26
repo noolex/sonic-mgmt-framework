@@ -135,6 +135,7 @@ static void read_cmdline()
     char      buffer[LINE_MAX];
     size_t    sz = sizeof(buffer);
     size_t    n  = 0;
+    memset(buffer, 0, sz);
     for(;;)
     {
         ssize_t r = read(fd, &buffer[n], sz-n);

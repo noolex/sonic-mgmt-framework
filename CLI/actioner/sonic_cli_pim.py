@@ -215,7 +215,9 @@ def get_keypath(func,args):
 def get_vrf(intf):
     request = ''
 
-    if intf.lower().startswith('e'):
+    if "." in intf:
+        request = '/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST=' + intf + '/vrf_name'
+    elif intf.lower().startswith('e'):
         request = '/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST=' + intf + '/vrf_name'
     elif intf.lower().startswith('vlan'):
         request = '/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST=' + intf + '/vrf_name'
@@ -235,11 +237,11 @@ def get_vrf(intf):
         if response is  None:
             return 'default'
 
-        if intf.lower().startswith('e'):
+        if intf.lower().startswith('e') or "." in intf:
             vrf = response.get('sonic-interface:vrf_name')
-        if intf.lower().startswith('vlan'):
+        elif intf.lower().startswith('vlan'):
             vrf = response.get('sonic-vlan-interface:vrf_name')
-        if intf.lower().startswith('p'):
+        elif intf.lower().startswith('p'):
             vrf = response.get('sonic-portchannel-interface:vrf_name')
 
         if vrf is None or vrf == '':
