@@ -129,15 +129,9 @@ def run(func, args):
     try:
         response = invoke_api(func, args)
 
-        '''
-        We ignore the response from DELETE operations on interface sFlow sample rate because
-        a user may run 'no sflow sample-rate ...` more than once and that may result in
-        error since resource check won't find a dB entry
-        '''
-        if (response.ok() is False and
-            func != 'delete_sonic_sflow_sonic_sflow_sflow_session_sflow_session_list_sample_rate'):
+        if (response.ok() is False):
             print response.error_message()
-            return
+            return 1
 
         if func == 'get_sonic_sflow_sonic_sflow_sflow_session_table':
             sess_lst = [[]]
@@ -151,10 +145,11 @@ def run(func, args):
 
     except Exception as e:
         print("% Error: Internal error: " + str(e))
-
-    return
+        return 1
+    return 0
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)
     func = sys.argv[1]
-    run(func, sys.argv[2:])
+    ret = run(func, sys.argv[2:])
+    sys.exit(ret)

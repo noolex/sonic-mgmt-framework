@@ -265,12 +265,19 @@ def run(func, args):
         elif func == 'showrun':
             api = cc.ApiClient()
             keypath = []
-            keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST={}'.format(args[0]))
+            if args[0] == 'mgmt':
+                keypath = cc.Path('/restconf/data/sonic-mgmt-vrf:sonic-mgmt-vrf/MGMT_VRF_CONFIG/MGMT_VRF_CONFIG_LIST')
+                showrun_list = [ ('show_multi_views', "views=renderCfg_ipvrfmgmt,configure"), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if-mgmt,configure-if,configure-subif,renderCfg_iprtemgmt,renderCfg_ntp,renderCfg_ipdns,renderCfg_tacacs,renderCfg_radius") ]
+            else:
+                keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST={}'.format(args[0]))
+                if args[0] == 'default':
+                    showrun_list = [ ('show_view', "views=renderCfg_ipvrf", 'view_keys="name=default"'), ('show_view', "views=renderCfg_ippim", 'view_keys="vrfname=default"'), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if,configure-subif,renderCfg_iprte"), ('show_view', "views=configure-router-bgp", 'view_keys="vrf-name=default"') ]
+                else:
+                    showrun_list = [ ('show_view', "views=renderCfg_ipvrf", 'view_keys="name={}"'.format(args[0])), ('show_view', "views=configure"), ('show_view', "views=renderCfg_ippim", 'view_keys="vrfname={}"'.format(args[0])), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if,configure-subif,renderCfg_iprte"), ('show_view', "views=configure-router-bgp", 'view_keys="vrf-name={}"'.format(args[0])) ]
             response = api.get(keypath)
-            if response.content == None:
+            if response.content == None or not response.content:
                  # vrf not found
                  return 0
-            showrun_list = [ ('show_view', "views=renderCfg_ipvrf", 'view_keys="name={}"'.format(args[0])), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if-mgmt,configure-if,configure-subif,renderCfg_iprte"), ('show_view', "views=configure-router-bgp", 'view_keys="vrf-name={}"'.format(args[0])) ]
             rcfgall = showconfig_views_to_buffer(showrun_list)
             vrfcfgs = ''
             gotSep = False
@@ -280,7 +287,8 @@ def run(func, args):
                    continue
                 if args[0] != 'default':
                    if not re.search('\\bvrf (forwarding )?{}\\b'.format(args[0]), cfgl):
-                      continue
+                      if args[0] != 'mgmt' or not cfgl.startswith('interface Management 0'):
+                         continue
                 else:
                    if re.search('\\bvrf\\b', cfgl) and not re.search('\\bvrf (forwarding )?default\\b', cfgl):
                       continue
