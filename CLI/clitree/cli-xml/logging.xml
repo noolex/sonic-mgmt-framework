@@ -75,6 +75,7 @@ limitations under the License.
           <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
           <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+          <PARAM name="SubInterface" help="Vlan interface" ptype="PHY_PO_SUB_INTERFACE" mode="subcommand"/>
         </PARAM>
       </PARAM>
       <PARAM name="vrf" help="Configures VRF to use for connection" mode="subcommand" ptype="SUBCOMMAND" optional="true">
@@ -92,7 +93,7 @@ limitations under the License.
             />
         </PARAM>
       </PARAM>
-		<ACTION builtin="clish_pyobj">sonic_cli_logging patch_openconfig_system_logging_server_config_host ${host} rport=${vrport} vrf=${mgmt}${vrf-name} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan}</ACTION>
+		<ACTION builtin="clish_pyobj">sonic_cli_logging patch_openconfig_system_logging_server_config_host ${host} rport=${vrport} vrf=${mgmt}${vrf-name} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan} ${SubInterface}</ACTION>
       <DOCGEN>
         <DESCRIPTION>Configure remote syslog server to forward syslog messages</DESCRIPTION>
 		<EXAMPLE>
