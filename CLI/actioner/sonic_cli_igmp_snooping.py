@@ -25,6 +25,14 @@ import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 
+l2mc_default_values_map = {
+        "querier"           :   False,
+        "fast-leave"        :   False,
+        "version"           :   2,
+        "query-interval"    :   125,
+        "lmqi"              :   1000,
+        "query-mrt"         :   10
+        }
 def invoke(func, args):
     body = None
     is_update_oper = False
@@ -186,8 +194,22 @@ def invoke(func, args):
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}',
                 vlanid=args[0])
         elif args[1] == 'querier' :
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/querier',
+            is_update_oper = True;
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping',
                 vlanid=args[0])
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                            {
+                                "name": args[0],
+                                "config" : {
+                                "querier": l2mc_default_values_map['querier']
+                                }
+                            }
+                            ]
+                            }
+                        }
+                   }
         elif args[1] == 'fast-leave' :
             is_update_oper = True
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping',
@@ -198,7 +220,7 @@ def invoke(func, args):
                             {
                                 "name": args[0],
                                 "config" : {
-                                "fast-leave": False
+                                "fast-leave": l2mc_default_values_map['fast-leave']
                                 }
                             }
                             ]
@@ -206,17 +228,73 @@ def invoke(func, args):
                         }
                    }
         elif args[1] == 'version' :
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/version',
+            is_update_oper = True
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping',
                 vlanid=args[0])
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                            {
+                                "name": args[0],
+                                "config" : {
+                                "version": l2mc_default_values_map['version']
+                                }
+                            }
+                            ]
+                            }
+                        }
+                   }
         elif args[1] == 'query-interval' :
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/query-interval',
+            is_update_oper = True
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping',
                 vlanid=args[0])
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                            {
+                                "name": args[0],
+                                "config" : {
+                                "query-interval": l2mc_default_values_map['query-interval']
+                                }
+                            }
+                            ]
+                            }
+                        }
+                   }
         elif args[1] == 'last-member-query-interval' :
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/last-member-query-interval',
+            is_update_oper = True
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping',
                 vlanid=args[0])
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                            {
+                                "name": args[0],
+                                "config" : {
+                                "last-member-query-interval": l2mc_default_values_map['lmqi']
+                                }
+                            }
+                            ]
+                            }
+                        }
+                   }
         elif args[1] == 'query-max-response-time' :
-            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/query-max-response-time',
+            is_update_oper = True
+            keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping',
                 vlanid=args[0])
+            body = { "openconfig-network-instance-deviation:igmp-snooping": {
+                        "interfaces": {
+                            "interface": [
+                            {
+                                "name": args[0],
+                                "config" : {
+                                "query-max-response-time": l2mc_default_values_map['query-mrt']
+                                }
+                            }
+                            ]
+                            }
+                        }
+                   }
         elif args[1] == 'mrouter' :
             keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance=default/protocols/protocol=IGMP_SNOOPING,IGMP-SNOOPING/openconfig-network-instance-deviation:igmp-snooping/interfaces/interface={vlanid}/config/mrouter-interface={ifname}',
                 vlanid=args[0], ifname=args[3])
