@@ -82,7 +82,7 @@ def align_and_save(temp_file_name, output_file_name):
 def addpipe(command):
    splitstr = command.get('name').split()
    action = command.find(ACTION_XPATH_EXPR).get('builtin')
-   if ((splitstr[0] == 'show' and splitstr[1] != 'tech-support') or splitstr[0] == 'get'):
+   if (splitstr[0] == 'show' or splitstr[0] == 'get'):
       if action in actionlst:
           etree.SubElement(command, "{"+XI_NS_HREF+"}include", href = PIPE_WITHOUT_DISPLAY_XML)
       else:
