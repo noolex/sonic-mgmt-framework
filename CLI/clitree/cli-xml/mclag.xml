@@ -295,6 +295,24 @@
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
+    <!-- show running-config-configuration mclag -->
+    <COMMAND name="show running-configuration mclag" help="Shows current mclag configuration">
+     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mclag </ACTION>
+     <DOCGEN>
+       <DESCRIPTION>
+           Shows running configuration of mclag domain
+       </DESCRIPTION>
+       <EXAMPLE summary="show running-configuration mclag">
+               sonic# show running-configuration mclag
+               mclag domain 89
+                 source-ip 1.1.1.1
+                 peer-ip 1.1.1.2
+                 peer-link PortChannel2
+                 keepalive-interval 1
+                 session-timeout 30
+       </EXAMPLE>
+       </DOCGEN>
+    </COMMAND>
   </VIEW>
 
 </CLISH_MODULE>
