@@ -81,7 +81,11 @@ def invoke(func, args):
     elif func == 'delete_openconfig_platform_port_components_component_port_breakout_mode_config':
         interface = args[0]
         path = cc.Path('/restconf/data/openconfig-platform:components/component={port}/port/openconfig-platform-port:breakout-mode/config',port=interface)
-        return aa.delete(path)
+        get_resp = aa.get(path)
+        if get_resp.ok() and get_resp.content:
+            return aa.delete(path)
+        else:
+            return aa._make_error_response('%Error: No change in port breakout mode')
     else:
         if len(args)<3:
             start = 1
