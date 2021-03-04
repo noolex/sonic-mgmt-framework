@@ -102,6 +102,7 @@
             {% endif %}
             {% if vars.update({'ipv4':"IPV4"}) %}{% endif %}
             {% if vars.update({'ipv6':"IPV6"}) %}{% endif %}
+ 	    {% if vars.update({'ip_prim':""}) %}{% endif %}
             {% if subif["openconfig-if-ip:ipv4"] and "addresses" in subif["openconfig-if-ip:ipv4"] and "address" in
                subif["openconfig-if-ip:ipv4"]["addresses"] and subif["openconfig-if-ip:ipv4"]["addresses"]["address"] is not none %}
               {% set ip_list = subif["openconfig-if-ip:ipv4"]["addresses"]["address"] %}
