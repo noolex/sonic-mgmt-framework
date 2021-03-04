@@ -118,7 +118,7 @@ install:
 	
 	# Scripts for Host Account Management (HAM)
 	rsync --archive --verbose --no-owner --no-group $(TOPDIR)/ham/hamd/etc $(DESTDIR)
-	$(INSTALL) -D $(TOPDIR)/ham/hamd/lib/systemd/system/*  $(DESTDIR)/lib/systemd/system/
+	$(INSTALL) -D -m 0644 $(TOPDIR)/ham/hamd/lib/systemd/system/*  $(DESTDIR)/lib/systemd/system/
 
 	$(INSTALL) -D $(TOPDIR)/ham/hamd/hamd     $(DESTDIR)/usr/sbin/.
 	$(INSTALL) -D $(TOPDIR)/ham/hamctl/hamctl $(DESTDIR)/usr/bin/.
