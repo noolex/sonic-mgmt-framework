@@ -43,7 +43,10 @@ def add_speed_and_mtu(data_in):
             if response.ok() and response.content is not None:
                 parent_data[item] = dict()
                 parent_data[item]['mtu'] = response.content['sonic-portchannel:LAG_TABLE_LIST'][0]['mtu']
-                parent_data[item]['speed'] = response.content['sonic-portchannel:LAG_TABLE_LIST'][0]['speed']
+                if 'speed' in response.content['sonic-portchannel:LAG_TABLE_LIST'][0]:
+                    parent_data[item]['speed'] = response.content['sonic-portchannel:LAG_TABLE_LIST'][0]['speed']
+                else:
+                    parent_data[item]['speed'] = "n/a"
     data_in['aux_info'] = parent_data
 
 def invoke_api(func, args=[]):
