@@ -21,6 +21,7 @@
 
 import sys
 import json
+from datetime import datetime
 from natsort import natsorted
 from collections import OrderedDict
 from rpipe_utils import pipestr
@@ -72,19 +73,29 @@ def run(func, args):
     #print ("intf='{0}'".format(if_name))
 
     if if_name is not None:
-        if_list.append(if_name)
+        path = cc.Path('/restconf/data/sonic-transceiver:sonic-transceiver-info/TRANSCEIVER_INFO/TRANSCEIVER_INFO_LIST={0}'.format(if_name))
+        resp = aa.get(path, None, False)
+        if resp.ok() and (resp.content is not None) and ('sonic-transceiver:TRANSCEIVER_INFO_LIST' in resp.content):
+            if len(resp.content['sonic-transceiver:TRANSCEIVER_INFO_LIST']) > 0:
+                intf = resp.content['sonic-transceiver:TRANSCEIVER_INFO_LIST'][0]
+                type = intf.get('type_abbrv_name')
+                if (type is not None) and (type.startswith('QSFP-DD')):
+                    if_list.append(if_name)
     else:
-        path = cc.Path(OC_PLAT)
-        resp = aa.get(path)
-        key = 'openconfig-platform:component'
-        if resp.ok() and (resp.content is not None) and (key in resp.content):
-            for row in resp.content[key]:
-                name = row.get('name')
+        path = cc.Path('/restconf/data/sonic-transceiver:sonic-transceiver-info/TRANSCEIVER_INFO/TRANSCEIVER_INFO_LIST')
+        resp = aa.get(path, None, False)
+        if resp.ok() and (resp.content is not None) and ('sonic-transceiver:TRANSCEIVER_INFO_LIST' in resp.content):
+            for intf in resp.content['sonic-transceiver:TRANSCEIVER_INFO_LIST']:
+                name = intf.get('ifname')
                 if (name is None) or (not name.startswith('Eth')):
                     continue
-                if (row.get('openconfig-platform-transceiver:transceiver') is None):
+                type = intf.get('type_abbrv_name')
+                if (type is None) or (not type.startswith('QSFP-DD')):
                     continue
                 if_list.append(name)
+
+    if len(if_list) < 1:
+        return
 
     # Initialize the xcvrInfo
     for intf in natsorted(if_list):
