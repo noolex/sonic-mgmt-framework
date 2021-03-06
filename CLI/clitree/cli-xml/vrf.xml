@@ -86,8 +86,8 @@ limitations under the License.
       <COMMAND name="show running-configuration vrf" help="Show VRF configuration information">
         <PARAM
           name="vrf-name"
-          help="Name of VRF (Max: 15 characters, prefixed with Vrf)"
-          ptype="STRING_15"
+          help="Name of VRF"
+          ptype="ALL_VRF"
           >
         </PARAM>
         <ACTION
