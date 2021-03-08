@@ -1411,9 +1411,6 @@
         <PARAM name="border-routers" help="Displays all OSPFv2 ABR's and ASBR's" ptype="SUBCOMMAND" mode="subcommand">
         </PARAM>
 
-        <PARAM name="route" help="Displays OSPFv2 routing table" ptype="SUBCOMMAND" mode="subcommand">
-        </PARAM>
-
         <PARAM name="database" help="Displays OSPFv2 Database summary" ptype="SUBCOMMAND" mode="subcommand" >
           <PARAM name = "databasetype" help = "" ptype = "SUBCOMMAND" mode="switch"  optional="true" >
             <PARAM name="asbr-summary" help="ASBR summary link states" ptype="SUBCOMMAND" mode="subcommand">
@@ -2023,13 +2020,15 @@ N    101.1.1.0/24          [10] area: 0.0.0.0
             </DOCGEN>
      </COMMAND>
 
+     <!--
      <COMMAND name="show ip ospf vrfs" help="Displays OSPFv2 VRFs" >
         <ACTION builtin="clish_nop"></ACTION>
      </COMMAND>
 
      <COMMAND name="show ip ospf router-info" help="Displays OSPFv2 Router information" >
         <ACTION builtin="clish_nop"></ACTION>
-  </COMMAND>
+     </COMMAND>
+     -->
 
 </VIEW>
 
