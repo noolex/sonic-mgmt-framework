@@ -470,6 +470,14 @@ limitations under the License.
     depth="3"
     >
 
+    <NAMESPACE ref="configure-view"
+                help="false"
+                completion="false"/>
+
+    <NAMESPACE ref="configure-bfd-view"
+                help="false"
+                completion="false"/>
+
     <NAMESPACE ref="configure-peer-view"
                 help="false"
                 completion="false"/>
