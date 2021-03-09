@@ -30,7 +30,7 @@ limitations under the License.
         <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_show.j2 </ACTION>
         <DOCGEN>
             <DESCRIPTION>
-                Shows LLPD neigbhor information in brief
+                Shows LLDP neigbhor information in brief
             </DESCRIPTION>
             <USAGE>
                 This command is useful to view the LLDP neighbor information in brief
@@ -55,7 +55,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_neighbor_show.j2 ${ifname}</ACTION>
     <DOCGEN>
         <DESCRIPTION>
-            Shows LLPD neigbhor information in detail
+            Shows LLDP neigbhor information in detail
         </DESCRIPTION>
         <USAGE>
             This command is useful to view the LLDP neighbor information in detail
@@ -78,6 +78,37 @@ limitations under the License.
             PortID:       hundredGigE53
             PortDescr:    Ethernet64
         -----------------------------------------------------------
+        </EXAMPLE>
+    </DOCGEN>
+   </COMMAND>
+
+   <COMMAND name="show lldp statistics" help="Show lldp statistics information">
+	 <PARAM
+            name="ifname"
+            help="Interface name"
+	        ptype="PHY_INTERFACE"
+	        optional="true"
+           >
+        </PARAM>
+    <ACTION builtin="clish_pyobj"> sonic_cli_lldp get_openconfig_lldp_lldp_interfaces lldp_stats.j2 ${ifname}</ACTION>
+    <DOCGEN>
+        <DESCRIPTION>
+            Shows LLDP statistics information 
+        </DESCRIPTION>
+        <USAGE>
+            This command is useful to view the LLDP statistics information
+        </USAGE>
+        <EXAMPLE summary="Shows LLDP statistics information">
+        sonic-cli# show lldp statistics
+        LLDP Statistics
+        ---------------------------------
+        Interface: Ethernet0
+            Transmitted      : 10
+            Received         : 12
+            Discarded        : 1
+            Unrecognized TLV : 0
+            Ageout           : 0
+        ---------------------------------
         </EXAMPLE>
     </DOCGEN>
    </COMMAND>
