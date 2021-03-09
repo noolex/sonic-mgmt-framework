@@ -159,7 +159,7 @@ def generate_show_ip_igmp_joins(args):
                  d = json.loads(d)
              except:
                  return 1
-             show_cli_output('show_ip_igmp_joins.j2',d)
+             return show_cli_output('show_ip_igmp_joins.j2',d)
 
 def generate_show_ip_igmp_vrf_all_groups(args):
     api = cc.ApiClient()
@@ -221,7 +221,8 @@ def generate_show_ip_igmp_vrf_all_joins(args):
                vrf_name = vrf['vrf_name']
                args[1] = vrf_name
                print("VRF : "+vrf_name)
-               generate_show_ip_igmp_joins(args)
+               if generate_show_ip_igmp_joins(args):
+                   break
 
 
 def generate_show_ip_igmp_interface_all(args):
@@ -243,9 +244,9 @@ def generate_show_ip_igmp_interface_all(args):
             api_response = response.content
             if api_response is None:
                 print("% No such Interface")
-                return
-    show_cli_output(args[0], api_response)
-    return api_response
+                return api_response, False
+    ret = show_cli_output(args[0], api_response)
+    return api_response, ret
 
 def generate_show_ip_igmp_vrf_all_interfaces(args):
     api = cc.ApiClient()
@@ -265,10 +266,12 @@ def generate_show_ip_igmp_vrf_all_interfaces(args):
                dlist = []
                d = {'vrfName': vrf_name}
                dlist.append(d)
-               api_response = generate_show_ip_igmp_interface_all(args)
+               api_response, ret = generate_show_ip_igmp_interface_all(args)
                api_response["VRF"] = vrf_name
                dlist.append(api_response)
-               show_cli_output(args[0], dlist)
+               if ret:
+                   break
+               #show_cli_output(args[0], dlist)
 
 def invoke_show_api(func, args=[]):
     api = cc.ApiClient()
@@ -300,7 +303,7 @@ def invoke_show_api(func, args=[]):
               api_response = generate_show_ip_igmp_interface(args)
               show_cli_output('show_ip_igmp_interface.j2', api_response)
            else:
-              api_response = generate_show_ip_igmp_interface_all(args)
+              api_response, ret = generate_show_ip_igmp_interface_all(args)
               show_cli_output('show_ip_igmp_interface.j2', api_response)
         elif args[2].lower() == 'groups':
            if args[1].lower() == 'all':
