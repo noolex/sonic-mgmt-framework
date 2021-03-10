@@ -99,8 +99,8 @@ $(CODEGEN_JAR): | $$(@D)/.
 #======================================================================
 %/.yangapi_validate_done: $(YANGAPI_DIR)/$$(*F).yaml | $$(@D)/. $(CODEGEN_JAR) $(SERVER_DIST_INIT)
 	@echo "+++ Validating $$(basename $(@D)).yaml +++"
-	$(JAVA) -jar $(CODEGEN_JAR) validate \
-		--input-spec $(YANGAPI_DIR)/$$(basename $(@D)).yaml
+	#$(JAVA) -jar $(CODEGEN_JAR) validate \
+	#	--input-spec $(YANGAPI_DIR)/$$(basename $(@D)).yaml
 	cp $(YANGAPI_DIR)/$$(basename $(@D)).yaml $(SERVER_DIST_UI)/$$(basename $(@D)).yaml
 	touch $@
 
