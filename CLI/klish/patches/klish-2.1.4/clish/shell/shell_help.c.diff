@@ -48,12 +48,14 @@
 < 		clish_param_help(param, help);
 ---
 > 		clish_param_help(param, help, clish_parg__get_value((parg)));
-107c127,175
+107c127,183
 < void clish_shell_help(clish_shell_t *this, const char *line)
 ---
-> void sort_help_command (const lub_argv_t *name , const lub_argv_t *help, int complete_status) {
+> void sort_help_command (const lub_argv_t *name , const lub_argv_t *help, int complete_status,int *dupCount) {
 >         int count = 0;
 >         int indexi,indexj;
+>         int strcmp_ret;
+>         int dupSwapCount = 0;
 >         char * temp = NULL;
 >         const char *str1 = NULL;
 >         const char *str2 = NULL;
@@ -79,43 +81,50 @@
 >             return;
 >         }
 > 
->         for (indexi=0;indexi<count-1;indexi++) {
->                 for (indexj=indexi+1;indexj<count;indexj++) {
+>         for (indexi=0; indexi< count-1-dupSwapCount; indexi++) {
+>                 for (indexj=indexi+1; indexj< count-dupSwapCount; indexj++) {
 >                         str1 = lub_argv__get_arg(name, indexi);
 >                         str2 = lub_argv__get_arg(name, indexj);
 > 
 >                         if ((str1 == NULL) || (str2 == NULL))
 >                                 continue;
 >                         /* check two strings. if compared string is lowest letter, then swap */
->                         if(lub_string_nocasecmp(str1,str2) > 0) {
+>                         strcmp_ret = lub_string_nocasecmp(str1,str2);
+>                         if(strcmp_ret > 0) {
 >                                 /*swap the name to sort */
 >                                 lub_argv__swap_arg(name,indexi,indexj);
 >                                 /*swap the corresponding help string of command */
 >                                 lub_argv__swap_arg(help,indexi,indexj);
+>                         } else if(strcmp_ret == 0) {
+> 				/*Move the duplicate token to the last place. So that the duplicate token will be printed.*/
+>                                 lub_argv__swap_arg(help,indexj,count-1-dupSwapCount);
+> 				dupSwapCount++;
 >                         }
 >                 }
 >         }
+> 	*dupCount = dupSwapCount;
 > 
 > }
 > 
 > /*--------------------------------------------------------- */
 > void clish_shell_help(clish_shell_t *this, const char *line, clish_context_t *context)
-112a181
+112a189,190
 > 	int complete_status = 0;
-119c188
+> 	int dupCount = 0;
+119c197
 < 	available_commands(this, &help, line, &max_width);
 ---
 > 	available_commands(this, &help, line, &max_width, context);
-122c191
+122c200
 < 	cmd = clish_shell_resolve_command(this, line);
 ---
 > 	cmd = clish_shell_resolve_command(this, line, context);
-126,127c195
+126,127c204
 < 		int status;
 < 		status = available_params(this, &help, cmd, line, &width);
 ---
 > 		complete_status = available_params(this, &help, cmd, line, &width);
-131,134c199,202
+131,134c208,211
 < 		if (!status) {
 < 			lub_argv_add(help.name, "<cr>");
 < 			lub_argv_add(help.help, NULL);
@@ -125,18 +134,22 @@
 > 			lub_argv_add(help.name, "<cr>", BOOL_FALSE);
 > 			lub_argv_add(help.help, NULL, BOOL_FALSE);
 > 			lub_argv_add(help.detail, NULL, BOOL_FALSE);
-138a207,211
+139,140c216
+< 
+< 	/* Print help messages */
+---
 >     
-> 	for (i = 0; i < lub_argv__get_count(help.name); i++) {
+142c218,228
+< 		fprintf(stderr, "  %-*s  %s\n", (int)max_width,
+---
 > 		if(max_width < strlen(lub_argv__get_arg(help.name, i)))
 > 			max_width = strlen(lub_argv__get_arg(help.name, i));
 > 	}
-139a213,214
-> 	/* Sort the help command name and is help strings */
-> 	sort_help_command(help.name, help.help, complete_status);
-142c217,219
-< 		fprintf(stderr, "  %-*s  %s\n", (int)max_width,
----
+> 
+> 	/* Sort the help command name and is help strings. Also move the duplicate command to last place. */
+> 	sort_help_command(help.name, help.help, complete_status, &dupCount);
+> 	/* Print help messages. Duplicate commands present in the last position wont be printed. */
+> 	for (i = 0; i < lub_argv__get_count(help.name)-dupCount; i++) {
 > 		if(max_width < strlen(lub_argv__get_arg(help.name, i)))
 > 			max_width = strlen(lub_argv__get_arg(help.name, i));
 > 		fprintf(stderr, "  %-*s  %-s\n", (int)max_width,

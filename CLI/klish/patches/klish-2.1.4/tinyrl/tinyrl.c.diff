@@ -6,24 +6,42 @@
 > 				if (!this->handlers[key](this, key))
 > 					tinyrl_ding(this);
 > 			}
-1414a1417,1432
+1414a1417,1450
 >                         int indexi,indexj;
 >                         char * temp = NULL;
->                         for (indexi=1;indexi<len-1;indexi++) {
+> 			int strcmp_ret = 0;
+>                         int dupSwapCount = 0;
+>                         for (indexi=1;indexi<len-1-dupSwapCount;indexi++) {
 > 
->                                 for (indexj=indexi+1;indexj<=len-1;indexj++) {
+>                                 for (indexj=indexi+1;indexj<=len-1-dupSwapCount;indexj++) {
 >                                     if ((matches[indexi] == NULL) || (matches[indexj] == NULL))
 >                                         continue;
 > 
->                                     if(lub_string_nocasecmp(matches[indexi],matches[indexj]) > 0) {
+>                                     strcmp_ret = lub_string_nocasecmp(matches[indexi],matches[indexj]);
+>                                     if(strcmp_ret > 0) {
 >                                         temp = matches[indexi];
 >                                         matches[indexi] = matches[indexj];
 >                                         matches[indexj] = temp;
->                                     }
+>                                     } else if (strcmp_ret == 0) {
+> 					/*move the duplicate to last place*/
+> 					temp = matches[len-1-dupSwapCount];
+> 					matches[len-1-dupSwapCount] = matches[indexj];
+> 					matches[indexj] = temp;
+> 					dupSwapCount++;
+> 				    }
 >                                 }
 >                         }
+> 			/* No need to print the duplicate token */
+> 			len = len - dupSwapCount;
 > 
-1435a1454,1498
+>                         if(len == 2) {
+> 			/* The matches[0] is having user entered string.
+> 			*If there is one token is available(ie matches[1] and nothing/duplicate in matches[2]),
+> 			*then we can set COMPLETED_MATCH*/
+> 				result = TINYRL_COMPLETED_MATCH;
+>                         }
+> 
+1435a1472,1516
 > static void
 > tinyrl_do_complete_ignore_error(tinyrl_t * this, bool_t with_extensions)
 > {
@@ -69,14 +87,14 @@
 > }
 > 
 > /*-------------------------------------------------------- */
-1447a1511,1516
+1447a1529,1534
 > void tinyrl_complete_ignore_error(tinyrl_t * this)
 > {
 >         return tinyrl_do_complete_ignore_error(this, BOOL_FALSE);
 > }
 > 
 > /*-------------------------------------------------------- */
-1656a1726,1732
+1656a1744,1750
 > 
 > /*-------------------------------------------------------- */
 > bool_t tinyrl_is_cursor_in_middle(const tinyrl_t *this)
