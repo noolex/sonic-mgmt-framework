@@ -112,20 +112,22 @@
 > 	clish_pargv_status_t retval;
 84a173
 > 	int recursive_start = 0;
-97a187,188
+87a177
+> 	assert(idx); /* idx must not be null */
+97a188,189
 > 		clish_ptype_t *ptype = NULL;
 > 		char *cmd_name = NULL;
-101a193,198
->                 if (idx && errP) {
+101a194,199
+>                 if (errP) {
 >                     if(*idx <= argc) {
 >                      *errP = *idx;
 >                     }
 >                 }
 > 
-115a213,214
+115a214,215
 > 		ptype = clish_param__get_ptype(param);
 > 		cmd_name = (char*)clish_command__get_name(cmd);
-117c216,221
+117c217,222
 < 		if (last && (*idx == need_index) &&
 ---
 > 		/* In order to show the help string for interface, we need to process  
@@ -134,9 +136,9 @@
 > 		 */
 > 		if (last && ((*idx == need_index)||
 > 			is_valid_regexp_select_iteration(param, *idx, need_index, is_switch, arg)) &&
-120a225
+120a226
 > 				bool keyword_match = false;
-127,128c232,237
+127,128c233,238
 < 					if (CLISH_PARAM_SUBCOMMAND ==
 < 						clish_param__get_mode(cparam)) {
 ---
@@ -146,7 +148,7 @@
 > 						((CLISH_PARAM_COMMON == clish_param__get_mode(cparam)) &&
 > 						(CLISH_PTYPE_METHOD_REGEXP_SELECT ==
 > 						 clish_ptype__get_method(ptype)))) {
-131,133c240,304
+131,133c241,305
 < 						if (!arg || (arg && 
 < 							(pname == lub_string_nocasestr(pname,
 < 							arg))))
@@ -216,13 +218,13 @@
 > 							   flag will track if any keyword is added already.if added already
 > 							   skip adding the non-keyword.This solution expects that the keywords
 > 							   are added before the non-keywords in the switch */
-136,138c307
+136,138c308
 < 					} else {
 < 						clish_pargv_insert(last,
 < 							cparam, arg);
 ---
 > 						}
-142,143c311,314
+142,143c312,315
 < 				if (CLISH_PARAM_SUBCOMMAND ==
 < 					clish_param__get_mode(param)) {
 ---
@@ -230,7 +232,7 @@
 > 						((CLISH_PARAM_COMMON == clish_param__get_mode(param)) &&
 > 						(CLISH_PTYPE_METHOD_REGEXP_SELECT ==
 > 						 clish_ptype__get_method(ptype)))) {
-145,147c316,320
+145,147c317,321
 < 					    clish_param__get_value(param);
 < 					if (!arg || (arg &&
 < 						(pname == lub_string_nocasestr(pname, arg))))
@@ -240,7 +242,7 @@
 > 						clish_param__get_ptype(param);
 > 					if ((CLISH_PTYPE_METHOD_REGEXP_SELECT != clish_ptype__get_method(ptype)) && 
 > 					(!arg || (arg && (pname == lub_string_nocasestr(pname, arg)))))
-148a322,356
+148a323,357
 > 					else if (CLISH_PTYPE_METHOD_REGEXP_SELECT ==
 > 						clish_ptype__get_method(ptype)) {
 > 						const char *name;
@@ -276,11 +278,11 @@
 >                             				name = NULL;
 >                         			}
 > 					}
-173c381
+173c382
 < 			if (clish_pargv_find_arg(pargv, clish_param__get_name(param))) {
 ---
 > 			if (clish_pargv_find_arg(pargv, clish_param__get_name(param))) { 
-187a396,484
+187a397,487
 > 					} else {
 > 						/*  For CLISH_PTYPE_REGEXP_SELECT method, we try to match the
 > 						 *  input arg against a PARAM. If it is not matching we try
@@ -361,6 +363,8 @@
 > 									unsigned strmatch = lub_string_equal_part_nocase(val,arg,BOOL_TRUE);
 > 									if(strmatchLen && strmatch>*strmatchLen)
 > 										*strmatchLen = strmatch;
+> 									lub_string_free(val);
+> 									val = NULL;
 >                 						}
 > 
 > 							} else if(arg && strmatchLen){
@@ -370,7 +374,7 @@
 > 									*strmatchLen = strmatch;
 >                                                         }
 > 						}
-192a490,560
+192a493,563
 > 				/*  For CLISH_PTYPE_REGEXP_SELECT method, we try to match the
 > 				 *  input arg against a PARAM. If it is not matching we try
 > 				 *  concatenating the next arg to this arg and try matching
@@ -442,7 +446,7 @@
 > 							*strmatchLen = strmatch;
 >                                         }
 > 				}
-203,204c571,575
+203,204c574,578
 < 					clish_pargv_insert(pargv, param,
 < 						validated);
 ---
@@ -451,25 +455,25 @@
 > 						lub_string_free(validated);
 > 						return CLISH_BAD_PARAM;
 > 					}
-220c591
+220c594
 < 							argv, idx, last, need_index);
 ---
 > 							argv, idx, last, need_index, errP, strmatchLen);
-250c621,623
+250c624,626
 < 					else
 ---
 > 					else {
 > 						clish_pargv_insert(pargv, param,
 > 								   clish_param__get_name(param));
-251a625
+251a628
 > 					}
-275c649
+275c652
 < 			(*idx <= argc) && (index >= paramc)) {
 ---
 > 			(*idx <= argc) && (index >= paramc) && (need_index != 0)) {
-296d669
+296d672
 < 			char *enc = NULL;
-301,304c674
+301,304c677
 < 			/* Escape quote and backslash */
 < 			enc = lub_string_encode(arg, lub_string_esc_quoted);
 < 			lub_string_cat(&args, enc);

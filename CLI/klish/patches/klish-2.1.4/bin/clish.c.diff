@@ -18,3 +18,8 @@
 < 		clish_shell__set_idle_timeout(shell, timeout);
 ---
 > 		clish_shell__set_timeout(shell, timeout);
+336a350,353
+> 		if (tmpfd == -1) {
+> 			fprintf(stderr, "Error: Can't dup stdin.\n");
+> 			goto end;
+> 		}

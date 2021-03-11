@@ -63,7 +63,7 @@ def __build_acl_binding_cache(intf_type, ifname, cache):
         keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={intfname}', intfname=ifname)
         response = acl_client.get(keypath, depth=None, ignore404=False)
         if response.ok() is False:
-            log.log_error("Resp not success")
+            log.log_debug("Resp not success")
             return
         if 'openconfig-acl:interface' not in response.content:
             log.log_debug("'openconfig-acl:interface' not found in response {}".format(str(response.content)))
@@ -226,7 +226,7 @@ def show_running_config_acl_start_callback(context, cache):
         __build_acl_config_cache(None, None, cache)
         __build_acl_binding_cache(None, None, cache)
     elif not bool(context['view_keys']):
-        if context['view_name'] == 'configure-if':
+        if (context['view_name'] == 'configure-if') or (context['view_name'] == 'configure-subif'):
             log.log_debug('All ethernet interfaces')
             __build_acl_binding_cache('Eth', None, cache)
         elif context['view_name'] == 'configure-vlan':
@@ -241,7 +241,7 @@ def show_running_config_acl_start_callback(context, cache):
             __build_acl_config_cache('ACL_IPV4', None, cache)
         elif context['view_name'] == 'configure-ipv6-acl':
             __build_acl_config_cache('ACL_IPV6', None, cache)
-    elif context['view_name'] in ['configure-if', 'configure-vlan', 'configure-lag']:
+    elif context['view_name'] in ['configure-if', 'configure-subif', 'configure-vlan', 'configure-lag']:
         __build_acl_binding_cache(None, context['view_keys']['name'], cache)
     elif context['view_name'] == 'configure-mac-acl':
         __build_acl_config_cache('ACL_L2', context['view_keys']['access-list-name'], cache)

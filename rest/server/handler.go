@@ -49,7 +49,6 @@ func Process(w http.ResponseWriter, r *http.Request) {
 	reqID := rc.ID
 	args := translibArgs{
 		reqID:       reqID,
-		method:      r.Method,
 		AuthEnabled: rc.ClientAuth.Any(),
 		User:        translib.UserRoles{Name: rc.Auth.User, Roles: rc.Auth.Roles},
 	}
@@ -62,6 +61,9 @@ func Process(w http.ResponseWriter, r *http.Request) {
 	glog.Infof("[%s] %s %s; content-len=%d", reqID, r.Method, r.URL.Path, r.ContentLength)
 	_, args.data, err = getRequestBody(r, rc)
 
+	if err == nil {
+		err = parseMethod(&args, r)
+	}
 	if err == nil {
 		err = parseQueryParams(&args, r)
 	}
@@ -76,7 +78,7 @@ func Process(w http.ResponseWriter, r *http.Request) {
 	args.path = getPathForTranslib(r, rc)
 	glog.V(1).Infof("[%s] Translated path = %s", reqID, args.path)
 
-	status, data, err = invokeTranslib(&args, r, rc)
+	status, data, err = invokeTranslib(&args, rc)
 	if err != nil {
 		glog.Warningf("[%s] Translib error %T - %v", reqID, err, err)
 		status, data, rtype = prepareErrorResponse(err, r)
@@ -104,7 +106,9 @@ write_resp:
 	if r.RemoteAddr != "@" {
 		auditMsg := fmt.Sprintf("[%s] User \"%s@%s\" request \"%s %s\" status - %d",
 			reqID, rc.Auth.User, r.RemoteAddr, r.Method, r.URL.Path, status)
-		auditWriter.Info(auditMsg)
+		if auditWriter != nil {
+			auditWriter.Info(auditMsg)
+		}
 	}
 
 	// Write http response.. Following strict order should be
@@ -267,6 +271,24 @@ func isOperationsRequest(r *http.Request) bool {
 	//Use swagger generated API name instead???
 }
 
+// parseMethod maps http method name to translib method
+func parseMethod(args *translibArgs, r *http.Request) error {
+	switch r.Method {
+	case "GET", "HEAD", "PUT", "PATCH", "DELETE":
+		args.method = r.Method
+	case "POST":
+		if isOperationsRequest(r) {
+			args.method = "ACTION"
+		} else {
+			args.method = r.Method
+		}
+	default:
+		glog.Warningf("[%s] Unknown method '%v'", args.reqID, r.Method)
+		return httpBadRequest("Invalid method")
+	}
+	return nil
+}
+
 // parseClientVersion parses the Accept-Version request header value
 func parseClientVersion(args *translibArgs, r *http.Request) error {
 	if v := r.Header.Get("Accept-Version"); len(v) != 0 {
@@ -294,16 +316,15 @@ type translibArgs struct {
 
 // invokeTranslib calls appropriate TransLib API for the given HTTP
 // method. Returns response status code and content.
-func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (int, []byte, error) {
+func invokeTranslib(args *translibArgs, rc *RequestContext) (int, []byte, error) {
 	var status = 400
 	var content []byte
 	var err error
 
 	ts := time.Now()
 
-	switch r.Method {
+	switch args.method {
 	case "GET", "HEAD":
-
 		req := translib.GetRequest{
 			Path:          args.path,
 			Depth:         args.depth,
@@ -320,36 +341,35 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 			err = err1
 		}
 
-	case "POST":
-		if isOperationsRequest(r) {
-
-			req := translib.ActionRequest{
-				Path:          args.path,
-				Payload:       args.data,
-				ClientVersion: args.version,
-				AuthEnabled:   args.AuthEnabled,
-				User:          args.User,
-			}
-			res, err1 := translib.Action(req)
-			if err1 == nil {
-				status = 200
-				content = res.Payload
-			} else {
-				err = err1
-			}
-		} else {
-			status = 201
-
-			req := translib.SetRequest{
-				Path:          args.path,
-				Payload:       args.data,
-				ClientVersion: args.version,
-				AuthEnabled:   args.AuthEnabled,
-				User:          args.User,
-			}
-
-			_, err = translib.Create(req)
+	case "ACTION":
+		req := translib.ActionRequest{
+			Path:          args.path,
+			Payload:       args.data,
+			ClientVersion: args.version,
+			AuthEnabled:   args.AuthEnabled,
+			User:          args.User,
 		}
+
+		res, err1 := translib.Action(req)
+		if err1 == nil {
+			status = 200
+			content = res.Payload
+		} else {
+			err = err1
+		}
+
+	case "POST":
+		status = 201
+
+		req := translib.SetRequest{
+			Path:          args.path,
+			Payload:       args.data,
+			ClientVersion: args.version,
+			AuthEnabled:   args.AuthEnabled,
+			User:          args.User,
+		}
+
+		_, err = translib.Create(req)
 
 	case "PUT":
 		//TODO send 201 if PUT resulted in creation
@@ -389,8 +409,8 @@ func invokeTranslib(args *translibArgs, r *http.Request, rc *RequestContext) (in
 		_, err = translib.Delete(req)
 
 	default:
-		glog.Warningf("[%s] Unknown method '%v'", rc.ID, r.Method)
-		err = httpBadRequest("Invalid method")
+		glog.Warningf("[%s] Unknown method '%v'", args.reqID, args.method)
+		err = httpError(http.StatusNotImplemented, "Internal error")
 	}
 
 	tt := time.Since(ts)

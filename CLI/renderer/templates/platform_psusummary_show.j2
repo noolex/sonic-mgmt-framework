@@ -1,4 +1,4 @@
-{% set ns = namespace(type = 'Unknown', output_current='N/A', output_power='N/A', output_voltage='N/A', fan_speed='N/A', fan_direction='N/A', status_led='N/A') %}
+{% set ns = namespace(type = 'Unknown', output_current='N/A', output_power='N/A', output_voltage='N/A', fan_speed='N/A', fan_direction='N/A', status_led='N/A', temperature='N/A') %}
 {% for psu_name, psu_info in json_output.items() %}
 {% if 'state' in psu_info and 'empty' in psu_info['state'] and psu_info['state']['empty'] %}
 {{psu_name}}: {{'NOT PRESENT'}}
@@ -49,6 +49,9 @@
 {% if 'output-voltage' in key and val != 'None' %}
 {% set ns.output_voltage = '%0.2f' | format(val|float) %}
 {% endif %}
+{% if 'temperature' in key and val != 'None' %}
+{% set ns.temperature = '%0.2f' | format(val|float) %}
+{% endif %}
 {% endfor %}
 {% endif %}
 {% endif %}
@@ -71,6 +74,7 @@
 {% endif %}
     {{'Fan Speed (RPM)'.ljust(20)}} :{{ns.fan_speed}}
     {{'Fan Direction'.ljust(20)}} :{{ns.fan_direction}}
+    {{'Temperature'.ljust(20)}} :{{ns.temperature}}
 {% endif %}
 {% endfor %}
 {% set ns.output_current = 'N/A' %}
@@ -78,6 +82,7 @@
 {% set ns.output_voltage = 'N/A' %}
 {% set ns.fan_speed = 'N/A' %}
 {% set ns.fan_direction = 'N/A' %}
+{% set ns.temperature = 'N/A' %}
 {% set ns.type = 'Unknown' %}
 {% endif %}
 {% endfor %}

@@ -1,7 +1,7 @@
+{% if json_output -%}
 {{'---------------------------------------------------------'}}
 {{'TACACS Global Configuration'.ljust(20)}}
 {{'---------------------------------------------------------'}}
-{% if json_output -%}
 {% set srcintf = json_output['openconfig-system:config']['openconfig-system-ext:source-interface'] %}
 {% set timeout = json_output['openconfig-system:config']['openconfig-system-ext:timeout'] %}
 {% set authtype = json_output['openconfig-system:config']['openconfig-system-ext:auth-type'] %}

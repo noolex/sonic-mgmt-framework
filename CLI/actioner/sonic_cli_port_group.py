@@ -20,19 +20,20 @@ def invoke(func, args):
 
     if func == 'get_openconfig_port_group_port_groups_openconfig_port_group_port_groups_state':
         resp = cc.Response(requests.Response())
-        resp.content = OrderedDict()
-        path = cc.Path('/restconf/data/openconfig-port-group:port-groups/port-group')
-        rsp = aa.get(path)
-        if rsp.content and 'openconfig-port-group:port-group' in rsp.content:
-            for pg in rsp.content['openconfig-port-group:port-group']:
-                if 'state' in pg:
-                     resp.content[pg['id']] = pg['state']
-                else:
-                    break
-            resp.content = OrderedDict(sorted(resp.content.iteritems(), key=lambda x: int(x[0])))
-        if (resp is not None) or (not resp.content) or (len(resp.content)<1):
-            resp.set_error_message("Port-group is not supported")
-        return resp
+        if resp is not None:
+            resp.content = OrderedDict()
+            path = cc.Path('/restconf/data/openconfig-port-group:port-groups/port-group')
+            rsp = aa.get(path)
+            if rsp.content and 'openconfig-port-group:port-group' in rsp.content:
+                for pg in rsp.content['openconfig-port-group:port-group']:
+                    if 'state' in pg:
+                        resp.content[pg['id']] = pg['state']
+                    else:
+                        break
+                resp.content = OrderedDict(sorted(resp.content.iteritems(), key=lambda x: int(x[0])))
+            if (not resp.content) or (len(resp.content)<1):
+                resp.set_error_message("Port-group is not supported")
+            return resp
     else:
         speed_map = {"10GIGE":"SPEED_10GB",
                     "25GIGE":"SPEED_25GB",

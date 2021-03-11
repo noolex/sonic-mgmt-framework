@@ -76,6 +76,8 @@ jinja_loader = {}
 CMDS_STRING = ''
 CMDS_VIEW = ''
 CMDS_VIEW_CHANGED = False
+CMDS_SAVE_TO_BUFFER = False
+CMDS_SAVE_BUFFER = ''
 DB_Cache = {}
 
 
@@ -200,10 +202,12 @@ def update_table_keys(table_keys, view_member):
 
 
 def cleanup():
-    global CMDS_STRING, CMDS_VIEW, CMDS_VIEW_CHANGED
+    global CMDS_STRING, CMDS_VIEW, CMDS_VIEW_CHANGED, CMDS_SAVE_BUFFER, CMDS_SAVE_TO_BUFFER
     CMDS_STRING = ""
     CMDS_VIEW = ""
     CMDS_VIEW_CHANGED = False
+    CMDS_SAVE_TO_BUFFER = False
+    CMDS_SAVE_BUFFER = ""
     DB_Cache.clear()
     config_tables_dict.clear()
     # call module cleanup callback functions.
@@ -540,15 +544,15 @@ def process_command(view, view_member, table_list, member_keys, dbpathstr, is_vi
             #if first command table same as view table,
             #ignore command table
             if dbpathstr and dbpathstr in cmd_table_path:
-                showrun_log(logging.WARNING, "Command table same as primary view table, process only member provided from primary view table {}, {}",
+                showrun_log(logging.DEBUG, "Command table same as primary view table, process only member provided from primary view table {}, {}",
                  dbpathstr, cmd_table_path )
-                break
-            cmd_table_present = True
-            # new dbpathstr and keys from cmd table
-            dbpathstr = '/'.join(cmd_table_path.split('/')[:-1])
+            else:
+                cmd_table_present = True
+                # new dbpathstr and keys from cmd table
+                dbpathstr = '/'.join(cmd_table_path.split('/')[:-1])
 
         if not db_render_callback:
-            if idx == 0:
+            if idx == 0 and cmd_table_present:
                cmd_table_keys =get_view_table_keys(cmd_table_path)
             response = get_rest_table(cmd_table_path, cmd_table_keys)
             if response is not None:
@@ -744,7 +748,7 @@ def parse_command_line(command_line):
 
 
 def render_cli_config(view_name = '', view_keys = {}):
-    global CMDS_STRING, CMDS_VIEW, CMDS_VIEW_CHANGED
+    global CMDS_STRING, CMDS_VIEW, CMDS_VIEW_CHANGED, CMDS_SAVE_BUFFER
     context = {'view_name':view_name, 'view_keys':view_keys}
 
     #Call application
@@ -786,7 +790,10 @@ def render_cli_config(view_name = '', view_keys = {}):
                 continue
 
     # write to output.            
-    write(CMDS_STRING)
+    if CMDS_SAVE_TO_BUFFER:
+        CMDS_SAVE_BUFFER += CMDS_STRING
+    else:
+        write(CMDS_STRING)
     CMDS_STRING = ''
     CMDS_VIEW = ''
     CMDS_VIEW_CHANGED = False
@@ -847,6 +854,35 @@ def show_views(func, args = []):
 
     for view_name in views:
         render_cli_config(view_name, viewKV)
+
+
+def showconfig_views_to_buffer(viewlist):
+    global format_read, CMDS_SAVE_TO_BUFFER
+
+    showrun_log(logging.DEBUG,"viewlist {}", viewlist)
+
+    cleanup()
+    CMDS_SAVE_TO_BUFFER = True
+
+    if not format_read:
+        template_path = os.getenv('SHOW_CONFIG_TOOLS', RENDERER_TEMPLATE_PATH)
+        format_file = os.path.join(template_path, FORMAT_FILE)
+
+        showrun_log(logging.DEBUG,"format_file {}",format_file)
+        read_cli_format_file(format_file)
+        format_read = True
+
+    if not viewlist:
+        render_cli_config()
+    else:
+        for to_show in viewlist:
+            show_views(to_show[0], to_show[1:])
+
+    output = CMDS_SAVE_BUFFER
+
+    cleanup()
+
+    return output
 
 
 def run(func = '', args=[]):

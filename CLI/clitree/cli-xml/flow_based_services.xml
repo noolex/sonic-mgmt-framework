@@ -29,10 +29,10 @@ limitations under the License.
     <PTYPE name="POLICER_RATE_BITS" pattern="^((&UINT_32_RANGE;)([kmgt]?bps)?)$" help="" />
     <PTYPE name="POLICER_RATE_BYTES" pattern="^((&UINT_32_RANGE;)([KMGT]?B)?)$" help="" />
     <PTYPE name="DESCRIPTION" pattern=".{1,256}" help="String (Max: 256 characters)"/>
-
+    <PTYPE name="TRAP_QUEUE" method="integer" pattern="0..31" help=""/>
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
-        <!-- show policy-map [NAME] | [type qos|monitoring|forwarding] -->
+        <!-- show policy-map [NAME] | [type qos|monitoring|forwarding|copp|acl-copp] -->
         <COMMAND name="show policy-map" help="Shows policy-map information">
             <PARAM name="show-fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="show-fbs-policy-name" help="Shows policy-map information using name (Max: 63 characters)" ptype="STRING_63"/>
@@ -43,6 +43,7 @@ limitations under the License.
                 <PARAM name="monitoring" help="Show all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="forwarding" help="Show all forwarding policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
                 <PARAM name="copp" help="Show all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="acl-copp" help="Show all ACL based CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${show-fbs-policy-name} ${show-fbs-policy-type}</ACTION>
             <DOCGEN>
@@ -50,7 +51,8 @@ limitations under the License.
                   Shows flow based services policy-map related information 
               </DESCRIPTION>
               <USAGE>
-                  Policy-map type and policy-map name arguments are optional. If type argument or policy-map name not provided command will show all policy-map information. Else it show corresponding policy-map information of given type or given name
+                  Policy-map type and policy-map name arguments are optional. If type argument or policy-map name not provided command will show all policy-map information.
+                  Else it show corresponding policy-map information of given type or given name
               </USAGE>
               <EXAMPLE summary="Displays policy-map information">
                Policy policy_mirror Type monitoring
@@ -60,7 +62,7 @@ limitations under the License.
                    set mirror-session mirror1
                  Applied to:
                    Vlan100 at Ingress
-               
+
                Policy policy_qos Type qos
                  Description:
                  Flow class_permit_ipv6 at priority 10
@@ -89,6 +91,7 @@ limitations under the License.
               </EXAMPLE>
            </DOCGEN>
         </COMMAND>
+
         <!-- show class-map [NAME] [type acl|fields] -->
         <COMMAND name="show class-map" help="Shows class-map information">
             <PARAM name="show-fbs-class-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
@@ -150,7 +153,6 @@ limitations under the License.
                   qos policy oob-qos-policy at ingress
               </EXAMPLE>
            </DOCGEN>
-             
         </COMMAND>
 
         <!-- show service-policy policy NAME [interface NAME] -->
@@ -203,7 +205,6 @@ limitations under the License.
                     Packet matches: 0 frames 0 bytes
               </EXAMPLE>
            </DOCGEN>
- 
         </COMMAND>
 
         <!-- show service-policy interface NAME [type qos|monitoring|forwarding] -->
@@ -402,11 +403,66 @@ limitations under the License.
               </EXAMPLE>
             </DOCGEN>
         </COMMAND>
+
+        <COMMAND name="show pbf" help="Shows policy based forwarding next-hop groups"/>
+        <COMMAND name="show pbf next-hop-group" help="Shows group information">
+            <PARAM name="show-fbs-nh-grp-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="show-fbs-group-name" help="Shows next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
+                <PARAM name="type" help="Shows all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <PARAM name="show-fbs-group-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-group-name}" = "type"'>
+                <PARAM name="ip" help="Shows all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ipv6" help="Shows all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_pbf_next_hop_group ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="show pbf next-hop-group status" help="Shows group information" />
+        <COMMAND name="show pbf next-hop-group status interface" help="Shows group status">
+            <PARAM name="show-fbs-group-interface" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="eth-if-id" help="Ethernet interface" ptype="PHY_INTERFACE"/>
+                <PARAM name="po-if-id" help="PortChannel interface" ptype="PO_INTERFACE"/>
+                <PARAM name="vlan-if-id" help="Vlan interface" ptype="VLAN_INTERFACE"/>
+                <PARAM name="eth-sub-if-id" help="Ethernet sub-interface" ptype="PHY_INTERFACE_SUBIF"/>
+                <PARAM name="po-sub-if-id" help="PortChannel sub-interface" ptype="PO_INTERFACE_SUBIF"/>
+            </PARAM>
+            <PARAM name="show-fbs-nh-grp-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="show-fbs-group-name" help="Shows next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
+                <PARAM name="type" help="Shows all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <PARAM name="show-fbs-group-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-group-name}" = "type"'>
+                <PARAM name="ip" help="Shows all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ipv6" help="Shows all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_pbf_next_hop_group_status interface ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="show pbf next-hop-group status Switch" help="Shows group status">
+            <PARAM name="show-fbs-nh-grp-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
+                <PARAM name="show-fbs-group-name" help="Shows next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
+                <PARAM name="type" help="Shows all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
+            </PARAM>
+            <PARAM name="show-fbs-group-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-group-name}" = "type"'>
+                <PARAM name="ip" help="Shows all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ipv6" help="Shows all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs show_pbf_next_hop_group_status Switch ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="show running-configuration pbf" help="Show current PBF next-hop groups configuration"/>
+        <COMMAND name="show running-configuration pbf next-hop-group" help="Show current PBF next-hop groups configuration">
+            <PARAM name="show-fbs-group-name" help="Shows next-hop group information using name (Max: 63 characters)" ptype="STRING_63" optional="true"/>
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_next_hop_group_by_name ${show-fbs-group-name}</ACTION>
+        </COMMAND>
     </VIEW>
 
     <!--===================================================================================-->
     <!--                            Config Mode commands                                   -->
     <!--===================================================================================-->
+    <VAR dynamic="true" name="fbs-dynamic-nhgrp-type">
+        <ACTION builtin="clish_pyobj">sonic_cli_fbs get_next_hop_group_type ${fbs-nhgrp-name} ${fbs-next-hop-group-type}</ACTION>
+    </VAR>
+
     <VIEW name="configure-view">
         <COMMAND name="policy-map" help="Configures policy-map" view="configure-policy-view" viewid="fbs-policy-name=${fbs-policy-name};fbs-policy-type=${fbs-policy-type}"
             data_and_render_cb="fbs_policy_render">
@@ -457,7 +513,7 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs create_classifier_${fbs-class-type} ${fbs-class-name} ${fbs-class-type}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
-                 Configures Class-map 
+                 Configures Class-map
               </DESCRIPTION>
               <USAGE>
                  Class-map name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character. 
@@ -482,7 +538,38 @@ limitations under the License.
               sonic(config)# no class-map class_permit_ip
               </EXAMPLE>
            </DOCGEN>
+        </COMMAND>
 
+        <COMMAND name="pbf" help="Policy based forwarding" />
+        <COMMAND name="pbf next-hop-group" help="configure next hop group" view="configure-pbf-${fbs-dynamic-nhgrp-type}-nh-grp-view" viewid="fbs-nh-grp-name=${fbs-nhgrp-name}"
+            data_and_render_cb="show_running_next_hop_group">
+            <PARAM name="fbs-nhgrp-name" help="Name of the Next-hop group (Max: 63 characters)" ptype="STRING_63"/>
+            <PARAM name="type" help="Next hop group type" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+                <PARAM name="fbs-next-hop-group-type" help="" ptype="SUBCOMMAND" mode="switch">
+                    <PARAM name="ip" help="Next hop group with IPv4 next-hop members" ptype="SUBCOMMAND" mode="subcommand"/>
+                    <PARAM name="ipv6" help="Next hop group with IPv6 next-hop members" ptype="SUBCOMMAND" mode="subcommand"/>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_next_hop_group ${fbs-nhgrp-name} ${fbs-next-hop-group-type}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Creates a policy based forwarding next-hop group
+              </DESCRIPTION>
+              <USAGE>
+                 A next-hop-group name can be of maximum 63 characters. The name must begin with A-Z, a-z or 0-9. Underscore and hypens can be used except as the first character. A next-hop-group
+                 can be of type ip or ipv6. The group type can not be updated after its created. The group type is mandatory at the time of creating the group.
+              </USAGE>
+              <EXAMPLE summary="Create an IPv4 next-hop group">
+              sonic(config)# pbf next-hop-group ipv4-group-1 type ip
+              sonic-cli(config-pbf-ip-nh-group)#
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name="no pbf" help="Policy based forwarding" />
+        <COMMAND name="no pbf next-hop-group" help="Delete next hop group">
+            <PARAM name="fbs-nhgrp-name" help="Name of the Next-hop group (Max: 63 characters)" ptype="STRING_63"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_next_hop_group ${fbs-nhgrp-name}</ACTION>
         </COMMAND>
 
         <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Switch,switch"/>
@@ -497,7 +584,7 @@ limitations under the License.
 
         <COMMAND name="description" help="Configures policy-map description">
             <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_policy_description ${fbs-policy-name} ${description-value}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_policy_description ${fbs-policy-name} description ${description-value}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
                  Configures policy-map description 
@@ -524,7 +611,6 @@ limitations under the License.
                  sonic(config-policy-map)# no description 
               </EXAMPLE>
            </DOCGEN>
-
         </COMMAND>
 
         <COMMAND name="class" help="Configures flow match criteria and its actions" view="configure-${fbs-policy-type}-flow-view"
@@ -930,6 +1016,7 @@ limitations under the License.
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_classifier_match_protocol ${fbs-class-name} ${trap-id}</ACTION>
         </COMMAND>
     </VIEW>
+
     <!--===================================================================================-->
     <!--                            Flow view for QoS actions                              -->
     <!--===================================================================================-->
@@ -939,40 +1026,7 @@ limitations under the License.
         <COMMAND name="set" help="Set parameters" />
         <COMMAND name="no set" help="Remove/Disable QoS actions" />
 
-        <COMMAND name="description" help="Configures flow description">
-            <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_flow_description ${fbs-policy-name} ${fbs-class-name} ${description-value}</ACTION>
-            <DOCGEN>
-              <DESCRIPTION>
-                 Updates description for qos flows 
-              </DESCRIPTION>
-              <USAGE>
-                 A string describing the qos flow max 256 characters. Description should be in double quotes if it has spaces
-              </USAGE>
-              <EXAMPLE summary="Configures description for qos flows">
-                  sonic(config)# policy-map policy_qos type qos
-                  sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)# description "qos flow1"
-              </EXAMPLE>
-           </DOCGEN>
-        </COMMAND>
-
-        <COMMAND name="no description" help="Clear flow description">
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_flow_description ${fbs-policy-name} ${fbs-class-name}</ACTION>
-            <DOCGEN>
-              <DESCRIPTION>
-                 Removes description for qos flows 
-              </DESCRIPTION>
-              <USAGE>
-                 A string describing the qos flow max 256 characters. Description should be in double quotes if it has spaces
-              </USAGE>
-              <EXAMPLE summary="Removes description for qos flows">
-                  sonic(config)# policy-map policy_qos type qos
-                  sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)# no description 
-              </EXAMPLE>
-           </DOCGEN>
-        </COMMAND>
+        <MACRO name="POLICY-FLOW-DESCRIPTION" />
 
         <COMMAND name="set pcp" help="Set PCP remarking">
             <PARAM name="pcp-value" help="PCP remarking value (0-7)" ptype="PCP_VALUE" />
@@ -984,7 +1038,7 @@ limitations under the License.
               <EXAMPLE summary="Configures PCP remarking action for Qos flow">
                   sonic(config)# policy-map policy_qos type qos
                   sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)#set pcp 1
+                  sonic(config-policy-map-flow)# set pcp 1
               </EXAMPLE>
            </DOCGEN>
         </COMMAND>
@@ -998,7 +1052,7 @@ limitations under the License.
               <EXAMPLE summary="Removes PCP remarking action for Qos flow">
                   sonic(config)# policy-map policy_qos type qos
                   sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)#no set pcp 
+                  sonic(config-policy-map-flow)# no set pcp
               </EXAMPLE>
            </DOCGEN>
         </COMMAND>
@@ -1013,7 +1067,7 @@ limitations under the License.
               <EXAMPLE summary="Configures DSCP remarking action for Qos flow">
                   sonic(config)# policy-map policy_qos type qos
                   sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)#set dscp 10
+                  sonic(config-policy-map-flow)# set dscp 10
               </EXAMPLE>
            </DOCGEN>
         </COMMAND>
@@ -1027,7 +1081,7 @@ limitations under the License.
               <EXAMPLE summary="Removes DSCP remarking action for Qos flow">
                   sonic(config)# policy-map policy_qos type qos
                   sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)#no set dscp
+                  sonic(config-policy-map-flow)# no set dscp
               </EXAMPLE>
            </DOCGEN>
         </COMMAND>
@@ -1056,93 +1110,12 @@ limitations under the License.
               <EXAMPLE summary="Removes traffic class action for Qos Flow">
                   sonic(config)# policy-map policy_qos type qos
                   sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)#no set traffic-class
+                  sonic(config-policy-map-flow)# no set traffic-class
               </EXAMPLE>
            </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="police" help="Set rate limiting parameters">
-            <PARAM name="policer-params" help="" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="cir" help="Committed information rate" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="cir-value" help="CIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    </PARAM>
-                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    </PARAM>
-                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    </PARAM>
-                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
-                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                    </PARAM>
-                </PARAM>
-                <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
-                    <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
-                </PARAM>
-            </PARAM>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_policer_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
-            <DOCGEN>
-              <DESCRIPTION>
-                 Configures policer action for Qos Flow
-              </DESCRIPTION>
-              <USAGE>
-                  CIR: Committed information rate in bits per second. CIR is mandatory. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000)cir 300000000 cbs 300000000 pir 300000000 pbs 300000000.
-                  CBS: Committed burst size in bytes. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the CIR in bytes. If configured by the user, it must be greater than or equal to CIR in bytes. 
-                  PIR: Peak information rate in bits per second. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000). If configured by the user, it must be greater than CIR 
-                  PBS: Peak burst size. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the PIR value in bytes. If configured by the user, it must be greater than PIR value in bytes and also CBS value 
-                  If only CIR is configured, then its 1 rate, 2 color policer.  Any traffic exceeding CIR value will be marked as red and will be dropped.
-
-                  If both CIR and PIR is configured, then is 2 rate 3 color policer. Any traffic that exceeds CIR but less than PIR will be marked as yellow. Any traffic that is more than PIR will be marked as red and will be dropped
-              </USAGE>
-              <EXAMPLE summary="Configures traffic class action for Qos Flow">
-                  sonic(config)# policy-map policy_qos type qos
-                  sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)#cir 300000000 cbs 300000000 pir 300000000 pbs 300000000
-              </EXAMPLE>
-           </DOCGEN>
-        </COMMAND>
-
-        <COMMAND name="no police" help="Clear or reset rate limiting parameters">
-            <PARAM name="cir" help="Clear committed information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="cbs" help="Clear committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="pir" help="Clear peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <PARAM name="pbs" help="Clear peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_policer_action ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
-            <DOCGEN>
-              <DESCRIPTION>
-                 Unconfigures policer action for Qos Flow
-              </DESCRIPTION>
-              <USAGE>
-                  CIR: Committed information rate in bits per second. CIR is mandatory. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000)cir 300000000 cbs 300000000 pir 300000000 pbs 300000000.
-                  CBS: Committed burst size in bytes. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the CIR in bytes. If configured by the user, it must be greater than or equal to CIR in bytes. 
-                  PIR: Peak information rate in bits per second. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000). If configured by the user, it must be greater than CIR 
-                  PBS: Peak burst size. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the PIR value in bytes. If configured by the user, it must be greater than PIR value in bytes and also CBS value 
-                  If only CIR is configured, then its 1 rate, 2 color policer.  Any traffic exceeding CIR value will be marked as red and will be dropped.
-
-                  If both CIR and PIR is configured, then is 2 rate 3 color policer. Any traffic that exceeds CIR but less than PIR will be marked as yellow. Any traffic that is more than PIR will be marked as red and will be dropped
-              </USAGE>
-              <EXAMPLE summary="Unconfigures traffic class action for Qos Flow">
-                  sonic(config)# policy-map policy_qos type qos
-                  sonic(config-policy-map)# class class_permit_ip priority 10
-                  sonic(config-policy-map-flow)#no police 
-              </EXAMPLE>
-           </DOCGEN>
-
-        </COMMAND>
+        <MACRO name="POLICER-PARAM-OPTIONS" arg="qos,set_policer_action, clear_policer_action"/>
     </VIEW>
 
     <!--===================================================================================-->
@@ -1153,6 +1126,8 @@ limitations under the License.
         <COMMAND name="set" help="Set parameters"/>
         <COMMAND name="no" help="Negate a command or set its defaults"/>
         <COMMAND name="no set" help="Remove/Disable monitoring actions" />
+
+        <MACRO name="POLICY-FLOW-DESCRIPTION" />
 
         <COMMAND name="set mirror-session" help="Set mirror session result">
             <PARAM name="session-name" help="Mirror session name" ptype="STRING"/>
@@ -1167,7 +1142,6 @@ limitations under the License.
                   sonic(config-policy-map-flow)# set mirror-session mirror1
               </EXAMPLE>
            </DOCGEN>
-
         </COMMAND>
 
         <COMMAND name="no set mirror-session" help="Delete mirror session result">
@@ -1192,17 +1166,20 @@ limitations under the License.
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
         <COMMAND name="set" help="Set parameters" />
 
+        <MACRO name="POLICY-FLOW-DESCRIPTION" />
+
         <COMMAND name="set ip" help="Internet Protocol Version 4 (IPv4)">
             <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv4,DOTTED_QUAD" />
             <MACRO name="FBS-NEXT-HOP-PRIORITY" />
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_next_hop_action ${fbs-policy-name} ${fbs-class-name} ip ${__params}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_${next-hop-or-group}_action ${fbs-policy-name} ${fbs-class-name} ip ${__params}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
                  Configures ip next hop for forwarding flow
               </DESCRIPTION>
               <USAGE>
                   If the VRF name is not specified then it will be derived from the VRF of the interface on which the policy is applied or default will be used for global application.
-                  Priority of the next-hop. Range is 1-65535. Default is 0 ie lowest priority if not configured by the user. The next-hop with the higher priority will be picked up for forwarding first. If more than 1 next-hops have the same priority then the next-hop which is configured first will be used
+                  Priority of the next-hop. Range is 1-65535. Default is 0 ie lowest priority if not configured by the user. The next-hop with the higher priority will be picked up for forwarding first.
+                  If more than 1 next-hops have the same priority then the next-hop which is configured first will be used.
               </USAGE>
               <EXAMPLE summary="Configures ip next hop for forwarding Flow">
                   sonic(config)# policy-map policy_vrf type forwarding
@@ -1215,20 +1192,20 @@ limitations under the License.
         <COMMAND name="set ipv6" help="Internet Protocol Version 6 (IPv6)">
             <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv6,IPV6_ADDR" />
             <MACRO name="FBS-NEXT-HOP-PRIORITY" />
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_next_hop_action ${fbs-policy-name} ${fbs-class-name} ipv6 ${__params}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_${next-hop-or-group}_action ${fbs-policy-name} ${fbs-class-name} ipv6 ${__params}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
                  Configures ipv6 next hop for forwarding flow
               </DESCRIPTION>
               <USAGE>
                   If the VRF name is not specified then it will be derived from the VRF of the interface on which the policy is applied or default will be used for global application.
-                  Priority of the next-hop. Range is 1-65535. Default is 0 ie lowest priority if not configured by the user. The next-hop with the higher priority will be picked up for forwarding first. If more than 1 next-hops have the same priority then the next-hop which is configured first will be used
+                  Priority of the next-hop. Range is 1-65535. Default is 0 ie lowest priority if not configured by the user. The next-hop with the higher priority will be picked up for forwarding first.
+                  If more than 1 next-hops have the same priority then the next-hop which is configured first will be used.
               </USAGE>
               <EXAMPLE summary="Configures ipv6 next hop for forwarding Flow">
                   sonic(config)# policy-map policy_vrf type forwarding
                   sonic(config-policy-map)# class class_permit_ipv6 priority 10
-                  sonic(config-policy-map)# set ipv6 next-hop 1211::2  priority 20
-
+                  sonic(config-policy-map)# set ipv6 next-hop 1211::2 priority 20
               </EXAMPLE>
            </DOCGEN>
         </COMMAND>
@@ -1242,8 +1219,9 @@ limitations under the License.
                  Configures ip interface for forwarding flow
               </DESCRIPTION>
               <USAGE>
-                  Egress interfaces configuration is valid only if the classifier uses MAC/L2 ACL for match. Only L2 switched traffic will be forwarded to the configured egress interface.  Combining egress interface with IPv4 or IPv6 next-hops is not permitted.
-                  Drop action(set interface to null) if configured will be of the lowest priority and will be chosen if none of the configured next-hops or egress interfaces can be used for forwarding
+                  Egress interfaces configuration is valid only if the classifier uses MAC/L2 ACL for match. Only L2 switched traffic will be forwarded to the configured egress interface.
+                  Combining egress interface with IPv4 or IPv6 next-hops is not permitted. Drop action(set interface to null) if configured will be of the lowest priority and will be chosen if none
+                  of the configured next-hops or egress interfaces can be used for forwarding.
               </USAGE>
               <EXAMPLE summary="Configures ip next hop for forwarding Flow">
                   sonic(config)# policy-map policy_vrf type forwarding
@@ -1259,14 +1237,15 @@ limitations under the License.
         <COMMAND name="no set ip" help="Internet Protocol Version 4 (IPv4)">
             <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv4,DOTTED_QUAD" />
             <MACRO name="FBS-NEXT-HOP-PRIORITY" />
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_next_hop_action ${fbs-policy-name} ${fbs-class-name} ip ${__params}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_${next-hop-or-group}_action ${fbs-policy-name} ${fbs-class-name} ip ${__params}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
                  Unconfigures ip next hop for forwarding flow
               </DESCRIPTION>
               <USAGE>
                   If the VRF name is not specified then it will be derived from the VRF of the interface on which the policy is applied or default will be used for global application.
-                  Priority of the next-hop. Range is 1-65535. Default is 0 ie lowest priority if not configured by the user. The next-hop with the higher priority will be picked up for forwarding first. If more than 1 next-hops have the same priority then the next-hop which is configured first will be used
+                  Priority of the next-hop. Range is 1-65535. Default is 0 ie lowest priority if not configured by the user. The next-hop with the higher priority will be picked up for forwarding first.
+                  If more than 1 next-hops have the same priority then the next-hop which is configured first will be used
               </USAGE>
               <EXAMPLE summary="Unconfigures ip next hop for forwarding Flow">
                   sonic(config)# policy-map policy_vrf type forwarding
@@ -1279,7 +1258,7 @@ limitations under the License.
         <COMMAND name="no set ipv6" help="Internet Protocol Version 6 (IPv6)">
             <MACRO name="FBS-NEXT-HOP-OPTIONS" arg="IPv6,IPV6_ADDR" />
             <MACRO name="FBS-NEXT-HOP-PRIORITY" />
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_next_hop_action ${fbs-policy-name} ${fbs-class-name} ipv6 ${__params}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_${next-hop-or-group}_action ${fbs-policy-name} ${fbs-class-name} ipv6 ${__params}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
                  Unconfigures ipv6 next hop for forwarding flow
@@ -1292,10 +1271,8 @@ limitations under the License.
                   sonic(config)# policy-map policy_vrf type forwarding
                   sonic(config-policy-map)# class class_permit_ipv6 priority 10
                   sonic(config-policy-map)# no set ipv6 next-hop 1211::2  priority 20
-
               </EXAMPLE>
            </DOCGEN>
-
         </COMMAND>
 
         <COMMAND name="no set interface" help="Set egress interface">
@@ -1316,7 +1293,6 @@ limitations under the License.
                   sonic(config-policy-map-flow)# no set interface Eth 1/9
               </EXAMPLE>
            </DOCGEN>
-
         </COMMAND>
     </VIEW>
 
@@ -1326,6 +1302,8 @@ limitations under the License.
     <VIEW name="configure-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
         <COMMAND name="set" help="Set parameters" />
+
+        <MACRO name="POLICY-FLOW-DESCRIPTION" />
 
         <COMMAND name="set copp-action" help="Binds a CoPP action group to the class-map">
             <PARAM name="copp-action-name" help="Name of the CoPP action group (up to 63 characters)" ptype="STRING_63"/>
@@ -1343,9 +1321,59 @@ limitations under the License.
     </VIEW>
 
     <!--===================================================================================-->
+    <!--                            Flow view for ACL-COPP actions                              -->
+    <!--===================================================================================-->
+    <VIEW name="configure-acl-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
+        <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <COMMAND name="set" help="Set parameters" />
+        <COMMAND name="no set" help="Remove/Disable ACL-COPP actions" />
+
+        <MACRO name="POLICY-FLOW-DESCRIPTION" />
+
+        <COMMAND name="set trap-queue" help="Set CoPP queue id">
+            <PARAM name="trap-queue-id-value" help="CPU queue ID value (0-31)" ptype="TRAP_QUEUE" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_acl_copp_queue_id_action ${fbs-policy-name} ${fbs-class-name} ${trap-queue-id-value}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures CPU Queue for ACL-CoPP flows
+              </DESCRIPTION>
+              <EXAMPLE summary="Configures CPU Queue for acl-copp flows">
+                  sonic(config)# policy-map policy3 type acl-copp
+                  sonic(config-policy-map)# class class0 priority 100
+                  sonic(config-policy-map-flow)# set trap-queue 30
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name="no set trap-queue" help="Clear CoPP queue id">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_acl_copp_queue_id_action ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes set CPU Queue for ACL-CoPP flows
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes CPU Queue for acl-copp flows">
+                  sonic(config)# policy-map policy3 type acl-copp
+                  sonic(config-policy-map)# class class0 priority 100
+                  sonic(config-policy-map-flow)# no set trap-queue
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
+        <MACRO name="POLICER-PARAM-OPTIONS" arg="acl-copp,set_acl_copp_policer_action,clear_acl_copp_policer_action"/>
+    </VIEW>
+    <!--===================================================================================-->
+
     <!--                            Policy binding CLIs for Ethernet                       -->
     <!--===================================================================================-->
     <VIEW name="configure-if-view">
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Ethernet,interface"/>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                            Policy binding CLIs for subinterface                   -->
+    <!--===================================================================================-->
+    <VIEW name="configure-subif-view">
         <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="1,Ethernet,interface"/>
     </VIEW>
 
@@ -1368,5 +1396,27 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-line-vty-view">
         <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="2,CtrlPlane,ctrlplane"/>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                          IPv4 Next Hop Group View                                 -->
+    <!--===================================================================================-->
+    <VIEW name="configure-pbf-ip-nh-grp-view" prompt="${SYSTEM_NAME}(config-pbf-ip-nh-group)# " depth="2">
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <MACRO name="FBS-NEXT-HOP-GROUP-CLIS" arg="IPv4,DOTTED_QUAD"/>
+    </VIEW>
+
+    <!--===================================================================================-->
+    <!--                          IPv6 Next Hop Group View                                 -->
+    <!--===================================================================================-->
+    <VIEW name="configure-pbf-ipv6-nh-grp-view" prompt="${SYSTEM_NAME}(config-pbf-ipv6-nh-group)# " depth="2">
+        <COMMAND name="no" help="Negate a command or set its defaults"/>
+        <MACRO name="FBS-NEXT-HOP-GROUP-CLIS" arg="IPv6,IPV6_ADDR" />
+    </VIEW>
+    <!--===================================================================================-->
+    <!--                            Policy binding CLIs for CPU                            -->
+    <!--===================================================================================-->
+    <VIEW name="config-if-CPU-view">
+        <MACRO name="FBS-POLICY-BINDING-OPTIONS" arg="3,CPU,cpu_port"/>
     </VIEW>
 </CLISH_MODULE>

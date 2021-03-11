@@ -3,12 +3,18 @@
     <MACRODEF name="SERVICE-POLICY-INTERFACE-OPTIONS">
         <PARAM name="interface-options" help="Show policies applied for interface" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="eth-if-id" help="Ethernet interface" ptype="PHY_INTERFACE" />
-            <PARAM name="po-if-id" help="PortChannel interface" ptype="PO_INTERFACE"/>
-            <PARAM name="vlan-if-id" help="Vlan interface" ptype="VLAN_INTERFACE"/>
+            <PARAM name="po-if-id" help="PortChannel interface" ptype="PO_INTERFACE" />
+            <PARAM name="vlan-if-id" help="Vlan interface" ptype="VLAN_INTERFACE" />
+            <PARAM name="eth-sub-if-id" help="Ethernet sub-interface" ptype="PHY_INTERFACE_SUBIF" />
+            <PARAM name="po-sub-if-id" help="PortChannel sub-interface" ptype="PO_INTERFACE_SUBIF" />
+            <PARAM name="CPU" help="CPU interface" ptype="SUBCOMMAND" mode="subcommand"/>
         </PARAM>
     </MACRODEF>
 
-    <!-- Case 0: All types for show commands etc. Case 1: All FBS types. Case 2: Only QoS for CtrlPlane-->
+    <!-- Case 0: All types for show commands etc.
+         Case 1: All FBS types. 
+         Case 2: Only QoS for CtrlPlane
+         Case 3: ACL Copp -->
     <MACRODEF name="FBS-POLICY-TYPES">
         <PARAM name="type" help="Policy type" ptype="SUBCOMMAND" mode="subcommand" optional="arg1" order="true">
             <PARAM name="fbs-policy-type" help="Policy type" ptype="SUBCOMMAND" mode="switch">
@@ -16,6 +22,7 @@
                 <PARAM name="monitoring" help="Monitoring Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" ) -o ( "arg2" = "1" )'/>
                 <PARAM name="forwarding" help="Forwarding Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" ) -o ( "arg2" = "1" )'/>
                 <PARAM name="copp" help="CoPP Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" )'/>
+                <PARAM name="acl-copp" help="ACL CoPP Policy" ptype="SUBCOMMAND" mode="subcommand" test='( "arg2" = "0" ) -o ( "arg2" = "3" )'/>
             </PARAM>
         </PARAM>
     </MACRODEF>
@@ -62,7 +69,7 @@
     <MACRODEF name="CLASSIFIER-DESCRIPTION">
         <COMMAND name="description" help="Configure class-map description">
             <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
-            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_description ${fbs-class-name} ${description-value}</ACTION>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_classifier_description ${fbs-class-name} description ${description-value}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
                  Configures Class-map description 
@@ -89,6 +96,41 @@
            </DOCGEN>
         </COMMAND>
     </MACRODEF>
+
+    <MACRODEF name="POLICY-FLOW-DESCRIPTION">
+        <COMMAND name="description" help="Configures flow description">
+            <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_flow_description ${fbs-policy-name} ${fbs-class-name} description ${description-value}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Updates description for the flows
+              </DESCRIPTION>
+              <USAGE>
+                 A string describing the flow with max 256 characters. Description should be in double quotes if it has spaces
+              </USAGE>
+              <EXAMPLE summary="Configures description for qos flows">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)# description "flow to match ip traffic and dscp remark to 10"
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name="no description" help="Clear flow description">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_flow_description ${fbs-policy-name} ${fbs-class-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Removes description for the policy flow.
+              </DESCRIPTION>
+              <EXAMPLE summary="Removes description for qos flows">
+                  sonic(config)# policy-map policy_qos type qos
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)# no description
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+    </MACRODEF>
+
 
     <MACRODEF name="FBS-DIRECTION-TYPES">
         <PARAM name="fbs-direction-type" help="Policy type" ptype="SUBCOMMAND" mode="switch">
@@ -156,12 +198,18 @@
     </MACRODEF>
 
     <MACRODEF name="FBS-NEXT-HOP-OPTIONS">
-        <PARAM name="next-hop" help="Next hop" ptype="SUBCOMMAND" mode="subcommand" />
-        <PARAM name="ip-address" help="arg1 address Value" ptype="arg2"/>
-        <PARAM name="vrf" help="Next hop VRF" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
-            <PARAM name="vrf-options" help="" ptype="SUBCOMMAND" mode="switch">
-                <PARAM name="vrf-name" help="Next hop VRF name" ptype="VRF_NAME" />
-                <PARAM name="default" help="Default VRF" ptype="SUBCOMMAND" mode="subcommand"/>
+        <PARAM name="next-hop-or-group" help="" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="next-hop" help="Next hop" ptype="SUBCOMMAND" mode="subcommand">
+                <PARAM name="ip-address" help="arg1 address Value" ptype="arg2"/>
+                <PARAM name="vrf" help="Next hop VRF" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                    <PARAM name="vrf-options" help="" ptype="SUBCOMMAND" mode="switch">
+                        <PARAM name="vrf-name" help="Next hop VRF name" ptype="VRF_NAME" />
+                        <PARAM name="default" help="Default VRF" ptype="SUBCOMMAND" mode="subcommand"/>
+                    </PARAM>
+                </PARAM>
+            </PARAM>
+            <PARAM name="next-hop-group" help="arg1 next-hop group" ptype="SUBCOMMAND" mode="subcommand">
+                <PARAM name="pbf-nh-grp" help="arg1 next-hop group name (Max: 63 characters)" ptype="STRING_63" />
             </PARAM>
         </PARAM>
     </MACRODEF>
@@ -178,5 +226,206 @@
             <PARAM name="port-id" help="Port number" ptype="PHY_INTERFACE" completion="false"/> 
             <PARAM name="portchannel-id" help="Lag number" ptype="PO_INTERFACE" completion="false"/>
         </PARAM>
+    </MACRODEF>
+
+    <MACRODEF name="FBS-NEXT-HOP-GROUP-CLIS">
+        <COMMAND name="entry" help="Configured next-hop group member at specified index">
+            <PARAM name="entry-index" help="Entry index" ptype="RANGE_1_65535">
+                <PARAM name="next-hop" help="Next hop" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
+                <PARAM name="ip-address" help="arg1 address Value" ptype="arg2" order="true"/>
+                <PARAM name="vrf" help="Next hop VRF" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                    <PARAM name="vrf-options" help="" ptype="SUBCOMMAND" mode="switch">
+                        <PARAM name="vrf-name" help="Next hop VRF name" ptype="VRF_NAME" />
+                        <PARAM name="default" help="Default VRF" ptype="SUBCOMMAND" mode="subcommand"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="next-hop-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
+                    <PARAM name="recursive" help="Next hop must be recursively resolved via an underlay interface" ptype="SUBCOMMAND" mode="subcommand" />
+                    <PARAM name="non-recursive" help="Next hop must be non-recursive resolved an underlay interface" ptype="SUBCOMMAND" mode="subcommand"/>
+                    <PARAM name="overlay" help="Next hop must be reachable via an overlay interface" ptype="SUBCOMMAND" mode="subcommand"/>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_next_hop_group_member ${fbs-nh-grp-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="no entry" help="Delete next-hop group member at specified index">
+            <PARAM name="entry-index" help="Entry index" ptype="RANGE_1_65535" />
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_next_hop_group_member ${fbs-nh-grp-name} ${__params}</ACTION>
+        </COMMAND>
+
+        <COMMAND name="description" help="Configures next hop group description">
+            <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs create_next_hop_group_description ${fbs-nh-grp-name} description ${description-value}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures PBF next-hop group description
+              </DESCRIPTION>
+              <USAGE>
+                 A string describing the next hop group of max 256 characters. Description should be in double quotes if it has spaces
+              </USAGE>
+              <EXAMPLE summary="Add description to next hop group">
+                 sonic(config-pbf-ipv6-nh-group)# description "example description"
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name="no description" help="Deletes next hop group description">
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_next_hop_group_description ${fbs-nh-grp-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Deletes PBF next-hop group description
+              </DESCRIPTION>
+              <USAGE>
+              </USAGE>
+              <EXAMPLE summary="Delete description from next hop group">
+                 sonic(config-policy-map)# no description
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name="threshold" help="Configure threshold parameters">
+            <PARAM name="threshold-options" help="" mode="switch" ptype="SUBCOMMAND">
+                <PARAM name="type" help="Threshold type" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="threshold-types" help="" ptype="SUBCOMMAND" mode="switch">
+                        <PARAM name="percentage" help="Threshold is percentage of reachable members" ptype="SUBCOMMAND" mode="subcommand"/>
+                        <PARAM name="count" help="Threshold is count of reachable members" ptype="SUBCOMMAND" mode="subcommand"/>
+                    </PARAM>
+                    <PARAM name="up" help="Threshold value above which the downstream interfaces will be brought up" mode="subcommand" ptype="SUBCOMMAND" optional="true" order="true">
+                        <PARAM name="threshold-up" help="Threshold up value" ptype="RANGE_1_128"/>
+                    </PARAM>
+                    <PARAM name="down" help="Threshold value below which the downstream interfaces will be shut down" mode="subcommand" ptype="SUBCOMMAND" optional="true" order="true">
+                        <PARAM name="threshold-down" help="Threshold down value" ptype="RANGE_0_127"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="up" help="Threshold value equal to or above which the next-hop group will be considered forwardable" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="threshold-up" help="Threshold up value" ptype="RANGE_1_128"/>
+                    <PARAM name="down" help="Threshold value equal to or below which the next-hop group will be not be considered forwardable" mode="subcommand" ptype="SUBCOMMAND" optional="true" order="true">
+                        <PARAM name="threshold-down" help="Threshold down value" ptype="RANGE_0_127"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="down" help="Threshold value equal to or below which the next-hop group will be not be considered forwardable" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="threshold-down" help="Threshold down value" ptype="RANGE_0_127"/>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs set_next_hop_group_threshold ${fbs-nh-grp-name} ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configure the threshold parameters which can be used to mark a next-hop group as forwardable.
+                </DESCRIPTION>
+                <USAGE>
+                    The threshold up value must be higher than threshold down value. If threshold up is not configured then its assumed as threshold down value + 1.
+                    If threshold down is not configured then its assumed as 0.
+                </USAGE>
+                <EXAMPLE summary="Configure threshold parameters">
+                    sonic(config-pbf-ipv6-nh-group)# threshold type percentage up 70 down 40
+                    sonic(config-pbf-ip-nh-group)# threshold type count up 4 down 2
+                    sonic(config-pbf-ip-nh-group)# threshold down 1
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND name="no threshold" help="Configure threshold parameters">
+            <PARAM name="threshold-type-options" help="" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
+                <PARAM name="up" help="Remove threshold up value" mode="subcommand" ptype="SUBCOMMAND" />
+                <PARAM name="down" help="Remove threshold down value" mode="subcommand" ptype="SUBCOMMAND" />
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_next_hop_group_threshold ${fbs-nh-grp-name} ${__params}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Delete the threshold parameters which can be used to mark a next-hop group as forwardable.
+                </DESCRIPTION>
+                <USAGE>
+                    Deleting threshold type will delete both up and down values. If threshold up is deleted then its assumed as threshold down value + 1.
+                    If threshold down is deleted then its assumed as 0.
+                </USAGE>
+                <EXAMPLE summary="Delete threshold parameters">
+                    sonic(config-pbf-ipv6-nh-group)# no threshold up
+                    sonic(config-pbf-ip-nh-group)# no threshold down
+                    sonic(config-pbf-ip-nh-group)# no threshold
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+    </MACRODEF>
+    <MACRODEF name="POLICER-PARAM-OPTIONS">
+        <COMMAND name="police" help="Set rate limiting parameters">
+            <PARAM name="policer-params" help="" ptype="SUBCOMMAND" mode="switch">
+                <PARAM name="cir" help="Committed information rate" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="cir-value" help="CIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    </PARAM>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="cbs" help="Committed burst size" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="cbs-value" help="CBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    </PARAM>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="pir" help="Peak information rate" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="pir-value" help="PIR value. Default is bits per second" ptype="POLICER_RATE_BITS"/>
+                    <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true">
+                        <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                    </PARAM>
+                </PARAM>
+                <PARAM name="pbs" help="Peak burst size" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="pbs-value" help="PBS value. Default is bytes" ptype="POLICER_RATE_BYTES"/>
+                </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs arg2 ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Configures policer action for arg1 Flow
+              </DESCRIPTION>
+              <USAGE>
+                  CIR: Committed information rate in bits per second. CIR is mandatory. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000)cir 300000000 cbs 300000000 pir 300000000 pbs 300000000.
+                  CBS: Committed burst size in bytes. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the CIR in bytes. If configured by the user, it must be greater than or equal to CIR in bytes. 
+                  PIR: Peak information rate in bits per second. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000). If configured by the user, it must be greater than CIR 
+                  PBS: Peak burst size. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the PIR value in bytes. If configured by the user, it must be greater than PIR value in bytes and also CBS value 
+                  If only CIR is configured, then its 1 rate, 2 color policer.  Any traffic exceeding CIR value will be marked as red and will be dropped.
+
+                  If both CIR and PIR is configured, then is 2 rate 3 color policer. Any traffic that exceeds CIR but less than PIR will be marked as yellow. Any traffic that is more than PIR will be marked as red and will be dropped
+              </USAGE>
+              <EXAMPLE summary="Configures traffic class action for arg1 Flow">
+                  sonic(config)# policy-map policy_arg1 type arg1
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#cir 300000000 cbs 300000000 pir 300000000 pbs 300000000
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
+        <COMMAND name="no police" help="Clear or reset rate limiting parameters">
+            <PARAM name="cir" help="Clear committed information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="cbs" help="Clear committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="pir" help="Clear peak information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <PARAM name="pbs" help="Clear peak burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
+            <ACTION builtin="clish_pyobj">sonic_cli_fbs arg3 ${fbs-policy-name} ${fbs-class-name} ${__params}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Unconfigures policer action for arg1 Flow
+              </DESCRIPTION>
+              <USAGE>
+                  CIR: Committed information rate in bits per second. CIR is mandatory. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000)cir 300000000 cbs 300000000 pir 300000000 pbs 300000000.
+                  CBS: Committed burst size in bytes. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the CIR in bytes. If configured by the user, it must be greater than or equal to CIR in bytes. 
+                  PIR: Peak information rate in bits per second. The value can be optionally suffixed with kbps(1000), mbps(1000000), gbps (1000000000) or tbps (1000000000000). If configured by the user, it must be greater than CIR 
+                  PBS: Peak burst size. The value can be suffixed with KB(1000), MB(1000000), GB(1000000000) or TB(1000000000000). The default value is 20% of the PIR value in bytes. If configured by the user, it must be greater than PIR value in bytes and also CBS value 
+                  If only CIR is configured, then its 1 rate, 2 color policer.  Any traffic exceeding CIR value will be marked as red and will be dropped.
+
+                  If both CIR and PIR is configured, then is 2 rate 3 color policer. Any traffic that exceeds CIR but less than PIR will be marked as yellow. Any traffic that is more than PIR will be marked as red and will be dropped
+              </USAGE>
+              <EXAMPLE summary="Unconfigures traffic class action for arg1 Flow">
+                  sonic(config)# policy-map policy_arg1 type arg1
+                  sonic(config-policy-map)# class class_permit_ip priority 10
+                  sonic(config-policy-map-flow)#no police 
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
     </MACRODEF>
 </ROOT>

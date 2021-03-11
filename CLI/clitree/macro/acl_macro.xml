@@ -336,6 +336,8 @@ limitations under the License.
                         <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand" />
                         <PARAM name="PortChannel" help="Portchannel interface" ptype="PO_INTERFACE" />
                         <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" />
+                        <PARAM name="eth-sub-if-id" help="Ethernet sub-interface" ptype="PHY_INTERFACE_SUBIF" />
+                        <PARAM name="po-sub-if-id" help="PortChannel sub-interface" ptype="PO_INTERFACE_SUBIF" />
                     </PARAM>
                 </PARAM>
                 <PARAM name="Switch" help="ACLs applied at switch level" ptype="SUBCOMMAND" mode="subcommand"/>

@@ -1,0 +1,24 @@
+{{'-----------------------------'}}
+{{'Platform Firmware Information'}}
+{{'-----------------------------'}}
+{% for chassis in json_output %}
+{% for module in json_output[chassis] %}
+{% for firmName in json_output[chassis][module] %}
+{% set firmInfo = json_output[chassis][module][firmName] %}
+{% set firmVer = 'N/A' %}
+{% set firmDesc = 'N/A' %}
+{% if 'firmware-version' in firmInfo %}
+{% set firmVer = firmInfo['firmware-version'] %}
+{% endif %}
+{% if 'description' in firmInfo %}
+{% set firmDesc = firmInfo['description'] %}
+{% endif %}
+{{'Chassis:'.ljust(20)}}{{chassis.ljust(15)}}
+{{'Module:'.ljust(20)}}{{module.ljust(15)}}
+{{'Component:'.ljust(20)}}{{firmName.ljust(15)}}
+{{'Firmware Version:'.ljust(20)}}{{firmVer.ljust(15)}}
+{{'Description:'.ljust(20)}}{{firmDesc.ljust(25)}}
+{{' '}}
+{% endfor %}
+{% endfor %}
+{% endfor %}

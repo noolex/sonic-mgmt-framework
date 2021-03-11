@@ -31,6 +31,7 @@ limitations under the License.
          help="Specify static route" ptype="SUBCOMMAND" mode="subcommand" command_keys="vrf_name=default,prefix_v=*" 
          command_tables="sonic-static-route:sonic-static-route/STATIC_ROUTE/STATIC_ROUTE_LIST/vrf-name={vrf_name},prefix={prefix_v}" 
          render_command_cb="static_routes_entry"
+         render_command_viewid="renderCfg_iprte"
          >
          <MACRO name="STATIC-ROUTE-CFG"  arg=""/>
 
@@ -42,11 +43,24 @@ limitations under the License.
          help="Configure IP Route for a VRF instance" ptype="SUBCOMMAND" mode="subcommand" command_keys="vrf_name=Vrf*,prefix_v=*" 
          command_tables="sonic-static-route:sonic-static-route/STATIC_ROUTE/STATIC_ROUTE_LIST/vrf-name={vrf_name},prefix={prefix_v}" 
          render_command_cb="static_routes_entry"
+         render_command_viewid="renderCfg_iprte"
          >
-         <PARAM name="vrfname" help="vrf name" ptype="VRF_OR_MGMT">
+         <PARAM name="vrfname" help="VRF name" ptype="VRF_NAME">
               <MACRO name="STATIC-ROUTE-CFG"  arg=""/>
          </PARAM>
     <ACTION builtin="clish_pyobj"> sonic-cli-static-route patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop ${__params} ipv4
+    </ACTION>
+    </COMMAND>
+
+    <COMMAND
+         name="ip route vrf mgmt"
+         help="Configure IP Route for Management VRF" ptype="SUBCOMMAND" mode="subcommand" command_keys="vrf_name=mgmt,prefix_v=*"
+         command_tables="sonic-static-route:sonic-static-route/STATIC_ROUTE/STATIC_ROUTE_LIST/vrf-name={vrf_name},prefix={prefix_v}"
+         render_command_cb="static_routes_entry"
+         render_command_viewid="renderCfg_iprtemgmt"
+         >
+         <MACRO name="STATIC-ROUTE-CFG"  arg=""/>
+    <ACTION builtin="clish_pyobj"> sonic-cli-static-route patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop mgmt ${__params} ipv4
     </ACTION>
     </COMMAND>
 
@@ -55,6 +69,7 @@ limitations under the License.
          help="Specify static route" ptype="SUBCOMMAND" mode="subcommand" command_keys="vrf_name=default,prefix_v=*" 
          command_tables="sonic-static-route:sonic-static-route/STATIC_ROUTE/STATIC_ROUTE_LIST/vrf-name={vrf_name},prefix={prefix_v}" 
          render_command_cb="static_routes_v6entry"
+         render_command_viewid="renderCfg_iprte"
          >
          <MACRO name="STATIC-ROUTE-CFG"  arg="V6"/>
 
@@ -66,13 +81,25 @@ limitations under the License.
          help="Configure IP Route for a VRF instance" ptype="SUBCOMMAND" mode="subcommand" command_keys="vrf_name=Vrf*,prefix_v=*" 
          command_tables="sonic-static-route:sonic-static-route/STATIC_ROUTE/STATIC_ROUTE_LIST/vrf-name={vrf_name},prefix={prefix_v}" 
          render_command_cb="static_routes_v6entry"
+         render_command_viewid="renderCfg_iprte"
          >
-         <PARAM name="vrfname" help="vrf name" ptype="VRF_OR_MGMT">
+         <PARAM name="vrfname" help="VRF name" ptype="VRF_NAME">
               <MACRO name="STATIC-ROUTE-CFG"  arg="V6"/>
          </PARAM>
     <ACTION builtin="clish_pyobj"> sonic-cli-static-route patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop ${__params} ipv6
     </ACTION>
     </COMMAND>
+   
+    <COMMAND
+         name="ipv6 route vrf mgmt"
+         help="Configure IP Route for Management VRF" ptype="SUBCOMMAND" mode="subcommand" command_keys="vrf_name=mgmt,prefix_v=*"
+         command_tables="sonic-static-route:sonic-static-route/STATIC_ROUTE/STATIC_ROUTE_LIST/vrf-name={vrf_name},prefix={prefix_v}"
+         render_command_cb="static_routes_v6entry"
+         >
+         <MACRO name="STATIC-ROUTE-CFG"  arg="V6"/>
+    <ACTION builtin="clish_pyobj"> sonic-cli-static-route patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop mgmt ${__params} ipv6
+    </ACTION>
+    </COMMAND> 
    
 
     <COMMAND
@@ -97,10 +124,19 @@ limitations under the License.
          name="no ip route vrf"
          help="Delete IP Route for a VRF instance"
          >
-         <PARAM name="vrfname" help="vrf name" ptype="VRF_OR_MGMT">
+         <PARAM name="vrfname" help="VRF name" ptype="VRF_NAME">
               <MACRO name="STATIC-ROUTE-DEL" arg=""/>
          </PARAM>
     <ACTION builtin="clish_pyobj"> sonic-cli-static-route delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop ${__params} ipv4
+    </ACTION>
+    </COMMAND>
+
+    <COMMAND
+         name="no ip route vrf mgmt"
+         help="Delete IP Route for Management VRF"
+         >
+         <MACRO name="STATIC-ROUTE-DEL" arg=""/>
+    <ACTION builtin="clish_pyobj"> sonic-cli-static-route delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop mgmt ${__params} ipv4
     </ACTION>
     </COMMAND>
     
@@ -108,10 +144,20 @@ limitations under the License.
          name="no ipv6 route vrf"
          help="Delete IP Route for a VRF instance"
          >
-         <PARAM name="vrfname" help="vrf name" ptype="VRF_OR_MGMT">
+         <PARAM name="vrfname" help="VRF name" ptype="VRF_NAME">
               <MACRO name="STATIC-ROUTE-DEL" arg="V6"/>
          </PARAM>
     <ACTION builtin="clish_pyobj"> sonic-cli-static-route delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop ${__params} ipv6
+    </ACTION>
+
+    </COMMAND>
+
+    <COMMAND
+         name="no ipv6 route vrf mgmt"
+         help="Delete IP Route for Management VRF"
+         >
+         <MACRO name="STATIC-ROUTE-DEL" arg="V6"/>
+    <ACTION builtin="clish_pyobj"> sonic-cli-static-route delete_openconfig_network_instance_network_instances_network_instance_protocols_protocol_static_routes_static_next_hops_next_hop mgmt ${__params} ipv6
     </ACTION>
 
     </COMMAND>
