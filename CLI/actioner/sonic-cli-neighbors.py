@@ -71,12 +71,20 @@ def get_keypath(func,args):
 #keypath for 'show ip/ipv6 arp/neighbors'
     if func == 'get_nbrs':
         intf = ""
+        subidx = "0"
 
         path = '/restconf/data/openconfig-interfaces:interfaces/interface={name}'
         if len(rcvdIntfName) > 0:
-            intf = rcvdIntfName
+            ifname = rcvdIntfName
         else:
-            intf = args
+            ifname = args
+
+        intf = ifname
+
+        if "." in ifname:
+            if_name = ifname.split(".")
+            intf = if_name[0]
+            subidx = if_name[1]
 
         if len(intf) == 0:
             return None
@@ -94,7 +102,7 @@ def get_keypath(func,args):
         if len(rcvdIpAddr) > 0:
             path = path + '/neighbor=' + rcvdIpAddr
 
-        keypath = cc.Path(path, name=intf, index="0")
+        keypath = cc.Path(path, name=intf, index=subidx)
 
 #keypath for 'clear ip/ipv6 arp/neighbors'
     elif func == 'rpc_sonic_clear_neighbors':
@@ -387,6 +395,7 @@ def show_neighbors(func):
     rcvdIntf = inputDict.get('intf')
     if rcvdIntf is not None:
         keypath, body = get_keypath(func, rcvdIntf)
+        #log.syslog(log.LOG_ERR, str(keypath))
         try:
             apiResponse = apiClient.get(keypath)
         except:
@@ -407,6 +416,7 @@ def show_neighbors(func):
                 (vrf == rcvdVrfName) or
                 rcvdVrfName == "all"):
                 keypath, body = get_keypath(func, intf)
+                #log.syslog(log.LOG_ERR, str(keypath))
             else:
                 continue
 
