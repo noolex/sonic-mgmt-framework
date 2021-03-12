@@ -65,7 +65,7 @@ def cli_getch():
         """
         c = os.read(fd, 1)
         termios.tcflush(fd, termios.TCIFLUSH)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, SystemExit):
         return 'q'
     except select.error as e:
         if e[0] == 4: # Interrupted system call
