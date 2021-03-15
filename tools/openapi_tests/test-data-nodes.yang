@@ -1089,4 +1089,13 @@ module test-data-nodes {
       }
     }
   }
+
+  notification something-changed {
+    description "Indicates somethig is changed!";
+    leaf something {
+      mandatory true;
+      type string;
+    }
+  }
+
 }
