@@ -1,0 +1,24 @@
+module test-notification {
+    namespace "https://example.com/ns/test-notification";
+    prefix "test-noti";
+
+    organization "Example, Inc.";
+    contact "support at example.com";
+    description
+        "Example Data Module for testing OpenAPI code generator handling
+        of yang notification statements. This model should contain only
+        notification statements. The code generator is exepected to
+        ignore all of them and emit an empty OpenAPI spec.";
+    revision "2021-03-12" {
+      description "Initial version.";
+    }
+
+    notification something-changed {
+        description "Indicates somethig is changed!";
+        leaf something {
+            mandatory true;
+            type string;
+        }
+    }
+
+}
