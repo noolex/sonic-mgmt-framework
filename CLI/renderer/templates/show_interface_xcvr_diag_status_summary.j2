@@ -1,0 +1,43 @@
+{% if json_output -%}
+
+{{' '}}
+{{'+--------------------+-------------+-------------+'}}
+{{'|                    |   Loopback  |   Pattern   |'}}
+{{'| Interface'.ljust(21)}}{{'| HI HO MI MO | CH CM GH GM |'}}
+{{'+--------------------+-------------+-------------+'}}
+
+{% for ifName in json_output %}
+
+{% set data = json_output[ifName]['loopbacks'] %}
+
+{% set hi_cfg = data['config'].get('lb-host-input-enabled') %}
+{% set hi_sta = data['state'].get('lb-host-input-enabled') %}
+
+{% set ho_cfg = data['config'].get('lb-host-output-enabled') %}
+{% set ho_sta = data['state'].get('lb-host-output-enabled') %}
+
+{% set mi_cfg = data['config'].get('lb-media-input-enabled') %}
+{% set mi_sta = data['state'].get('lb-media-input-enabled') %}
+
+{% set mo_cfg = data['config'].get('lb-media-output-enabled') %}
+{% set mo_sta = data['state'].get('lb-media-output-enabled') %}
+
+{% set ch_cfg = data['config'].get('pattern-chk-host-enabled') %}
+{% set ch_sta = data['state'].get('pattern-chk-host-enabled') %}
+
+{% set gh_cfg = data['config'].get('pattern-gen-host-enabled') %}
+{% set gh_sta = data['state'].get('pattern-gen-host-enabled') %}
+
+{% set cm_cfg = data['config'].get('pattern-chk-media-enabled') %}
+{% set cm_sta = data['state'].get('pattern-chk-media-enabled') %}
+
+{% set gm_cfg = data['config'].get('pattern-gen-media-enabled') %}
+{% set gm_sta = data['state'].get('pattern-gen-media-enabled') %}
+
+{% set host  = json_output[ifName]['reports']['host']['state'] %}
+{% set media = json_output[ifName]['reports']['media']['state'] %}
+
+{{'| '}}{{ifName.ljust(19)}}{{'|'}}{{("E" if hi_sta else " ").rjust(3)}}{{("E" if ho_sta else " ").rjust(3)}}{{("E" if mi_sta else " ").rjust(3)}}{{("E" if mo_sta else " ").rjust(3)}}{{' |'}}{{("E" if ch_sta else " ").rjust(3)}}{{("E" if cm_sta else " ").rjust(3)}}{{("E" if gh_sta else " ").rjust(3)}}{{("E" if gm_sta else " ").rjust(3)}}{{' |'}}
+
+{% endfor %}
+{% endif %}
