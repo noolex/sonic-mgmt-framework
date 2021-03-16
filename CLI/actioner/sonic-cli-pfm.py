@@ -171,6 +171,10 @@ def run(func, args):
                             if_list.append(d['ifname'])
                     except:
                         return 1
+            elif if_name == 'Ethernet_X_SUMMARY':
+                summary = True
+                if_name = sys.argv[7]
+                if_list.append(if_name)
             else:
                 # Singleton
                 if_list.append(if_name)

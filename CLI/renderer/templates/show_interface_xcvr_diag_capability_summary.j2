@@ -1,0 +1,66 @@
+{% if json_output -%}
+
+{{' '}}
+{{'+--------------------+-------------+---------------+'}}
+{{'|                    |   Loopback  |     Report    |'}}
+{{'| Interface'.ljust(21)}}{{'| HI HO MI MO | BER IPEAK SNR |'}}
+{{'+--------------------+-------------+---------------+'}}
+
+{% for ifName in json_output %}
+
+{% set vars = {} %}
+
+{% set data = json_output[ifName]['capabilities']['state']['loopback'] %}
+
+{% set key = 'Host Side Input' %}
+{% if key in data %}
+{% set cap_hi = '*' %}
+{% else %}
+{% set cap_hi = ' ' %}
+{% endif %}
+
+{% set key = 'Host Side Output' %}
+{% if key in data %}
+{% set cap_ho = '*' %}
+{% else %}
+{% set cap_ho = ' ' %}
+{% endif %}
+
+{% set key = 'Media Side Input' %}
+{% if key in data %}
+{% set cap_mi = '*' %}
+{% else %}
+{% set cap_mi = ' ' %}
+{% endif %}
+
+{% set key = 'Media Side Output' %}
+{% if key in data %}
+{% set cap_mo = '*' %}
+{% else %}
+{% set cap_mo = ' ' %}
+{% endif %}
+
+{% set data = json_output[ifName]['capabilities']['state']['report'] %}
+
+{% if 'BER' in data  %}
+{% set cap_ber = '*' %}
+{% else %}
+{% set cap_ber = ' ' %}
+{% endif %}
+
+{% if 'input peak' in data  %}
+{% set cap_ipeak = '*' %}
+{% else %}
+{% set cap_ipeak = ' ' %}
+{% endif %}
+
+{% if 'SNR' in data  %}
+{% set cap_snr = '*' %}
+{% else %}
+{% set cap_snr = ' ' %}
+{% endif %}
+
+{{'| '}}{{ifName.ljust(19)}}{{'|'}}{{cap_hi.rjust(3)}}{{cap_ho.rjust(3)}}{{cap_mi.rjust(3)}}{{cap_mo.rjust(3)}}{{' |'}}{{cap_ber.rjust(4)}}{{cap_ipeak.rjust(6)}}{{cap_snr.rjust(4)}}{{' |'}}
+
+{% endfor %}
+{% endif %}
