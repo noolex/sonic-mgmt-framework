@@ -48,7 +48,7 @@
 < 		clish_param_help(param, help);
 ---
 > 		clish_param_help(param, help, clish_parg__get_value((parg)));
-107c127,183
+107c127,184
 < void clish_shell_help(clish_shell_t *this, const char *line)
 ---
 > void sort_help_command (const lub_argv_t *name , const lub_argv_t *help, int complete_status,int *dupCount) {
@@ -97,6 +97,7 @@
 >                                 lub_argv__swap_arg(help,indexi,indexj);
 >                         } else if(strcmp_ret == 0) {
 > 				/*Move the duplicate token to the last place. So that the duplicate token will be printed.*/
+>                                 lub_argv__swap_arg(name,indexj,count-1-dupSwapCount);
 >                                 lub_argv__swap_arg(help,indexj,count-1-dupSwapCount);
 > 				dupSwapCount++;
 >                         }
@@ -108,23 +109,23 @@
 > 
 > /*--------------------------------------------------------- */
 > void clish_shell_help(clish_shell_t *this, const char *line, clish_context_t *context)
-112a189,190
+112a190,191
 > 	int complete_status = 0;
 > 	int dupCount = 0;
-119c197
+119c198
 < 	available_commands(this, &help, line, &max_width);
 ---
 > 	available_commands(this, &help, line, &max_width, context);
-122c200
+122c201
 < 	cmd = clish_shell_resolve_command(this, line);
 ---
 > 	cmd = clish_shell_resolve_command(this, line, context);
-126,127c204
+126,127c205
 < 		int status;
 < 		status = available_params(this, &help, cmd, line, &width);
 ---
 > 		complete_status = available_params(this, &help, cmd, line, &width);
-131,134c208,211
+131,134c209,212
 < 		if (!status) {
 < 			lub_argv_add(help.name, "<cr>");
 < 			lub_argv_add(help.help, NULL);
@@ -134,12 +135,12 @@
 > 			lub_argv_add(help.name, "<cr>", BOOL_FALSE);
 > 			lub_argv_add(help.help, NULL, BOOL_FALSE);
 > 			lub_argv_add(help.detail, NULL, BOOL_FALSE);
-139,140c216
+139,140c217
 < 
 < 	/* Print help messages */
 ---
 >     
-142c218,228
+142c219,229
 < 		fprintf(stderr, "  %-*s  %s\n", (int)max_width,
 ---
 > 		if(max_width < strlen(lub_argv__get_arg(help.name, i)))
