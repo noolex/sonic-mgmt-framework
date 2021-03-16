@@ -1900,7 +1900,11 @@ limitations under the License.
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-
+        <COMMAND
+            name="show configuration"
+            help = "show configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=config-if-CPU view_keys="name=${cpu_ifname}" </ACTION>
+        </COMMAND>
         <COMMAND name="no scheduler-policy" help="Unconfigure a scheduler policy">
         <ACTION builtin="clish_restcl">
              oper=DELETE url=/restconf/data/openconfig-qos:qos/interfaces/interface=${cpu_ifname}/output/scheduler-policy/config/name
