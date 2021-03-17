@@ -166,27 +166,31 @@ func getStatsHandler(w http.ResponseWriter, r *http.Request) {
 func writeDBStatsText(tw *tabwriter.Writer, name string, stats *db.Stats) {
 	fmt.Fprintf(tw,"\tTable Name:%s\n", name)
 	fmt.Fprintln(tw,
-		"\t\tGetEntry\tGetKeys\tGetKeysPattern\tGetMap\tGetMapAll\tTotal")
+		"\t\tGetEntry\tGetKeys\tGetKeysPattern\tGetMap\tGetMapAll\tSCNew\tSCDel\tGetNextKeys\tTotal")
 	fmt.Fprintln(tw,
-		"\t\t--------\t-------\t--------------\t------\t---------\t-----")
-	fmt.Fprintf(tw, "\tHits\t%d\t%d\t%d\t%d\t%d\t%d\n",
+		"\t\t--------\t-------\t--------------\t------\t---------\t-----\t-----\t-----------\t-----")
+	fmt.Fprintf(tw, "\tHits\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
 		stats.GetEntryHits,
 		stats.GetKeysHits, stats.GetKeysPatternHits,
 		stats.GetMapHits, stats.GetMapAllHits,
+		stats.NewScanCursorHits, stats.DeleteScanCursorHits,
+        stats.GetNextKeysHits,
 		stats.Hits)
 	fmt.Fprintf(tw, "\tCacheHits\t%d\t%d\t%d\t%d\t%d\n",
 		stats.GetEntryCacheHits,
 		stats.GetKeysCacheHits, stats.GetKeysPatternCacheHits,
 		stats.GetMapCacheHits, stats.GetMapAllCacheHits)
-	fmt.Fprintf(tw, "\tTime\t%s\t%s\t%s\t%s\t%s\t%s\n",
+	fmt.Fprintf(tw, "\tTime\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
 		stats.GetEntryTime,
 		stats.GetKeysTime, stats.GetKeysPatternTime,
 		stats.GetMapTime, stats.GetMapAllTime,
+		time.Duration(0), time.Duration(0), stats.GetNextKeysTime,
 		stats.Time)
-	fmt.Fprintf(tw, "\tPeak\t%s\t%s\t%s\t%s\t%s\t%s\n",
+	fmt.Fprintf(tw, "\tPeak\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
 		stats.GetEntryPeak,
 		stats.GetKeysPeak, stats.GetKeysPatternPeak,
 		stats.GetMapPeak, stats.GetMapAllPeak,
+		time.Duration(0), time.Duration(0), stats.GetNextKeysPeak,
 		stats.Peak)
 	fmt.Fprintln(tw, "")
 }
