@@ -734,11 +734,22 @@ def show_nbr_info(response):
             if pimDrPrio is None:
                 pimDrPrio = ""
 
+            pimNbrBfdState = nbrState.get('openconfig-pim-ext:bfd-session-status')
+            if pimNbrBfdState is None:
+                pimNbrBfdState = "-"
+            elif pimNbrBfdState == "UP":
+                pimNbrBfdState = "Up"
+            elif pimNbrBfdState == "DOWN":
+                pimNbrBfdState = "Down"
+            else:
+                pimNbrBfdState = "-"
+
             nbrEntry = {'intfId':intfId,
                         'rcvdNbr':rcvdNbr,
                         'upTime':upTime,
                         'expiryTime':expiryTime,
                         'pimDrPrio':pimDrPrio,
+                        'pimNbrBfdState':pimNbrBfdState,
                         }
             outputList.append(nbrEntry)
 
