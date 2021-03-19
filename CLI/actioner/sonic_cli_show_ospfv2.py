@@ -399,7 +399,7 @@ def invoke_show_api(func, args=[]):
                     if (neiarg == "detail"):
                         detail = True
                     elif (neiarg == "all"):
-                        allneigh = true
+                        allneigh = True
                     elif (("." in neiarg) or (":" in neiarg)):
                         intfname = neiarg
                     elif (neiarg == "\|"):
