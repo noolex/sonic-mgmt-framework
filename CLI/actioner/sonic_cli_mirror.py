@@ -119,16 +119,16 @@ def show(args):
     # Retrieve mirror session status.
     keypath = cc.Path('/restconf/data/sonic-mirror-session:sonic-mirror-session/MIRROR_SESSION_TABLE')
     response = aa.get(keypath)
-    session_status = 0
+    status = 0
     if response.ok() and response.content is not None and 'sonic-mirror-session:MIRROR_SESSION_TABLE' in response.content.keys():
         value = response['sonic-mirror-session:MIRROR_SESSION_TABLE']
         if 'MIRROR_SESSION_TABLE_LIST' in value.keys():
-            session_status = value['MIRROR_SESSION_TABLE_LIST']
+            status = value['MIRROR_SESSION_TABLE_LIST']
         else:
             print("Session state info not found")
             return
     elif response.ok() and response.content is not None and 'sonic-mirror-session:MIRROR_SESSION_TABLE_LIST' in response.content.keys():
-        session_status = response['sonic-mirror-session:MIRROR_SESSION_TABLE_LIST']
+        status = response['sonic-mirror-session:MIRROR_SESSION_TABLE_LIST']
     else:
         print("Session state info not found")
         return
@@ -136,6 +136,11 @@ def show(args):
     for session in session_list:
         if 'direction' in session:
             session['direction']=session['direction'].lower()
+
+    session_status=[]
+    for session in status:
+        if session['name'] != 'mirror_capability':
+            session_status.append(session)
 
     if args.session is not '':
         session_found = "0"
