@@ -126,8 +126,12 @@ def show_running_fbs_classifier(render_tables):
 
 def show_running_fbs_policy(render_tables):
     fbs_client = cc.ApiClient()
+
     if 'fbs-policy-name' in render_tables:
-        body = {"sonic-flow-based-services:input": {"POLICY_NAME":render_tables['fbs-policy-name']}}
+        if 'fbs-class-name' in render_tables:
+            body = {"sonic-flow-based-services:input": {"POLICY_NAME":render_tables['fbs-policy-name'], "CLASS_NAME":render_tables['fbs-class-name']}}
+        else:
+            body = {"sonic-flow-based-services:input": {"POLICY_NAME":render_tables['fbs-policy-name']}}
     else:
         body = {"sonic-flow-based-services:input": {}}
     keypath = cc.Path('/restconf/operations/sonic-flow-based-services:get-policy')
@@ -406,4 +410,3 @@ def show_running_next_hop_group(render_tables):
         runn_config += '!;'
 
     return 'CB_SUCCESS', runn_config, True
-

@@ -580,6 +580,30 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-policy-view" prompt="${SYSTEM_NAME}(config-policy-map)# " depth="2">
         <NAMESPACE ref="configure-view" help="false" completion="false" />
+
+        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name}"</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Shows current policy-map configuration
+              </DESCRIPTION>
+              <USAGE>
+                 Use this command to display running configurations within current policy-map.
+              </USAGE>
+              <EXAMPLE summary="show configuration" >
+                 sonic(config-policy-map)# show configuration
+                 policy-map policy_vrf type forwarding
+                  class class_permit_ipv6 priority 10
+                   set ipv6 next-hop 1211::2  priority 20
+                   set ipv6 next-hop 1212::2 vrf Vrf-BLUE priority 30
+                  class class_permit_ip priority 10
+                   set ip next-hop 12.12.1.2 vrf default priority 30
+                   set ip next-hop 12.12.2.2 vrf Vrf-BLUE priority 20
+                   set ip next-hop 12.12.1.2  priority 10
+              </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="no" help="Negate a command or set its defaults"/>
 
         <COMMAND name="description" help="Configures policy-map description">
@@ -633,6 +657,23 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-acl-classifier-view" prompt="${SYSTEM_NAME}(config-class-map)# " depth="2">
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
+
+        <COMMAND name="show configuration" help="Shows current class-map configuration">
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${fbs-class-name} </ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows configuration of current class-map
+              </DESCRIPTION>
+              <USAGE>
+                  Use this command to show the configuration of the current class-map
+              </USAGE>
+              <EXAMPLE summary="show configuration">
+               sonic(config-class-map)#show configuration
+               class-map class-1 match-type acl 
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="no" help="Negate a command or set its defaults"/>
         <COMMAND name="match" help="Add match criteria"/>
         <COMMAND name="no match" help="Delete match criteria"/>
@@ -678,6 +719,23 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-fields-classifier-view" prompt="${SYSTEM_NAME}(config-class-map)# " depth="2">
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
+
+        <COMMAND name="show configuration" help="Shows current class-map configuration">
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${fbs-class-name} </ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows configuration of current class-map
+              </DESCRIPTION>
+              <USAGE>
+                  Use this command to show the configuration of the current class-map
+              </USAGE>
+              <EXAMPLE summary="show configuration">
+               sonic(config-class-map)#show configuration
+               class-map class-1 match-type fields match-all 
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="no" help="Negate a command or set its defaults"/>
         <COMMAND name="match" help="Add match criteria"/>
         <COMMAND name="no match" help="Delete match criteria"/>
@@ -1000,6 +1058,23 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-copp-classifier-view" prompt="${SYSTEM_NAME}(config-class-map)# " depth="2">
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
+
+        <COMMAND name="show configuration" help="Shows current class-map configuration">
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${fbs-class-name} </ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                  Shows configuration of current class-map
+              </DESCRIPTION>
+              <USAGE>
+                  Use this command to show the configuration of the current class-map
+              </USAGE>
+              <EXAMPLE summary="show configuration">
+               sonic(config-class-map)#show configuration
+               class-map class-1 match-type copp 
+              </EXAMPLE>
+           </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="no" help="Negates a command or set its defaults"/>
         <COMMAND name="match" help="Adds a match criteria"/>
         <COMMAND name="no match" help="Deletes a match criteria"/>
@@ -1022,6 +1097,28 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-qos-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+
+        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name},fbs-class-name=${fbs-class-name}"</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Shows current policy-map configuration
+              </DESCRIPTION>
+              <USAGE>
+                 Use this command to display running configurations within current policy-map.
+              </USAGE>
+              <EXAMPLE summary="show configuration" >
+                 sonic(config-policy-map-flow)# show configuration
+                 !
+                 policy-map policy-qos-test type qos
+                  description "qos-test-policy"
+                  class class-qos-test priority 1020
+                   police cir 512000
+                  !
+              </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="no" help="Negate a command or set its defaults"/>
         <COMMAND name="set" help="Set parameters" />
         <COMMAND name="no set" help="Remove/Disable QoS actions" />
@@ -1123,6 +1220,28 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-monitoring-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+
+        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name},fbs-class-name=${fbs-class-name}"</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Shows current policy-map configuration
+              </DESCRIPTION>
+              <USAGE>
+                 Use this command to display running configurations within current policy-map.
+              </USAGE>
+              <EXAMPLE summary="show configuration" >
+                 sonic(config-policy-map-flow)# show configuration
+                 !
+                 policy-map policy-monitoring type monitoring
+                  description "monitoring-policy"
+                  class class-monitoring priority 1020
+                   set mirror-session test
+                  !
+              </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="set" help="Set parameters"/>
         <COMMAND name="no" help="Negate a command or set its defaults"/>
         <COMMAND name="no set" help="Remove/Disable monitoring actions" />
@@ -1164,6 +1283,30 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-forwarding-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+
+        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name},fbs-class-name=${fbs-class-name}"</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Shows current policy-map configuration
+              </DESCRIPTION>
+              <USAGE>
+                 Use this command to display running configurations within current policy-map.
+              </USAGE>
+              <EXAMPLE summary="show configuration" >
+                 sonic(config-policy-map-flow)# show configuration
+                 !
+                 policy-map policy-forwarding-test type forwarding
+                  description "forwarding-policy"
+                  class class_permit_ip priority 10
+                   set ip next-hop 12.12.1.2 vrf default priority 30
+                   set ip next-hop 12.12.2.2 vrf Vrf-BLUE priority 20
+                   set ip next-hop 12.12.1.2  priority 10
+                  !
+              </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="set" help="Set parameters" />
 
         <MACRO name="POLICY-FLOW-DESCRIPTION" />
@@ -1301,6 +1444,28 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+
+        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name},fbs-class-name=${fbs-class-name}"</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Shows current policy-map configuration
+              </DESCRIPTION>
+              <USAGE>
+                 Use this command to display running configurations within current policy-map.
+              </USAGE>
+              <EXAMPLE summary="show configuration" >
+                 sonic(config-policy-map-flow)# show configuration
+                 !
+                 policy-map copp-test-policy type copp
+                  description "copp-policy-test"
+                  class copp-system-vrrp priority 0
+                   set copp-action copp-system-vrrp
+                  !
+              </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="set" help="Set parameters" />
 
         <MACRO name="POLICY-FLOW-DESCRIPTION" />
@@ -1325,6 +1490,28 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-acl-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
+
+        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name},fbs-class-name=${fbs-class-name}"</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Shows current policy-map configuration
+              </DESCRIPTION>
+              <USAGE>
+                 Use this command to display running configurations within current policy-map.
+              </USAGE>
+              <EXAMPLE summary="show configuration" >
+                 sonic(config-policy-map-flow)# show configuration
+                 !
+                 policy-map acl-copp-test-policy type acl-copp
+                  description "acl-copp test policy"
+                  class class-acl-copp priority 1020
+                   set trap-queue 1
+                  !
+              </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="no" help="Negate a command or set its defaults"/>
         <COMMAND name="set" help="Set parameters" />
         <COMMAND name="no set" help="Remove/Disable ACL-COPP actions" />
@@ -1402,6 +1589,25 @@ limitations under the License.
     <!--                          IPv4 Next Hop Group View                                 -->
     <!--===================================================================================-->
     <VIEW name="configure-pbf-ip-nh-grp-view" prompt="${SYSTEM_NAME}(config-pbf-ip-nh-group)# " depth="2">
+
+        <COMMAND name="show configuration" help="Shows current pbf ip next-hop group configurations">
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_next_hop_group_by_name ${fbs-nh-grp-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Shows current pbf ip next-hop group configuration
+              </DESCRIPTION>
+              <USAGE>
+                 Use this command to display running configurations within current pbf ip next-hop group configuration 
+              </USAGE>
+              <EXAMPLE summary="show configuration" >
+                 sonic(config)# pbf next-hop-group test type ip
+                 sonic(config-pbf-ip-nh-group)# show configuration
+                 !
+                 pbf next-hop-group test type ip
+              </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="no" help="Negate a command or set its defaults"/>
         <MACRO name="FBS-NEXT-HOP-GROUP-CLIS" arg="IPv4,DOTTED_QUAD"/>
     </VIEW>
@@ -1410,6 +1616,25 @@ limitations under the License.
     <!--                          IPv6 Next Hop Group View                                 -->
     <!--===================================================================================-->
     <VIEW name="configure-pbf-ipv6-nh-grp-view" prompt="${SYSTEM_NAME}(config-pbf-ipv6-nh-group)# " depth="2">
+
+        <COMMAND name="show configuration" help="Shows current pbf ipv6 next-hop group configurations">
+            <ACTION builtin="clish_pyobj">show_config_fbs show_running_next_hop_group_by_name ${fbs-nh-grp-name}</ACTION>
+            <DOCGEN>
+              <DESCRIPTION>
+                 Shows current pbf ipv6 next-hop group configuration
+              </DESCRIPTION>
+              <USAGE>
+                 Use this command to display running configurations within current pbf ipv6 next-hop group configuration 
+              </USAGE>
+              <EXAMPLE summary="show configuration" >
+                 sonic(config)# pbf next-hop-group test type ipv6 
+                 sonic(config-pbf-ipv6-nh-group)# show configuration
+                 !
+                 pbf next-hop-group test type ipv6 
+              </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
         <COMMAND name="no" help="Negate a command or set its defaults"/>
         <MACRO name="FBS-NEXT-HOP-GROUP-CLIS" arg="IPv6,IPV6_ADDR" />
     </VIEW>
