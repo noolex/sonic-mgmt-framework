@@ -769,19 +769,29 @@ def invoke_api(func, args=[]):
         sratupmetricval = ""
 
         i = 0
+        body = {}
         for arg in args:
             if (arg == "administrative"):
-                metrictypeadmin = "administrative:"
-            if (arg == "on-startup"):
-                sratupmetricval = args[i + 1]
-            i = i +1
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:administrative": True}}}}
+            elif (arg == "on-startup"):
+                timervalue = args[i + 1]
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:on-startup": int(timervalue)} }}}
+            elif (arg == "all"):
+                if i + 1 < len(args) :
+                    maxmetricvalue = args[i + 1]
+                else :
+                    maxmetricvalue = '16777215'
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:router-lsa-all": int(maxmetricvalue) } }}}
+            elif (arg == "include-stub"):
+                if i + 1 < len(args) :
+                    maxmetricvalue = args[i + 1]
+                else :
+                    maxmetricvalue = '16777215'
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:router-lsa-stub": int(maxmetricvalue) }}}}
 
-        if (metrictypeadmin != ""):
-            body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:administrative": True}}}}
-            return patch_ospf_router_global_config(api, args[0], body)
-        else:
-            body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:on-startup": int(sratupmetricval)} }}}
-            return patch_ospf_router_global_config(api, args[0], body)
+            i = i + 1
+            if len(body) :
+                return patch_ospf_router_global_config(api, args[0], body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config':
         vrf = args[0]
@@ -789,12 +799,13 @@ def invoke_api(func, args=[]):
 
         for arg in args:
             if (arg == "administrative"):
-                metrictypeadmin = "administrative:"
-
-        if (metrictypeadmin != ""):
-            return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:administrative')
-        else:
-            return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:on-startup')
+                return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:administrative')
+            elif (arg == "on-startup"):
+                return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:on-startup')
+            elif (arg == "all"):
+                return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:router-lsa-all')
+            elif (arg == "include-stub"):
+                return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:router-lsa-stub')
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_refresh_timer':
         body = { "timers" : { "lsa-generation" : { "config" : {"openconfig-ospfv2-ext:refresh-timer": int(args[1])}}}}
