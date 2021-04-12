@@ -65,7 +65,9 @@ if [ -z $YANG_MODELS_PATH ]; then
     pushd $YANG_MODELS_PATH > /dev/null
     MGMT_COMN=$(realpath --relative-to=$PWD $MGMT_COMMON_DIR)
     rm -f *
-    find $MGMT_COMN/models/yang -name "*.yang" -not -path "*/testdata/*" -exec ln -sf {} \;
+    find $MGMT_COMN/models/yang/sonic -name "*.yang" -exec ln -sf {} \;
+    find $MGMT_COMN/models/yang/annotations -name "*.yang" -exec ln -sf {} \;
+    find $MGMT_COMN/build/yang -name "*.yang" -exec ln -sf {} \;
     ln -sf $MGMT_COMN/models/yang/version.xml
     ln -sf $MGMT_COMN/config/transformer/models_list
     ln -sf $MGMT_COMN/config/transformer/sonic_table_info.json
