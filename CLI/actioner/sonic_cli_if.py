@@ -127,7 +127,7 @@ def build_relay_address_info (args):
                             output[intfName] = relay_addresses
         except  Exception as e:
             log.syslog(log.LOG_ERR, str(e))
-            print "%Error: Internal error"
+            print("%Error: Internal error")
     return output
 
 def invoke_api(func, args=[]):
@@ -1065,7 +1065,7 @@ def run(func, args):
                 show_cli_output(args[0], api_response)
 
         else:
-            print response.error_message()
+            print(response.error_message())
             return 1
 
     except Exception as e:

@@ -80,7 +80,7 @@ def build_helper_counters_info ():
             output[intfName] = intf
     except  Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "%Error: Internal error"
+        print("%Error: Internal error")
     return output
 
 def build_helper_address_info ():
@@ -119,7 +119,7 @@ def build_helper_address_info ():
                 output[intfName] = helper_addresses
         except  Exception as e:
             log.syslog(log.LOG_ERR, str(e))
-            print "%Error: Internal error"
+            print("%Error: Internal error")
     return output
 
 def invoke_api(func, args=[]):

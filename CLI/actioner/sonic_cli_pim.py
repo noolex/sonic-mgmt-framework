@@ -450,7 +450,7 @@ def show_topology_src_info(response):
 
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "% Error: Internal error"
+        print("% Error: Internal error")
 
 def show_topology_info(response):
     outputList = []
@@ -584,7 +584,7 @@ def show_topology_info(response):
 
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "% Error: Internal error"
+        print("% Error: Internal error")
 
 def get_ssm_ranges(response):
     if not response:
