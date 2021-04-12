@@ -769,6 +769,7 @@ def invoke_api(func, args=[]):
         sratupmetricval = ""
 
         i = 0
+        mmtype = ''
         body = {}
         for arg in args:
             if (arg == "administrative"):
@@ -776,18 +777,22 @@ def invoke_api(func, args=[]):
             elif (arg == "on-startup"):
                 timervalue = args[i + 1]
                 body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:on-startup": int(timervalue)} }}}
-            elif (arg == "all"):
-                if i + 1 < len(args) :
-                    maxmetricvalue = args[i + 1]
-                else :
-                    maxmetricvalue = '16777215'
+            elif (arg == "router-lsa"):
+                mmtype = 'router-lsa'
+            elif (arg == "external-lsa"):
+                mmtype = 'external-lsa'
+            elif (mmtype == 'router-lsa' and arg == "all"):
+                maxmetricvalue = args[i + 1] if i + 1 < len(args) else '16777215'
                 body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:router-lsa-all": int(maxmetricvalue) } }}}
-            elif (arg == "include-stub"):
-                if i + 1 < len(args) :
-                    maxmetricvalue = args[i + 1]
-                else :
-                    maxmetricvalue = '16777215'
-                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:router-lsa-stub": int(maxmetricvalue) }}}}
+            elif (mmtype == 'router-lsa' and arg == "include-stub"):
+                maxmetricvalue = args[i + 1] if i + 1 < len(args) else '16777215'
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:router-lsa-stub": int(maxmetricvalue) } }}}
+            elif (mmtype == 'external-lsa' and arg == "all"):
+                maxmetricvalue = args[i + 1] if i + 1 < len(args) else '16777215'
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:external-lsa-all": int(maxmetricvalue) } }}}
+            elif (mmtype == 'external-lsa' and arg == "connected"):
+                maxmetricvalue = args[i + 1] if i + 1 < len(args) else '16777215'
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:external-lsa-connected": int(maxmetricvalue) } }}}
 
             i = i + 1
             if len(body) :
@@ -797,15 +802,24 @@ def invoke_api(func, args=[]):
         vrf = args[0]
         metrictypeadmin = ""
 
+        mmtype = ''
         for arg in args:
             if (arg == "administrative"):
                 return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:administrative')
             elif (arg == "on-startup"):
                 return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:on-startup')
-            elif (arg == "all"):
+            elif (arg == "router-lsa"):
+                mmtype = 'router-lsa'
+            elif (arg == "external-lsa"):
+                mmtype = 'external-lsa'
+            elif (mmtype == 'router-lsa' and arg == "all"):
                 return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:router-lsa-all')
-            elif (arg == "include-stub"):
+            elif (mmtype == 'router-lsa' and arg == "include-stub"):
                 return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:router-lsa-stub')
+            elif (mmtype == 'external-lsa' and arg == "all"):
+                return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:external-lsa-all')
+            elif (mmtype == 'external-lsa' and arg == "connected"):
+                return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:external-lsa-connected')
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_refresh_timer':
         body = { "timers" : { "lsa-generation" : { "config" : {"openconfig-ospfv2-ext:refresh-timer": int(args[1])}}}}
