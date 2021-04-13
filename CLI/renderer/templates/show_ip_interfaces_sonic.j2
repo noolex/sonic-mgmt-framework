@@ -83,7 +83,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
                     {% if sagvars.update({'flags':"A"}) -%}{% endif -%}
                 {% endif -%}
             {% endif -%}
-            {% if "v4GwIp" in sagIntf or "v6GwIp" in sagIntf -%}       
+            {% if "v4GwIp" in sagIntf and sagIntf["v4GwIp"][0]|length > 1 or "v6GwIp" in sagIntf and sagIntf["v6GwIp"][0]|length > 1 -%}       
 {{'%-20s'|format(sagvars.name)}}{{'%-35s'|format(sagvars.ipv4_src_pfx[0])}}{{'%-15s'|format(sagvars.vrf)}}{{'%-15s'|format(sagvars.admin_oper)}}{{'%-15s'|format(sagvars.flags)}}
             {% if sagvars.ipv4_src_pfx|length > 1 -%}
                 {% for pfx in sagvars.ipv4_src_pfx[1:] %}
