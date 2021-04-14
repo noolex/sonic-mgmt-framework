@@ -364,13 +364,14 @@ Before each command articulation, a comment is shown with the desired command sy
 ========================================================================= -->
   <COMMAND name="snmp-server community" help="Configure SNMP community"
            command_tables="sonic-snmp:sonic-snmp/SNMP_SERVER_COMMUNITY/"
+           escape_chars=""
            render_command_cb="snmp_community">
-    <PARAM name="community-name" help="Unique SNMP community name" ptype="SNMP_IDENTIFIER">
+    <PARAM name="community-name" help="Unique SNMP community name (4-32 chars: except space, comma and @)" ptype="SNMP_COMMUNITY_TYPE">
       <PARAM name="group" help="Configure community group" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name="group-name" help="SNMP community group" ptype="SNMP_IDENTIFIER" />
       </PARAM>
     </PARAM>
-    <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_community_add  ${community-name}  ${group-name}</ACTION>
+    <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_community_add  ${#community-name}  ${group-name}</ACTION>
     <DOCGEN>
       <DESCRIPTION>
         Configure one or more SNMP communities and optionally associate them with a group.
@@ -557,7 +558,7 @@ Before each command articulation, a comment is shown with the desired command sy
     note: SNMPv1 support is disabled in SONiC including traps
 ========================================================================= -->
         <PARAM name="community" help="Community for v2c" ptype="SUBCOMMAND"  mode="subcommand">
-          <PARAM name="community-name" help="Unique SNMP community name" ptype="SNMP_IDENTIFIER">
+          <PARAM name="community-name" help="Unique SNMP community name (4-32 chars: except space, comma and @)" ptype="SNMP_COMMUNITY_TYPE">
             <PARAM name="trap-or-inform" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
               <PARAM name="traps" help="Specify traps" ptype="SUBCOMMAND" mode="subcommand">
 <!--============= SNMP v1 is not currently supported ===============================
@@ -760,7 +761,7 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
       no snmp-server community  "community name"
 ========================================================================= -->
   <COMMAND name="no snmp-server community" help="Remove SNMP community" ptype="SUBCOMMAND" mode="subcommand">
-    <PARAM name="community-name" help="SNMP community to remove" ptype="SNMP_IDENTIFIER"/>
+    <PARAM name="community-name" help="SNMP community to remove" ptype="SNMP_COMMUNITY_TYPE"/>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_community_delete  ${community-name}</ACTION>
     <DOCGEN>
       <DESCRIPTION>

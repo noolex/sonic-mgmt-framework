@@ -18,6 +18,12 @@ Copyright 2020 Broadcom, Inc.
         />
     <!--=======================================================-->
     <PTYPE
+        name="SNMP_COMMUNITY_TYPE"
+        pattern="(^(([^ @,]){4,32})$)"
+        help="WORD"
+    />
+<!--=======================================================-->
+    <PTYPE
         name="STRING_255"
         pattern="(^([a-zA-Z0-9_-]){0,255})$"
         help="String(Max: 255 characters)"
