@@ -15,7 +15,7 @@
 {% endif %}
 {% endfor %}
 
-{% for nvo_list in  json_output['sonic-vxlan:EVPN_NVO_LIST'] %}
+{% for nvo_list in  json_output['sonic-vxlan:VXLAN_EVPN_NVO_LIST'] %}
 {{'EVPN NVO Name    : '}} {{(nvo_list.name|string).ljust(8)}}
 {{'EVPN VTEP        : '}} {{(nvo_list.source_vtep|string).ljust(8)}}
 {% endfor %}
