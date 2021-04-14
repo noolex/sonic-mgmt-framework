@@ -77,7 +77,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
                 {% if "vrf" in sagIntf and sagIntf["vrf"] != 'default' -%}
                     {% if sagvars.update({'vrf':sagIntf["vrf"]}) -%}{% endif -%}
                 {% endif -%}
-                {% set admin_op = sagvars.admin_state|string() + "/" + sagvars.oper_state|string() -%}
+                {% set admin_op = sagvars.oper_state|string() + "/" + sagvars.oper_state|string() -%}
                 {% if sagvars.update({'admin_oper':admin_op}) -%}{% endif -%}     
                 {% if "mode" in sagIntf and sagIntf["mode"] == "sag" -%}
                     {% if sagvars.update({'flags':"A"}) -%}{% endif -%}
