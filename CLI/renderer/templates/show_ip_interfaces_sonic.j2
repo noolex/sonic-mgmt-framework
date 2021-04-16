@@ -207,7 +207,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
                             {% if "oper_status" in vlan %}
                                 {% if vars.update({'oper_state':vlan["oper_status"]}) %}{% endif %}
                             {% endif %}
-                            {% set admin_op = vars.admin_state + "/" + vars.oper_state|string() %}
+                            {% set admin_op = vars.oper_state + "/" + vars.oper_state|string() %}
                             {% if vars.update({'admin_oper':admin_op}) %}{% endif %}
                         {% endif -%}
                     {% endfor -%}
