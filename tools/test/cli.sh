@@ -65,10 +65,10 @@ export PYTHONPATH
 
 # KLISH_BIN can be set to use klish exe and libs from other directory
 if [[ -z ${KLISH_BIN} ]]; then
-    if [[ -f ${CLIBUILD}/clish ]]; then
-        KLISH_BIN=${CLIBUILD}
-    elif [[ -f ${BUILDDIR}/target/clish ]]; then
+    if [[ -f ${BUILDDIR}/target/clish ]]; then
         KLISH_BIN=${BUILDDIR}/target
+    elif [[ -f ${CLIBUILD}/clish ]]; then
+        KLISH_BIN=${CLIBUILD}
     else
         echo "Error: could not locate clish."
         exit 1
