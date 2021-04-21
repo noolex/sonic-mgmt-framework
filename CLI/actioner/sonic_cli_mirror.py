@@ -160,7 +160,10 @@ def show(args):
     final_dict = {}
     final_dict['session_list'] = session_list
     final_dict['session_status'] = session_status
-    show_cli_output(args.renderer, final_dict)
+    if session_list and session_status:
+        show_cli_output(args.renderer, final_dict)
+    else:
+        print("No sessions configured")
     return
 
 
