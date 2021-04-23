@@ -8,6 +8,32 @@
 
 {% for ifName in json_output %}
 
+{% set hi_cfg = False %}
+{% set hi_sta = False %}
+
+{% set ho_cfg = False %}
+{% set ho_sta = False %}
+
+{% set mi_cfg = False %}
+{% set mi_sta = False %}
+
+{% set mo_cfg = False %}
+{% set mo_sta = False %}
+
+{% set ch_cfg = False %}
+{% set ch_sta = False %}
+
+{% set gh_cfg = False %}
+{% set gh_sta = False %}
+
+{% set cm_cfg = False %}
+{% set cm_sta = False %}
+
+{% set gm_cfg = False %}
+{% set gm_sta = False %}
+
+{% if 'loopbacks' in json_output[ifName] %}
+
 {% set data = json_output[ifName]['loopbacks'] %}
 
 {% set hi_cfg = data['config'].get('lb-host-input-enabled') %}
@@ -36,6 +62,8 @@
 
 {% set host  = json_output[ifName]['reports']['host']['state'] %}
 {% set media = json_output[ifName]['reports']['media']['state'] %}
+
+{% endif %}
 
 {{'| '}}{{ifName.ljust(19)}}{{'|'}}{{("E" if hi_sta else " ").rjust(3)}}{{("E" if ho_sta else " ").rjust(3)}}{{("E" if mi_sta else " ").rjust(3)}}{{("E" if mo_sta else " ").rjust(3)}}{{' |'}}{{("E" if ch_sta else " ").rjust(3)}}{{("E" if cm_sta else " ").rjust(3)}}{{("E" if gh_sta else " ").rjust(3)}}{{("E" if gm_sta else " ").rjust(3)}}{{' |'}}
 
