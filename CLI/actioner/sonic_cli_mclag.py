@@ -354,7 +354,7 @@ def mclag_get_ethernet_if_oper_status(if_name):
 
 
 def mclag_get_remote_if_oper_status(if_name, remote_if_list):
-    if_oper_status = "down"
+    if_oper_status = "unknown"
 
     for list_item in remote_if_list:
         if list_item["if_name"] == if_name:
