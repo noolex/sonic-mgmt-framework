@@ -7,6 +7,9 @@
 {{'--------------------------------------------------------'}}
 {{ifName.ljust(20)}}
 {{'--------------------------------------------------------'}}
+
+{% if 'capabilities' in json_output[ifName] %}
+
 {{"Loopback Capabilities"}}
 
 {% set data = json_output[ifName]['capabilities']['state']['loopback'] %}
@@ -215,5 +218,6 @@
 {% set data = json_output[ifName]['capabilities']['state']['pattern-gen-media'] %}
 {{"    Media Side Pattern Generator".ljust(48)}}:  {{data}}
 
+{% endif %}
 {% endfor %}
 {% endif %}

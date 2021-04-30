@@ -9,9 +9,9 @@ SSM group range: {{output}}
 
 {% if cmd == 'show_neighbor' %}
 PIM neighbor information for VRF: {{vrf}}
-{{'Interface'.ljust(23)}}{{'Neighbor'.ljust(18)}}{{'Uptime'.ljust(15)}}{{'Expirytime'.ljust(15)}}{{'DR-Priority'.ljust(10)}}
+{{'Interface'.ljust(23)}}{{'Neighbor'.ljust(18)}}{{'Uptime'.ljust(15)}}{{'Expirytime'.ljust(15)}}{{'DR-Priority'.ljust(18)}}{{'BFD-State'.ljust(15)}}
 {% for entry in output %}
-{{(entry['intfId'] | string).ljust(23)}}{{(entry['rcvdNbr'] | string).ljust(18)}}{{(entry['upTime'] | string).ljust(15)}}{{(entry['expiryTime'] | string).ljust(15)}}{{(entry['pimDrPrio'] | string).ljust(10)}}
+{{(entry['intfId'] | string).ljust(23)}}{{(entry['rcvdNbr'] | string).ljust(18)}}{{(entry['upTime'] | string).ljust(15)}}{{(entry['expiryTime'] | string).ljust(15)}}{{(entry['pimDrPrio'] | string).ljust(18)}}{{(entry['pimNbrBfdState'] | string).ljust(15)}}
 {% endfor %}
 {% endif %}
 
