@@ -55,6 +55,11 @@ def show_running_fbs_classifier(render_tables):
                 if match_type == 'fields':
                     fields_str = 'match-all'
                 cmd_str += 'class-map {} match-type {} {};'.format(class_name, match_type, fields_str)
+                if 'DESCRIPTION' in class_data.keys() and class_data['DESCRIPTION'] != "":
+                    if ' ' in class_data['DESCRIPTION']:
+                        cmd_str += ' description "{}";'.format(class_data['DESCRIPTION'])
+                    else:
+                        cmd_str += ' description {};'.format(class_data['DESCRIPTION'])
                 if match_type == 'copp':
                     if 'TRAP_IDS' in class_data.keys():
                         trap_id_list = class_data['TRAP_IDS'].split(',')

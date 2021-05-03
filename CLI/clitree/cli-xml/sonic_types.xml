@@ -664,7 +664,7 @@ limitations under the License.
     <PTYPE
         name="STRING_24"
         pattern="(^([a-zA-Z0-9_-]){1,24})$"
-        help="String(Max: 20 characters)"
+        help="String(Max: 24 characters)"
         />
     <!--=======================================================-->
     <PTYPE

@@ -117,6 +117,34 @@ def show_router_ospf_config(render_tables):
         match_value = { 'BRIEF' : '', 'DETAIL' : 'detail' }
         cmd_str += ospf_generate_command(tbl_rec, 'log-adjacency-changes', ' log-adjacency-changes', match_value=match_value)
 
+        mmrlsa_all_p, _, mmrlsa_all_v = ospf_get_key_value(tbl_rec, 'max-metric-router-lsa-all')
+        if mmrlsa_all_p == True :
+            if mmrlsa_all_v == 16777215 :
+                cmd_str += ' max-metric router-lsa all ;'
+            else :
+                cmd_str += ' max-metric router-lsa all {} ;'.format(mmrlsa_all_v)
+
+        mmrlsa_stb_p, _, mmrlsa_stb_v = ospf_get_key_value(tbl_rec, 'max-metric-router-lsa-stub')
+        if mmrlsa_stb_p == True :
+            if mmrlsa_stb_v == 16777215 :
+                cmd_str += ' max-metric router-lsa include-stub ;'
+            else :
+                cmd_str += ' max-metric router-lsa include-stub {} ;'.format(mmrlsa_stb_v)
+
+        mmelsa_all_p, _, mmelsa_all_v = ospf_get_key_value(tbl_rec, 'max-metric-external-lsa-all')
+        if mmelsa_all_p == True :
+            if mmelsa_all_v == 16777215 :
+                cmd_str += ' max-metric router-lsa external-lsa all ;'
+            else :
+                cmd_str += ' max-metric router-lsa external-lsa all {} ;'.format(mmelsa_all_v)
+
+        mmelsa_ctd_p, _, mmelsa_ctd_v = ospf_get_key_value(tbl_rec, 'max-metric-external-lsa-connected')
+        if mmelsa_ctd_p == True :
+            if mmelsa_ctd_v == 16777215 :
+                cmd_str += ' max-metric router-lsa external-lsa connected ;'
+            else :
+                cmd_str += ' max-metric router-lsa external-lsa connected {} ;'.format(mmelsa_ctd_v)
+
         match_value = { True : 'administrative' }
         cmd_str += ospf_generate_command(tbl_rec, 'max-metric-administrative', ' max-metric router-lsa', match_value=match_value)
         cmd_str += ospf_generate_command(tbl_rec, 'max-metric-on-shutdown', ' max-metric router-lsa on-shutdown')
