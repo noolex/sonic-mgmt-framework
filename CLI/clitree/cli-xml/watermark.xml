@@ -26,7 +26,7 @@ limitations under the License.
 <VIEW name="enable-view">
 <COMMAND
         name="show watermark"
-        help="show watermark commands"/>
+        help="Show watermark commands"/>
 	<COMMAND name="show watermark interval" help="Show watermark snapshot interval" ptype="SUBCOMMAND" mode="subcommand">
 	<ACTION builtin="clish_pyobj">sonic_cli_watermark get_list_sonic_watermark_sonic_watermark_snapshot_table_snapshot_table_list ${__full_line}</ACTION>
         <DOCGEN>

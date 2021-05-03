@@ -52,12 +52,12 @@
         command_tables="sonic-device-metadata:sonic-device-metadata/DEVICE_METADATA/DEVICE_METADATA_LIST/name={name}"
         help="Modify factory default configuration">
         <PARAM name="default"
-               help="Configures factory default configuration profile"
+               help="Configure factory default configuration profile"
                mode="subcommand"
                ptype="SUBCOMMAND">
         </PARAM>
         <PARAM name="profile"
-               help="Configures factory default configuration profile"
+               help="Configure factory default configuration profile"
                mode="subcommand"
                ptype="SUBCOMMAND">
         </PARAM>

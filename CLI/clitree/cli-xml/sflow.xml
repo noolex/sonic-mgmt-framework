@@ -118,7 +118,7 @@ limitations under the License.
     <COMMAND name="sflow agent-id" help="Collector agent interface" ptype="SUBCOMMAND" mode="subcommand" command_keys="sflow_key=global" command_tables="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/sflow_key={sflow_key}" render_command_cb="sflow_source_if">
       <PARAM name="if-switch" help="agent interface" mode="switch" ptype="STRING">
         <PARAM name="phy-if-name" help="Physical interface" ptype="PHY_INTERFACE"/>
-        <PARAM name="vlan-if-name" help="Vlan indentifer" ptype="VLAN_INTERFACE"/>
+        <PARAM name="vlan-if-name" help="VLAN indentifer" ptype="VLAN_INTERFACE"/>
         <PARAM name="loop-if-name" help="Loopback identifier" ptype="LOOPBACK_INTERFACE"/>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id ${phy-if-name}${vlan-if-name}${loop-if-name}</ACTION>

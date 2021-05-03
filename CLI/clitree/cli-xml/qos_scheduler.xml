@@ -67,7 +67,7 @@ limitations under the License.
         help="false"
         completion="false"
         />
-    <COMMAND name="show configuration" help="show scheduler-policy configuration">
+    <COMMAND name="show configuration" help="Show scheduler-policy configuration">
            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-qos-scheduler-policy view_keys="name=${scheduler_policy_name}" </ACTION>
     </COMMAND>
 
@@ -84,7 +84,7 @@ limitations under the License.
         >
         <PARAM
             name="sequence"
-            help="Queue id: 0-7 for interface queues, 0-47 for CPU queues."
+            help="Queue ID: 0-7 for interface queues, 0-47 for CPU queues."
             ptype="RANGE_0_47">
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler patch_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} ${sequence}
@@ -114,7 +114,7 @@ limitations under the License.
           >
           <PARAM
               name="sequence"
-              help="Queue id: 0-7 for interface queues, 0-47 for CPU queues."
+              help="Queue ID: 0-7 for interface queues, 0-47 for CPU queues."
               ptype="RANGE_0_47">
           </PARAM>
           <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler ${scheduler_policy_name} ${sequence}
@@ -144,14 +144,14 @@ limitations under the License.
         help="false"
         completion="false"
         />
-    <COMMAND name="show configuration" help="show scheduler_policy queue configuration">
+    <COMMAND name="show configuration" help="Show scheduler_policy queue configuration">
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-qos-scheduler-policy-per-queue view_keys="name=${top_scheduler_policy_name}@${scheduler_policy_per_queue_name}" </ACTION>
     </COMMAND>
 
 
         <COMMAND
             name="type"
-            help="scheduler type (strict/dwrr/wrr)"
+            help="Scheduler type (strict/dwrr/wrr)"
             >
             <PARAM
                 name="type"
@@ -169,11 +169,11 @@ limitations under the License.
 
         <COMMAND
             name="weight"
-            help="scheduler weight"
+            help="Scheduler weight"
         >
         <PARAM
             name="weight"
-            help="weight of DWRR"
+            help="Weight of DWRR"
             ptype="RANGE_1_100"
             >
         </PARAM>
@@ -191,7 +191,7 @@ limitations under the License.
 
         <COMMAND
             name="meter-type"
-            help="scheduler meter type (packets/bytes)"
+            help="Scheduler meter type (packets/bytes)"
         >
         <PARAM
             name="meter_type"
@@ -246,7 +246,7 @@ limitations under the License.
         </ACTION>
         </COMMAND>
 
-        <COMMAND name="no cbs" help="delete Committed Burst Size">
+        <COMMAND name="no cbs" help="Delete Committed Burst Size">
         <ACTION builtin="clish_pyobj">sonic_cli_qos_scheduler delete_openconfig_qos_qos_scheduler_policies_scheduler_policy_schedulers_scheduler_two_rate_three_color_config_bc ${top_scheduler_policy_name} ${scheduler_policy_per_queue_name}
         </ACTION>
         </COMMAND>
@@ -306,7 +306,7 @@ limitations under the License.
         help="false"
         completion="false"
         />
-    <COMMAND name="show configuration" help="show scheduler_policy port configuration" >
+    <COMMAND name="show configuration" help="Show scheduler_policy port configuration" >
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-qos-scheduler-policy-per-port view_keys="name=${top_scheduler_policy_name}@255" </ACTION>
     </COMMAND>
 

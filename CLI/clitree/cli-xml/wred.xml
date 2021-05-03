@@ -115,7 +115,7 @@
         help="false"
         completion="false"
         />
-        <COMMAND name="show configuration" help="show wred-policy configuration">
+        <COMMAND name="show configuration" help="Show wred-policy configuration">
            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-wred view_keys="wname=${prof_id}" </ACTION>
         </COMMAND>
         <COMMAND

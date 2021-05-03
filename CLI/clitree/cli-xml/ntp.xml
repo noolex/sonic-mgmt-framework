@@ -50,10 +50,10 @@ limitations under the License.
   <VIEW name="enable-view">
 
     <COMMAND name="show ntp" 
-             help="Display NTP information"/>
+             help="Show NTP information"/>
 
     <COMMAND name="show ntp global" 
-             help="Display NTP global configuration" 
+             help="Show NTP global configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <ACTION
@@ -79,7 +79,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="show ntp server" 
-             help="Display NTP server configuration" 
+             help="Show NTP server configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <ACTION
@@ -104,7 +104,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="show ntp associations" 
-             help="Display NTP associations" 
+             help="Show NTP associations" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <ACTION
@@ -144,7 +144,7 @@ limitations under the License.
 
     <!-- NTP authenticate configuration commands -->
     <COMMAND name="ntp authenticate"
-             help="Enables NTP authentication"
+             help="Enable NTP authentication"
              mode="subcommand"
              command_keys="global_key=global"
              command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
@@ -409,7 +409,7 @@ limitations under the License.
                mode="subcommand">
         </PARAM>
         <PARAM name="Vlan"
-               help="Vlan interface"
+               help="VLAN interface"
                ptype="VLAN_INTERFACE"
                mode="subcommand">
         </PARAM>
@@ -473,7 +473,7 @@ limitations under the License.
                mode="subcommand">
         </PARAM>
         <PARAM name="Vlan"
-               help="Vlan interface"
+               help="VLAN interface"
                ptype="VLAN_INTERFACE"
                mode="subcommand">
         </PARAM>

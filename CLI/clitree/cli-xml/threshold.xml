@@ -10,7 +10,7 @@
    <VIEW name="enable-view">
    <COMMAND
         name="show threshold"
-        help="show threshold commands"/>
+        help="Show threshold commands"/>
    <COMMAND
 	name="show threshold breaches"
 	help="Show threshold breach entries"
@@ -38,17 +38,17 @@
       <ACTION builtin="clish_pyobj">sonic_cli_threshold get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list ${__full_line}</ACTION>
     </COMMAND>
     <COMMAND name="show threshold priority-group" help="Show priority-group threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
-      <PARAM name="threshold_buffer_type" help="choose from shared, headroom." mode="switch" ptype="SUBCOMMAND">
-        <PARAM name="headroom" help="choose headroom as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
-        <PARAM name="shared" help="choose shared as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+      <PARAM name="threshold_buffer_type" help="Choose from shared, headroom." mode="switch" ptype="SUBCOMMAND">
+        <PARAM name="headroom" help="Choose headroom as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+        <PARAM name="shared" help="Choose shared as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_threshold get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}</ACTION>
     </COMMAND>
     <COMMAND name="show threshold queue" help="Show queue threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
-      <PARAM name="queue_buffer_type" help="choose from unicast/multicast as queue buffer type" mode="switch" ptype="SUBCOMMAND">
-        <PARAM name="CPU" help="choose threshold cpu queue" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
-        <PARAM name="multicast" help="choose multicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
-        <PARAM name="unicast" help="choose unicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+      <PARAM name="queue_buffer_type" help="Choose from unicast/multicast as queue buffer type" mode="switch" ptype="SUBCOMMAND">
+        <PARAM name="CPU" help="Choose threshold cpu queue" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+        <PARAM name="multicast" help="Choose multicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+        <PARAM name="unicast" help="Choose unicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_threshold get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}</ACTION>
     </COMMAND>
@@ -98,9 +98,9 @@
 
 	<COMMAND name="clear buffer_pool"
                  help="Clear Buffer pool watermark counters">
-		<PARAM name="watermark_type" help="choose from watermark, persistent-watermark." mode="switch" ptype="SUBCOMMAND">
-		<PARAM name="watermark" help="clear user watermark counters" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
-		<PARAM name="persistent-watermark" help="clear persistent-watermark counters" ptype="SUBCOMMAND" mode="subcommand"/> </PARAM>
+		<PARAM name="watermark_type" help="Choose from watermark, persistent-watermark." mode="switch" ptype="SUBCOMMAND">
+		<PARAM name="watermark" help="Clear user watermark counters" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+		<PARAM name="persistent-watermark" help="Clear persistent-watermark counters" ptype="SUBCOMMAND" mode="subcommand"/> </PARAM>
 		<ACTION builtin="clish_pyobj">sonic_cli_threshold rpc_sonic_buffer_pool_clear_buffer_pool_wm_stats ${__params} </ACTION>
                         <DOCGEN>
                         <DESCRIPTION>
@@ -119,26 +119,26 @@
 
     <COMMAND
         name="show buffer_pool"
-        help="show buffer pool watermark commands"
+        help="Show buffer pool watermark commands"
 	>
 	<PARAM name="watermark_type"
-		help="choose from watermark, persistent-watermark."
+		help="Choose from watermark, persistent-watermark."
 		mode="switch"
 		ptype="SUBCOMMAND">
 	<PARAM name="watermark"
-		help="show user watermark counters"
+		help="Show user watermark counters"
 		ptype="SUBCOMMAND"
 		mode="subcommand">
 	</PARAM>
 	<PARAM name="persistent-watermark"
-		help="show persistent-watermark counters"
+		help="Show persistent-watermark counters"
 		ptype="SUBCOMMAND"
 		mode="subcommand">
 	</PARAM>
 	</PARAM>
 	<PARAM
 		name="percentage"
-		help="show watermark couters in percentage"
+		help="Show watermark couters in percentage"
 		ptype="SUBCOMMAND"
 		mode="subcommand"
 		optional="true"
@@ -172,14 +172,14 @@
 		>
                 <PARAM
                     name="buffer_pool_name"
-                    help="configure buffer pool name"
+                    help="Configure buffer pool name"
                     ptype="STRING_63"
 		    dbpath="sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST/pool_name"
                     >
                  </PARAM>
 		<PARAM
                        name="threshold_value"
-                       help="threshold value"
+                       help="Threshold value"
                        ptype="PERCENT_1"
 		       dbpath="sonic-threshold:sonic-threshold/THRESHOLD_BUFFERPOOL_TABLE/THRESHOLD_BUFFERPOOL_TABLE_LIST/threshold"
 		       >
@@ -236,19 +236,19 @@
 		</PARAM>
 		<PARAM
 			name="threshold_buffer_type"
-			help="choose from shared, headroom."
+			help="Choose from shared, headroom."
 			mode="switch"
 			ptype="SUBCOMMAND">
                 <PARAM
                        name="headroom"
-                       help="choose headroom as threshold buffer type"
+                       help="Choose headroom as threshold buffer type"
                        ptype="SUBCOMMAND"
                        mode="subcommand"
                        dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST/threshold_buffer_type=headroom">
 		</PARAM>
 		<PARAM
                        name="shared"
-                       help="choose shared as threshold buffer type"
+                       help="Choose shared as threshold buffer type"
                        ptype="SUBCOMMAND"
                        mode="subcommand"
                        dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST/threshold_buffer_type=shared">
@@ -284,19 +284,19 @@
                 </PARAM>
 	        <PARAM
 			name="queue_buffer_type"
-			help="choose from unicast/multicast as queue buffer type"
+			help="Choose from unicast/multicast as queue buffer type"
 			mode="switch"
 			ptype="SUBCOMMAND">
 		<PARAM
 			name="unicast"
-			help="choose unicast as queue_buffer_type"
+			help="Choose unicast as queue_buffer_type"
 			ptype="SUBCOMMAND"
 			mode="subcommand"
       dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST/threshold_buffer_type=unicast">
 		</PARAM>
 		<PARAM
                        name="multicast"
-                       help="choose multicast as queue_buffer_type"
+                       help="Choose multicast as queue_buffer_type"
                        ptype="SUBCOMMAND"
                        mode="subcommand"
                        dbpath="sonic-threshold:sonic-threshold/THRESHOLD_TABLE/THRESHOLD_TABLE_LIST/threshold_buffer_type=multicast">
@@ -330,7 +330,7 @@
 
 	<!-- no threshold priority-group -->
 	<COMMAND name="no threshold priority-group"
-		help="Clears priority-group buffer threshold."
+		help="Clear priority-group buffer threshold."
 		ptype="SUBCOMMAND"
 		mode="subcommand">
                 <PARAM name="PG-Index" help="PG Index value" ptype="RANGE_0_7"> </PARAM>
@@ -354,7 +354,7 @@
 	</COMMAND>
 	<!-- no threshold queue -->
 	<COMMAND name="no threshold queue"
-             help="Clears queue buffer threshold."
+             help="Clear queue buffer threshold."
              ptype="SUBCOMMAND"
              mode="subcommand">
 		<PARAM name="queue_index" help="queue Index value" ptype="RANGE_0_7"> </PARAM>
@@ -430,7 +430,7 @@
                 mode="subcommand">
 	</COMMAND>
 	<COMMAND name="no threshold queue"
-		help="Clears CPU interface queue buffer threshold."
+		help="Clear CPU interface queue buffer threshold."
 		ptype="SUBCOMMAND"
 		mode="subcommand">
 		<PARAM name="cpu_queue_index" help="cpu_queue index value" ptype="RANGE_0_47"> </PARAM>

@@ -26,17 +26,17 @@ limitations under the License.
     <COMMAND help="Clear logging" name="clear logging">
         <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_clear_logging infra_reboot.j2</ACTION>
     </COMMAND>
-    <COMMAND help="Displays logging information" name="show logging">
+    <COMMAND help="Show logging information" name="show logging">
         <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging tpcm.j2</ACTION>
     </COMMAND>
     <COMMAND help="Output of last NUM lines" name="show logging lines">
         <PARAM name="lines" help="Output of last NUM lines" optional="true" ptype="LOGGING_REMOTE_PORT" default ="0" > </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging tpcm.j2 ${lines} </ACTION>
     </COMMAND>
-    <COMMAND help="total number of logging" name="show logging count">
+    <COMMAND help="Total number of logging" name="show logging count">
         <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging_count infra_reboot.j2</ACTION>
     </COMMAND>
-    <COMMAND name="show logging servers" help="Displays logging server information">
+    <COMMAND name="show logging servers" help="Show logging server information">
       <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging_servers </ACTION>
       <DOCGEN>
         <DESCRIPTION>Shows list of remote syslog servers are configured</DESCRIPTION>
@@ -56,26 +56,26 @@ limitations under the License.
 
   <VIEW name="configure-view">
     <!-- syslog -->
-    <COMMAND name="logging" help="Configures syslog"/>
+    <COMMAND name="logging" help="Configure syslog"/>
 
     <!-- logging server configuration commands -->
     <COMMAND name="logging server"
-      help="Configures remote syslog server"
+      help="Configure remote syslog server"
       command_tables="sonic-system-logging:sonic-system-logging/SYSLOG_SERVER/SYSLOG_SERVER_LIST/ipaddress={address}"
       render_command_cb="logging_server_cmd"
       >
       <PARAM name="host" help="Hostname or IP address of remote syslog server" ptype="DOMAIN_NAME_OR_IPADDR"> </PARAM>
-      <PARAM name="remote-port" help="Configures remote server port" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+      <PARAM name="remote-port" help="Configure remote server port" mode="subcommand" ptype="SUBCOMMAND" optional="true">
         <PARAM name="vrport" help="Port number (default 514)" ptype="LOGGING_REMOTE_PORT"> </PARAM>
       </PARAM>
-      <PARAM name="source-interface" help="Configures source interface" mode="subcommand" ptype="SUBCOMMAND" optional="true">
-        <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
+      <PARAM name="source-interface" help="Configure source interface" mode="subcommand" ptype="SUBCOMMAND" optional="true">
+        <PARAM name="iftype" help="Interface type" mode="switch" ptype="SUBCOMMAND">
           <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
           <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
           <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
           <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
-          <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
-          <PARAM name="SubInterface" help="Vlan interface" ptype="PHY_PO_SUB_INTERFACE" mode="subcommand"/>
+          <PARAM name="Vlan" help="VLAN interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
+          <PARAM name="SubInterface" help="Subinterface" ptype="PHY_PO_SUB_INTERFACE" mode="subcommand"/>
         </PARAM>
       </PARAM>
       <PARAM name="vrf" help="Configures VRF to use for connection" mode="subcommand" ptype="SUBCOMMAND" optional="true">
@@ -103,13 +103,13 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
     <!-- no commands -->
-    <COMMAND name="no logging" help="Unconfigures syslog configuration"/>
-    <COMMAND name="no logging server" help="Unconfigures syslog server configuration">
+    <COMMAND name="no logging" help="Unconfigure syslog configuration"/>
+    <COMMAND name="no logging server" help="Unconfigure syslog server configuration">
       <PARAM name="host" help="Hostname or IP address of remote syslog server" ptype="DOMAIN_NAME_OR_IPADDR"> </PARAM>
       <PARAM name="attribute" help="" ptype="STRING" mode="switch" optional="true">
-        <PARAM name="remote-port" help="Unconfigures syslog server port" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
-        <PARAM name="source-interface" help="Unconfigures source interface" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
-        <PARAM name="vrf" help="Unconfigures VRF to use for connection" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
+        <PARAM name="remote-port" help="Unconfigure syslog server port" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
+        <PARAM name="source-interface" help="Unconfigure source interface" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
+        <PARAM name="vrf" help="Unconfigure VRF to use for connection" mode="subcommand" ptype="SUBCOMMAND"> </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_logging delete_openconfig_system_looging_server_config_host ${host} ${attribute}</ACTION>
       <DOCGEN>

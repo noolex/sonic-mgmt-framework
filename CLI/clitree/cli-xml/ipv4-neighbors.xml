@@ -327,7 +327,7 @@ limitations under the License.
 
 <!-- clear ip arp interface <intf> -->
     <COMMAND
-        help="clear ARP entries for this interface"
+        help="Clear ARP entries for this interface"
         name="clear ip arp interface">
         <PARAM
             name="interface-switch"
@@ -343,7 +343,7 @@ limitations under the License.
             </PARAM>
             <PARAM 
                 name="subif-name"
-                help="Clear Sub interface ARP entries"
+                help="Clear Subinterface ARP entries"
                 ptype="PHY_PO_SUB_INTERFACE"
                 >
             </PARAM>
@@ -361,7 +361,7 @@ limitations under the License.
             </PARAM>
             <PARAM 
                 name="vlan-if-name"
-                help="Clear Vlan interface ARP entries"
+                help="Clear VLAN interface ARP entries"
                 ptype="VLAN_INTERFACE"
                 >
             </PARAM>
@@ -374,7 +374,7 @@ limitations under the License.
 
 <!-- clear ip arp <ip> -->
     <COMMAND
-        help="clear ARP commands"
+        help="Clear ARP commands"
         name="clear ip arp">
         <PARAM
             name="cleararp-subcommands"

@@ -142,10 +142,10 @@ limitations under the License.
 
       <COMMAND
            name="show running-configuration interface Vlan"
-           help="Show interface Vlan info">
+           help="Show interface VLAN info">
             <PARAM
                name="vlan-id"
-               help="Vlan Interface"
+               help="VLAN Interface"
                ptype="VLAN_ID"
                optional="true">
             </PARAM>
@@ -1311,7 +1311,7 @@ limitations under the License.
 
     <COMMAND
            name="mclag-separate-ip"
-           help="Configure separate IP on Vlan interface for L3 protocol support over MCLAG"
+           help="Configure separate IP on VLAN interface for L3 protocol support over MCLAG"
            command_tables="sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST/if_name={name}"
            dbpath="sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST/unique_ip=enable" >
            <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_seperate_ip_list ${vlan_name} </ACTION>
@@ -1330,7 +1330,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
            name="no mclag-separate-ip"
-           help="Unconfigure separate IP on Vlan interface for L3 protocol support over MCLAG" >
+           help="Unconfigure separate IP on VLAN interface for L3 protocol support over MCLAG" >
            <ACTION builtin="clish_pyobj">sonic_cli_mclag delete_sonic_mclag_seperate_ip_list ${vlan_name} </ACTION>
            <DOCGEN>
                <DESCRIPTION>

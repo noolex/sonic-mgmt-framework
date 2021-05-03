@@ -308,7 +308,7 @@ limitations under the License.
             >
             <PARAM
                 name="all"
-                help="clearing dynamic mac address"
+                help="Clear dynamic mac address"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -386,7 +386,7 @@ limitations under the License.
     </COMMAND>
   <COMMAND name="clear mac dampening-disabled-ports" help="Clear MAC dampening disabled ports">
    <PARAM  name="damp-subcommands" help="subcommands" mode="switch" ptype="SUBCOMMAND">
-      <PARAM name="all" help="clearing all mac dampening disabled ports" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="all" help="Clear all mac dampening disabled ports" ptype="SUBCOMMAND" mode="subcommand">
       </PARAM>
       <PARAM name="PORT_ID" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand">
       </PARAM>

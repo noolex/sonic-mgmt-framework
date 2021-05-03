@@ -320,7 +320,7 @@ limitations under the License.
 
 <!-- clear ipv6 neighbors interface <intf> -->
     <COMMAND
-        help="clear NDP entries for this interface"
+        help="Clear NDP entries for this interface"
         name="clear ipv6 neighbors interface">
         <PARAM
             name="interface-switch"
@@ -336,7 +336,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="subif-name"
-                help="Clear Sub interface NDP entries"
+                help="Clear Subinterface NDP entries"
                 ptype="PHY_PO_SUB_INTERFACE"
                 >
             </PARAM>
@@ -354,7 +354,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="vlan-if-name"
-                help="Clear Vlan interface NDP entries"
+                help="Clear VLAN interface NDP entries"
                 ptype="VLAN_INTERFACE"
                 >
             </PARAM>
@@ -366,11 +366,11 @@ limitations under the License.
 
 <!-- clear ipv6 neighbors <ip> -->
     <COMMAND
-        help="clear NDP commands"
+        help="Clear NDP commands"
         name="clear ipv6 neighbors">
         <PARAM
             name="clearneighbors-subcommands"
-            help="clear neighbors subcommands"
+            help="Clear neighbors subcommands"
             mode="switch"
             ptype="SUBCOMMAND"
             optional="true">

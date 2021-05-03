@@ -67,7 +67,7 @@
                 >
                 <PARAM
                     name="udld"
-                    help="Enables error disable for UDLD"
+                    help="Enable error disable for UDLD"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -75,7 +75,7 @@
                 </PARAM>
                 <PARAM
                     name="bpduguard"
-                    help="Enables error disable for STP bpduguard"
+                    help="Enable error disable for STP bpduguard"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -108,7 +108,7 @@
                 >
                 <PARAM
                     name="udld"
-                    help="Disables error disable for UDLD"
+                    help="Disable error disable for UDLD"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -116,7 +116,7 @@
                 </PARAM>
                 <PARAM
                     name="bpduguard"
-                    help="Disables error disable for STP bpduguard"
+                    help="Disable error disable for STP bpduguard"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -140,7 +140,7 @@
         </COMMAND>
 
         <COMMAND name = "errdisable recovery interval"
-            help = "Configures error disable recovery interval"
+            help = "Configure error disable recovery interval"
             command_tables="sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST/id">
             <PARAM
                 name="interval"
@@ -165,7 +165,7 @@
         </COMMAND>
 
         <COMMAND name = "no errdisable recovery interval"
-            help = "Resets error disable recovery interval to default value">
+            help = "Reset error disable recovery interval to default value">
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_interval 300</ACTION>
             <DOCGEN>
                 <DESCRIPTION>

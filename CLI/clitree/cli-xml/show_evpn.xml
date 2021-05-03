@@ -40,7 +40,7 @@ limitations under the License.
   <COMMAND name="show evpn arp-cache" help="ARP and ND cache"/>
   <COMMAND name="show evpn arp-cache vni all" help="All VNIs">
   	<PARAM name="showevpnarpsubcommands" help="false" ptype="SUBCOMMAND" mode="switch" optional="true">
-  		<PARAM name="detail" help="Neighbor details for all vnis in detail" mode="subcommand" ptype="SUBCOMMAND" />
+  		<PARAM name="detail" help="Neighbor details for all VNIs in detail" mode="subcommand" ptype="SUBCOMMAND" />
 	  	<PARAM name="duplicate" help="Duplicate address list" mode="subcommand" ptype="SUBCOMMAND" />
   	</PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
@@ -86,7 +86,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   </COMMAND>
 
-  <COMMAND name="show evpn next-hops" help="Remote Vteps"/>
+  <COMMAND name="show evpn next-hops" help="Remote VTEPs"/>
   <COMMAND name="show evpn next-hops vni all" help="All VNIs">
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   </COMMAND>
