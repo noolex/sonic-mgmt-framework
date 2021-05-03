@@ -299,24 +299,28 @@ limitations under the License.
     <!--============================== INTERFACE ETHERNET MODE COMMANDS ======================-->
     <VIEW name="configure-if-view">
         <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
+        <COMMAND name="no mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE PORTCHANNEL MODE COMMANDS ======================-->
     <VIEW name="configure-lag-view">
         <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
+        <COMMAND name="no mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE VLAN MODE COMMANDS ======================-->
     <VIEW name="configure-vlan-view">
         <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
+        <COMMAND name="no mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== SUB-INTERFACE MODE COMMANDS ======================-->
     <VIEW name="configure-subif-view">
         <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
+        <COMMAND name="no mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 

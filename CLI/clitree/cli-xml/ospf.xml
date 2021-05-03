@@ -742,16 +742,40 @@
   </COMMAND>
 
   <COMMAND name="max-metric" help="Enables infinite metric advertising in OSPFv2 LSAs" >
-    <PARAM name="router-lsa" help="Enables infinite metric on router LSAs" ptype="SUBCOMMAND" mode="subcommand" >
-      <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
-        <PARAM name="administrative" help="Enables administrative type infinite metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+    <PARAM name = "maxmetric" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="router-lsa" help="Enables infinite metric on router LSAs" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name = "rtrlsatype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="administrative" help="Enables administrative type infinite metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
 <!--
-        <PARAM name="on-shutdown" help="Enables infinite metric advertising before OSPFv2 router shutdown" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-          <PARAM name="interdistance" help="Time in seconds to wait till full shutdown" ptype="RANGE_5_100" />
-        </PARAM>
+          <PARAM name="on-shutdown" help="Enables infinite metric advertising before OSPFv2 router shutdown" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name="interdistance" help="Time in seconds to wait till full shutdown" ptype="RANGE_5_100" />
+          </PARAM>
 -->
-        <PARAM name="on-startup" help="Enables infinite metric advertising at OSPFv2 router startup" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
-          <PARAM name="interdistance" help="Duration in seconds to advertise max metric" ptype="RANGE_5_86400" />
+          <PARAM name="on-startup" help="Enables infinite metric advertising at OSPFv2 router startup" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name="onstartuptimervalue" help="Duration in seconds to advertise max metric" ptype="RANGE_5_86400" />
+          </PARAM>
+          <PARAM name="all" help="Enables router LSA all link max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name="maxmetricvalue" help="Max metric value" ptype="RANGE_1_16777215" default="16777215" optional="true"/>
+          </PARAM>
+          <PARAM name="include-stub" help="Enables router LSA stub link max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+            <PARAM name="maxmetricvalue" help="Max metric value" ptype="RANGE_1_16777215" default="16777215" optional="true"/>
+          </PARAM>
+          <PARAM name="external-lsa" help="Enables infinite metric on external LSAs" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+            <PARAM name = "extlsatype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+              <PARAM name="all" help="Enables external LSA all prefix max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="maxmetricvalue" help="Max metric value" ptype="RANGE_1_16777215" default="16777215" optional="true"/>
+              </PARAM>
+              <PARAM name="connected" help="Enables external LSA connected prefix max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+                <PARAM name="maxmetricvalue" help="Max metric value" ptype="RANGE_1_16777215" default="16777215" optional="true"/>
+              </PARAM>
+            </PARAM>
+          </PARAM>
+        </PARAM>
+        <PARAM name="all" help="Enables router LSA all link max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="maxmetricvalue" help="Max metric value" ptype="RANGE_0_16777215" default="16777215" optional="true"/>
+        </PARAM>
+        <PARAM name="include-stub" help="Enables router LSA stub link max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="maxmetricvalue" help="Max metric value" ptype="RANGE_0_16777215" default="16777215" optional="true"/>
         </PARAM>
       </PARAM>
     </PARAM>
@@ -776,13 +800,23 @@
   </COMMAND>
 
   <COMMAND name="no max-metric" help="Disables infinite metric advertising in OSPFv2 LSAs" >
-    <PARAM name="router-lsa" help="Disables infinite metric on router LSAs" ptype="SUBCOMMAND" mode="subcommand" >
-      <PARAM name = "maxmetrictype" help = "" ptype = "SUBCOMMAND" mode="switch" >
-        <PARAM name="administrative" help="Disables administrative type infinite metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+    <PARAM name = "maxmetric" help = "" ptype = "SUBCOMMAND" mode="switch" >
+      <PARAM name="router-lsa" help="Disables infinite metric on router LSAs" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name = "routerlsatype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="administrative" help="Disables administrative type infinite metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
 <!--
-        <PARAM name="on-shutdown" help="Disables infinite metric advertising before OSPFv2 router shutdown" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="on-shutdown" help="Disables infinite metric advertising before OSPFv2 router shutdown" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
 -->
-        <PARAM name="on-startup" help="Disables infinite metric advertising at OSPFv2 router startup" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="on-startup" help="Disables infinite metric advertising at OSPFv2 router startup" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="all" help="Disables router LSA all link max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="include-stub" help="Disables router LSA stub link max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+          <PARAM name="external-lsa" help="Disables infinite metric on external LSAs" ptype="SUBCOMMAND" mode="subcommand" >
+            <PARAM name = "extlsatype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+              <PARAM name="all" help="Disables external LSA all prefix max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+              <PARAM name="connected" help="Disables external LSA connected prefix max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+            </PARAM>
+          </PARAM>
+        </PARAM>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config ${vrf-name} ${__full_line} </ACTION>
