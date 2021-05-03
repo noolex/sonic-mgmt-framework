@@ -7,6 +7,8 @@
 {{'Attribute'.ljust(36)}}:  {{'Value/State'}}
 {{'---------------------------------------------------------------------'}}
 
+{% if 'loopbacks' in json_output[ifName] %}
+
 {{'Loopback'}}
 {% set data = json_output[ifName]['loopbacks'] %}
 
@@ -26,7 +28,12 @@
 {% set sta = data['state'].get('lb-media-output-enabled') %}
 {{"    Media Side Output".ljust(36)}}:  {{"Enabled" if sta else "Disable"}} {{'('}} {{"Enabled" if cfg else "Disable"}} {{'in Config )'}}
 
+{% endif %}
+
 {{' '}}
+
+{% if 'patterns' in json_output[ifName] %}
+
 {{'Pattern Generation and Checking'}}
 {% set data = json_output[ifName]['patterns'] %}
 
@@ -83,6 +90,8 @@
 {{"    Media side SNR6".ljust(36)}}: {{media['snr6']}}
 {{"    Media side SNR7".ljust(36)}}: {{media['snr7']}}
 {{"    Media side SNR8".ljust(36)}}: {{media['snr8']}}
+
+{% endif %}
 
 {% endfor %}
 {% endif %}

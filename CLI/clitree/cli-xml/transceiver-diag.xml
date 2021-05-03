@@ -19,7 +19,7 @@ limitations under the License.
   <VIEW name="configure-view">
     <COMMAND name="interface transceiver" help="Transceiver Configuration"/>
     <COMMAND name="interface transceiver diagnostics" help="Transceiver diagnostics configuration"
-             command_tables="sonic-transceiver-diag:sonic-transceiver-diag/XCVR/XCVR_LIST/ifname={ifname}"
+             command_tables="sonic-transceiver:sonic-transceiver/TRANSCEIVER_DIAG/TRANSCEIVER_DIAG_LIST/ifname={ifname}"
              render_command_cb="xcvr_diag_ctrl">
       <PARAM name="ifcfg-xcvr-diag-subcommands"
              help="Configure transceiver diagnostics subcommands"
