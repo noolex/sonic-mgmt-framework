@@ -305,12 +305,23 @@ def process_nbrs(response, rcvdIntfName, outputList):
         if macAddr is None:
             continue
 
+        nbrType = state.get('origin')
+        if nbrType is None:
+            continue
+
+        remoteVal = state.get('openconfig-interfaces-ext:remote')
+        if remoteVal is None:
+            continue
+
+
         egressPort = get_egress_port(rcvdIntfName, macAddr)
 
         nbrEntry = {'ipAddr':ipaddress.ip_address(ipAddr),
                     'macAddr':macAddr,
                     'intfName':rcvdIntfName,
-                    'egressPort':egressPort
+                    'egressPort':egressPort,
+                    'nbrType':nbrType,
+                    'remoteVal':remoteVal
                     }
 
         if (rcvdMacAddr == macAddr):

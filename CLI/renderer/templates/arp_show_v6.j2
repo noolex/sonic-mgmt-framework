@@ -1,6 +1,11 @@
-{{'-------------------------------------------------------------------------------------------------'}}
-{{'Address'.ljust(40)}}{{'Hardware address'.ljust(20)}}{{'Interface '.ljust(21)}}{{'Egress Interface'}}
-{{'-------------------------------------------------------------------------------------------------'}}
+{{'Type: R - Remote Neighbor entries (EVPN or MCLAG)'}}
+{{'---------------------------------------------------------------------------------------------------------------'}}
+{{'Address'.ljust(40)}}{{'Hardware address'.ljust(20)}}{{'Interface '.ljust(21)}}{{'Egress Interface'.ljust(20)}}{{'Type'}}
+{{'---------------------------------------------------------------------------------------------------------------'}}
 {% for neigh_list in json_output %}
-{{(neigh_list['ipAddr'] | string).ljust(40)}}{{(neigh_list['macAddr'] | string).ljust(20)}}{{(neigh_list['intfName'] | string).ljust(21)}}{{(neigh_list['egressPort'] | string).ljust(20)}}
+{% if neigh_list['remoteVal'] == 1 %}
+{{(neigh_list['ipAddr'] | string).ljust(40)}}{{(neigh_list['macAddr'] | string).ljust(20)}}{{(neigh_list['intfName'] | string).ljust(21)}}{{(neigh_list['egressPort'] | string).ljust(20)}}{{((neigh_list['nbrType'] | string | capitalize) + '(R)').ljust(20)}}
+{% else %}
+{{(neigh_list['ipAddr'] | string).ljust(40)}}{{(neigh_list['macAddr'] | string).ljust(20)}}{{(neigh_list['intfName'] | string).ljust(21)}}{{(neigh_list['egressPort'] | string).ljust(20)}}{{((neigh_list['nbrType'] | string | capitalize)).ljust(20)}}
+{% endif %}
 {% endfor %}
