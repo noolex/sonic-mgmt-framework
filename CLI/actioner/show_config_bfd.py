@@ -16,28 +16,28 @@ def bfd_get_key_value(in_map, key_name) :
     return True, in_map[key_name]
 '''
 
-def bfd_get_key_values(in_map) :
-    if in_map == None :
+def bfd_get_key_values(in_map):
+    if in_map == None:
         return False
     return True, in_map["remote-address"], in_map["interface"], in_map["vrf"], in_map["local-address"]
 
-def bfd_generate_command(in_map, key_name, cmd_prefix, match_value={}, cmd_suffix=' ;', default='') :
+def bfd_generate_command(in_map, key_name, cmd_prefix, match_value={}, cmd_suffix=' ;', default=''):
     cmd_str = ''
 
-    if in_map == None :
+    if in_map == None:
         return ''
-    if key_name == None or key_name == '' :
+    if key_name == None or key_name == '':
         return ''
 
-    if key_name in in_map :
-        if len(match_value) :
-            for key, value in match_value.items() :
-                if in_map[key_name] == key :
-                    if value != '' :
+    if key_name in in_map:
+        if len(match_value):
+            for key, value in list(match_value.items()):
+                if in_map[key_name] == key:
+                    if value != '':
                         cmd_str = '{} {} {}'.format(cmd_prefix, value, cmd_suffix)
-                    else :
+                    else:
                         cmd_str = '{} {}'.format(cmd_prefix, cmd_suffix)
-        else :
+        else:
             value = in_map[key_name]
             if ((default != '') and (value != default)):
                 cmd_str = '{} {} {}'.format(cmd_prefix, value, cmd_suffix)
@@ -53,13 +53,13 @@ def bfd_generate_peer_view_cmd(rec, cmd_prefix):
     default_value = 50
     cmd_str += bfd_generate_command(rec, 'desired-minimum-echo-receive', cmd_prefix + 'echo-interval', default=default_value)
 
-    match_value = { True : '' }
+    match_value = {True:''}
     cmd_str += bfd_generate_command(rec, 'echo-active', cmd_prefix + 'echo-mode', match_value=match_value)
 
     default_value = 300
     cmd_str += bfd_generate_command(rec, 'required-minimum-receive', cmd_prefix + 'receive-interval', default=default_value)
 
-    match_value = { False : '' }
+    match_value = {False:''}
     cmd_str += bfd_generate_command(rec, 'enabled', cmd_prefix + 'shutdown', match_value=match_value)
 
     default_value = 300
@@ -187,7 +187,7 @@ def show_bfd_config(render_tables):
     if (mhop_tbl_path in render_tables):
         mhop_record = True
         mhop_record_list = render_tables[mhop_tbl_path]
-        if not isinstance(mhop_record_list, list) :
+        if not isinstance(mhop_record_list, list):
             mhop_record_list = [mhop_record_list]
 
     if (shop_record == False and mhop_record == False):
