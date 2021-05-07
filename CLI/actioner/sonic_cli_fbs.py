@@ -848,7 +848,7 @@ def clear_details_by_policy(args):
         body["sonic-flow-based-services:input"]["POLICY_NAME"] = args[0]
     if len(args) > 1:
         if args[1] == "interface":
-            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2] + args[3]
+            body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[2]
         else:
             body["sonic-flow-based-services:input"]["INTERFACE_NAME"] = args[1]
 
