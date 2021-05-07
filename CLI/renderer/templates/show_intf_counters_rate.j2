@@ -32,13 +32,13 @@
                     {% endif %}
                     {% if 'counters' in state %}
                         {% set counters = state['counters'] %}
-                        {% if vars.update({'in_MBPS':interface["state"]["counters"]["in-octets-per-second"]|float / 1000}) %}{% endif %}
+                        {% if vars.update({'in_MBPS':interface["state"]["counters"]["in-octets-per-second"]|float / 1000000}) %}{% endif %}
                         {% if vars.update({'in_PPS':interface["state"]["counters"]["in-pkts-per-second"]}) %}{% endif %}
-                        {% if vars.update({'in_MbPS':interface["state"]["counters"]["in-bits-per-second"]|float / 1000}) %}{% endif %}
+                        {% if vars.update({'in_MbPS':interface["state"]["counters"]["in-bits-per-second"]|float / 1000000}) %}{% endif %}
                         {% if vars.update({'in_utilization':interface["state"]["counters"]["in-utilization"]}) %}{% endif %}
-                        {% if vars.update({'out_MBPS':interface["state"]["counters"]["out-octets-per-second"]|float / 1000}) %}{% endif %}
+                        {% if vars.update({'out_MBPS':interface["state"]["counters"]["out-octets-per-second"]|float / 1000000}) %}{% endif %}
                         {% if vars.update({'out_PPS':interface["state"]["counters"]["out-pkts-per-second"]}) %}{% endif %}
-                        {% if vars.update({'out_MbPS':interface["state"]["counters"]["out-bits-per-second"]|float / 1000}) %}{% endif %}
+                        {% if vars.update({'out_MbPS':interface["state"]["counters"]["out-bits-per-second"]|float / 1000000}) %}{% endif %}
                         {% if vars.update({'out_utilization':interface["state"]["counters"]["out-utilization"]}) %}{% endif %}
 {{'%-15s'|format(vars.name)}}{{'%-15s'|format(vars.rate_interval)}}{{'%-16s'|format(vars.in_MBPS)}}{{'%-16s'|format(vars.in_MbPS)}}{{'%-16s'|format(vars.in_PPS)}}{{'%-16s'|format(vars.in_utilization)}}{{'%-16s'|format(vars.out_MBPS)}}{{'%-16s'|format(vars.out_MbPS)}}{{'%-16s'|format(vars.out_PPS)}}{{'%-16s'|format(vars.out_utilization)}}
                     {% endif %}
