@@ -62,7 +62,7 @@ def run(func, args):
                     print("Failed")
                     sys.exit(1)
         else:
-            print response.error_message()
+            print(response.error_message())
             sys.exit(1)
     else:
        return
