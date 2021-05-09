@@ -41,11 +41,13 @@ Q: A - Access (Untagged), T - Tagged
 {{'%-10s'|format(vars.vlanName)}}{{'%-12s'|format(vars.statusWord)}}{{'%-4s'|format(vars.tagLetter)}}{{'%-16s'|format(vars.ifName)}}{{'%-4s'|format(vars.autostateWord)}}
 {% if vars.update({'vlanName':''}) %}{% endif %}
 {% if vars.update({'statusWord':""}) %}{% endif %}
+{% if vars.update({'autostateWord':""}) %}{% endif %}
 {% endfor %}
 {% else %}
 {{'%-10s'|format(vars.vlanName)}}{{'%-32s'|format(vars.statusWord)}}{{'%-4s'|format(vars.autostateWord)}}
 {% if vars.update({'vlanName':''}) %}{% endif %}
 {% if vars.update({'statusWord':""}) %}{% endif %}
+{% if vars.update({'autostateWord':""}) %}{% endif %}
 {% endif %}
 {% endfor %}
 {% endif %}
