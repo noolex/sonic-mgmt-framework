@@ -476,7 +476,6 @@ def invoke_api(func, args=[]):
         iflistStr = args[0].split("=")[1]
         iflist = iflistStr.rstrip().split(',') 
         for intf in iflist:
-            time.sleep(.1)
             listobj = {
                 "name": intf,
                 "vlanid": int(intf[4:]),
