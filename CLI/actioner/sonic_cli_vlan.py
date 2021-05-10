@@ -39,7 +39,7 @@ class ifInfo:
         self.ifModeDict = ifModeDict
     
     def asdict(self):
-        return {'vlanMembers':self.ifModeDict, 'oper_status':self.oper_status}
+        return {'vlanMembers':self.ifModeDict, 'oper_status':self.oper_status, 'autostate': self.autostate}
 
 def invoke_api(func, args=[]):
 
@@ -120,15 +120,21 @@ def updateVlanInfoMap(vlanTuple, vlanId):
         if "oper_status" in dict:
             operStatus = dict["oper_status"]
 
+        autoState = "enable"
+        if "autostate" in dict:
+            autoState = dict["autostate"]
+
         if vlanDict.get(vlanName) == None:
             ifModeDict = {}
 
             ifData = ifInfo(ifModeDict)
             ifData.oper_status = operStatus
+            ifData.autostate = autoState
             vlanDict[vlanName] = ifData
         else:
             ifData = vlanDict.get(vlanName)
             ifData.oper_status = operStatus
+            ifData.autostate = autoState
 
 def updateVlanNeighSuppressMap(suppTuple, tunnelMapTuple, vlanId):
     sDict = {}

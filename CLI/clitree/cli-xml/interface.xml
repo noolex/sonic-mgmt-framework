@@ -1349,7 +1349,7 @@ limitations under the License.
     <COMMAND
            name="autostate"
            help="Configure autostate setting"
-           dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/autostate" >
+           dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/autostate=enable" >
            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST=${vlan_name}/autostate  body={"sonic-vlan:autostate": "enable"}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
@@ -1368,7 +1368,8 @@ limitations under the License.
     </COMMAND>
     <COMMAND
            name="no autostate"
-           help="Unconfigure autostate setting" >
+           help="Unconfigure autostate setting" 
+           dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/autostate=disable" >
            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST=${vlan_name}/autostate  body={"sonic-vlan:autostate": "disable"}</ACTION>
            <DOCGEN>
                <DESCRIPTION>
