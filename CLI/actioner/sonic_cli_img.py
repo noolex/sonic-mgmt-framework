@@ -10,10 +10,10 @@ from scripts.render_cli import show_cli_output
 def prompt(msg):
     prompt_msg = msg + " [y/N]:";
 
-    x = raw_input(prompt_msg)
+    x = eval(input(prompt_msg))
     while x != "y" and  x != "N":
         print ("Invalid input, expected [y/N]")
-        x = raw_input(prompt_msg)
+        x = eval(input(prompt_msg))
     if x == "N":
         return False
     else:
@@ -72,22 +72,22 @@ def run(func, args):
            if api_response.ok():
                 response = api_response.content
                 if response is None:
-                    print "Success"
+                    print("Success")
                 else:
                     if 'sonic-image-management:output' in response:
                         status =response["sonic-image-management:output"]
                         if status["status"] != 0:
-                            print status["status-detail"]
+                            print(status["status-detail"])
                     else:
                         jOut = eval(json.dumps(response))
                         show_cli_output(args[0], jOut)
            else:
                 #error response
-                print api_response.error_message()
+                print(api_response.error_message())
 
       except:
             # system/network error
-            print "%Error: Transaction Failure"
+            print("%Error: Transaction Failure")
 
 if __name__ == '__main__':
 

@@ -19,7 +19,7 @@ def invoke(func, argv):
     elif func == "locator_led_chassis_off":
          keypath = cc.Path('/restconf/operations/openconfig-system-ext:locator-led-chassis-off')
     else:
-         print "%Error: invalid command"
+         print("%Error: invalid command")
     body = None
     templ=argv[0]
     api_response = aa.post(keypath, body)
