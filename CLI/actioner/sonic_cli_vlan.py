@@ -52,7 +52,7 @@ def invoke_api(func, args=[]):
         return api.get(path)
 
     if func == 'get_sonic_vxlan_remote_vni':
-        path = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_REMOTE_VNI_TABLE/EVPN_REMOTE_VNI_TABLE_LIST')
+        path = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_REMOTE_VNI_TABLE/VXLAN_REMOTE_VNI_TABLE_LIST')
         return api.get(path)
 
     return api.cli_not_implemented(func)
@@ -182,8 +182,8 @@ def run(func, args):
                    if response2content is not None:
                        # Get Command Output
                        #api_response2 = response2.content
-                       if 'sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST' in response2content:
-                           tunnel_vni_list = response2content['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST']
+                       if 'sonic-vxlan:VXLAN_REMOTE_VNI_TABLE_LIST' in response2content:
+                           tunnel_vni_list = response2content['sonic-vxlan:VXLAN_REMOTE_VNI_TABLE_LIST']
                            vlanid = 'all'
                            if args[0]:
                               vlanid = args[0]
