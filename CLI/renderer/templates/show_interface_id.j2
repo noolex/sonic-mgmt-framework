@@ -3,6 +3,7 @@
 {% set vars = {'name': ""} %}
 {% set vars = {'admin_state': ""} %}
 {% set vars = {'oper_state': ""} %}
+{% set vars = {'mac_address': ""} %}
 {% set vars = {'rate_interval': ""} %}
 {% set vars = {'description':""} %}
 {% set vars = {'mtu': ""} %}
@@ -63,6 +64,7 @@
         {% if vars.update({'name':interface[key]["name"]}) %}{% endif %}
         {% if vars.update({'admin_state':interface[key]["admin-status"]}) %}{% endif %}
         {% if vars.update({'oper_state':interface[key]["oper-status"]}) %}{% endif %}
+	{% if vars.update({'mac_address':interface[key]["mac-address"]}) %}{% endif %}
         {% if vars.update({'rate_interval':interface[key]["openconfig-interfaces-ext:rate-interval"]}) %}{% endif %}
         {% if vars.update({'description':interface[key]["description"]}) %}{% endif %}
         {% if vars.update({'mtu':interface[key]["mtu"]}) %}{% endif %}
@@ -155,7 +157,7 @@
     {% endfor %}
 {% if vars.name %}
 {{ vars.name }} is {{ vars.admin_state|lower() }}, line protocol is {{vars.oper_state|lower() }}
-Hardware is Eth
+Hardware is Eth, address is {{vars.mac_address}}
 
 {% if vars.description %}
 Description: {{ vars.description }}
