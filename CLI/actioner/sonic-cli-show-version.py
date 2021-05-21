@@ -61,7 +61,7 @@ def run(func, args):
         show_cli_output(sys.argv[3], responseContent)
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print 'Error Transaction'
+        print('Error Transaction')
 
 if __name__ == '__main__':
 

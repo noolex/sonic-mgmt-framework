@@ -68,7 +68,7 @@ def run_get_sonic_infra_reboot(func, argv):
               show_cli_output(templ, response['openconfig-system-ext:output']['result'])
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "%Error: Traction Failure"
+        print("%Error: Traction Failure")
 
 def run_get_openconfig_infra_state(func, argv):
     aa = cc.ApiClient()
@@ -82,14 +82,14 @@ def run_get_openconfig_infra_state(func, argv):
     elif argv[0] == "user-list":
        path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:infra/state/show-user-list')
     else:
-       print "%Error: invalid state command"
+       print("%Error: invalid state command")
     api_response = aa.get(path)
     if api_response.ok():
         if api_response.content is not None:
             response = api_response.content
             show_cli_output(templ, response)
     else:
-        print api_response.error_message()
+        print(api_response.error_message())
 
 def run_get_sonic_infra_config(func, argv):
     templ = argv[1]
@@ -113,7 +113,7 @@ def run_get_sonic_infra_config(func, argv):
               show_cli_output(templ, response['sonic-system-infra:output']['result'])
     except Exception as e:
         log.syslog(log.LOG_ERR, str(e))
-        print "%Error: Traction Failure"
+        print("%Error: Traction Failure")
 
 
 def run_set_openconfig_logger(func, argv):
@@ -129,7 +129,7 @@ def run_set_openconfig_logger(func, argv):
            response = api_response.content
            show_cli_output(templ, response['openconfig-system-ext:output']['result'])
     except Exception as e:
-        print "%Error: Traction Failure"
+        print("%Error: Traction Failure")
 
 
 
@@ -143,7 +143,7 @@ def invoke(func, argv):
     elif func == "set_openconfig_logger":
          run_set_openconfig_logger(func, argv)
     else:
-         print "%Error: invalid command"
+         print("%Error: invalid command")
 
 
 ## Main function
