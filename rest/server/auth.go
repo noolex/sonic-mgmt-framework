@@ -22,13 +22,14 @@ package server
 import (
 	"bytes"
 	"fmt"
+	"net/http"
 	"os/user"
 	"strings"
+	"sync"
+
 	"github.com/Azure/sonic-mgmt-common/translib"
 	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
-	"sync"
-	"net/http"
 )
 
 type UserAuth map[string]bool
@@ -36,7 +37,6 @@ type UserAuth map[string]bool
 var AuthLock sync.Mutex
 
 var ErrUnauthorized = httpError(http.StatusUnauthorized, "Authentication not provided")
-
 
 func (i UserAuth) String() string {
 	if i["none"] {
@@ -180,4 +180,3 @@ func UserPwAuth(username string, passwd string) (bool, error) {
 
 	return true, nil
 }
-

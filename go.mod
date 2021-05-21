@@ -10,6 +10,7 @@ require (
 	github.com/pkg/profile v1.4.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
 )
 

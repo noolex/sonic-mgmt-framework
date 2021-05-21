@@ -121,28 +121,52 @@ class SonicACLCLIStopNoError(RuntimeError):
 def acl_natsort_intf_prio(ifname):
     if isinstance(ifname, tuple):
         ifname = ifname[0]
-
-    if ifname.startswith('Ethernet'):
-        prio = 10000 + int(ifname.replace('Ethernet', ''), 0)
-    elif ifname.startswith('Eth'):
-        portnum = ifname.replace('Eth', '')
-        parts = portnum.split('/')
-        # Ideally slot on Pizzabox is supposed to be 0. Just in case its changed in future
-        slot=int(parts[0])+1
-        port=int(parts[1])
-        try:
-            breakout = int(parts[2])
-        except IndexError:
-            breakout = 1
-        prio = 10000 + slot*(port*16 + breakout)
-    elif ifname.startswith('PortChannel'):
-        prio = 20000 + int(ifname.replace('PortChannel', ''), 0)
-    elif ifname.startswith('Vlan'):
-        prio = 30000 + int(ifname.replace('Vlan', ''), 0)
-    elif ifname == "Switch":
-        prio = 40000
+    if '.' not in ifname:
+        if ifname.startswith('Ethernet'):
+            prio = 310000 + int(ifname.replace('Ethernet', ''), 0)
+        elif ifname.startswith('Eth'):
+            portnum = ifname.replace('Eth', '')
+            parts = portnum.split('/')
+            # Ideally slot on Pizzabox is supposed to be 0. Just in case its changed in future
+            slot=int(parts[0])+1
+            port=int(parts[1])
+            try:
+                breakout = int(parts[2])
+            except IndexError:
+                breakout = 1
+            prio = 310000 + slot*(port*16 + breakout)
+        elif ifname.startswith('PortChannel'):
+            prio = 320000 + int(ifname.replace('PortChannel', ''), 0)
+        elif ifname.startswith('Vlan'):
+            prio = 330000 + int(ifname.replace('Vlan', ''), 0)
+        elif ifname == "Switch":
+            prio = 340000
+        else:
+            prio = 350000
     else:
-        prio = 50000
+        #sub-interfaces
+        if ifname.startswith('Ethernet'):
+            portnum = ifname.replace('Ethernet', '').split('.')
+            prio = 10000 + 250*int(portnum[1]) + int(portnum[0])
+        elif ifname.startswith('Eth'):
+            portnum = ifname.replace('Eth', '')
+            parts = portnum.split('/')
+            slot=int(parts[0])
+            if '.' in parts[1]:
+                ports = parts[1].split('.')
+                port = int(ports[0])
+                breakout = 1
+            else:
+                port = int(parts[1])
+                try:
+                    ports = parts[2].split('.')
+                    breakout = int(ports[0])
+                except IndexError:
+                    breakout = 1
+            prio = 10000 + slot*(250*(port*8 + breakout) + int(ports[1]))
+        elif ifname.startswith('PortChannel'):
+            portnum = ifname.replace('PortChannel', '').split('.')
+            prio = 150000 + 250*int(portnum[1]) + int(portnum[0])
 
     return prio
 
@@ -491,7 +515,13 @@ def handle_delete_acl_rule_request(args):
 
 def __handle_interface_acl_bind_request(args):
     keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}', id=args[2])
-    if args[3] == "in":
+    # PortChannel subinterface contains an extra argument after interface id - parent interface.
+    if len(args) > 4 and '.' in args[2]:
+        direction = args[4]
+    else:
+        direction = args[3]
+
+    if direction == "in":
         body = {
             "openconfig-acl:config": {
                 "id": args[2]
@@ -608,7 +638,12 @@ def handle_unbind_acl_request(args):
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/openconfig-acl-ext:control-plane/egress-acl-sets/egress-acl-set={set_name},{acl_type}',
                               set_name=args[0], acl_type=args[1])
     else:
-        if args[3] == 'in':
+        # PortChannel subinterface contains an extra argument after interface id - parent interface.
+        if len(args) > 4 and '.' in args[2]:
+            direction = args[4]
+        else:
+            direction = args[3]
+        if direction == 'in':
             keypath = cc.Path('/restconf/data/openconfig-acl:acl/interfaces/interface={id}/ingress-acl-sets/ingress-acl-set={set_name},{acl_type}',
                               id=args[2], set_name=args[0], acl_type=args[1])
         else:

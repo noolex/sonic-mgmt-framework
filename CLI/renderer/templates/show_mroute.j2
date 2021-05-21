@@ -11,11 +11,11 @@ IP multicast routing table summary for VRF: {{vrf}}
 {% if cmd == 'show_mroute' %}
 IP multicast routing table for VRF: {{vrf}}
   * -> indicates installed route
-{{(""|string).ljust(3)}}{{'Source'.ljust(18)}}{{'Group'.ljust(18)}}{{'Input'.ljust(18)}}{{'Output'.ljust(18)}}{{'Uptime'.ljust(12)}}
+{{(""|string).ljust(3)}}{{'Source'.ljust(18)}}{{'Group'.ljust(18)}}{{'Input'.ljust(23)}}{{'Output'.ljust(23)}}{{'Uptime'.ljust(12)}}
 {% set listLen = output|length %}
 {% for entry in output %}
 {% for oil in entry.get('oilList') %}
-{{(entry.get('installed')|string).ljust(3)}}{{(entry.get('srcAddr')|string).ljust(18)}}{{(entry.get('grpAddr')|string).ljust(18)}}{{(entry.get('inIntf')|string).ljust(18)}}{{(oil.get('outIntf')|string).ljust(18)}}{{(oil.get('oilUpTime')|string).ljust(12)}}
+{{(entry.get('installed')|string).ljust(3)}}{{(entry.get('srcAddr')|string).ljust(18)}}{{(entry.get('grpAddr')|string).ljust(18)}}{{(entry.get('inIntf')|string).ljust(23)}}{{(oil.get('outIntf')|string).ljust(23)}}{{(oil.get('oilUpTime')|string).ljust(12)}}
 {%- set _ = entry.update({'installed': ''}) -%}
 {%- set _ = entry.update({'srcAddr': ''}) -%}
 {%- set _ = entry.update({'grpAddr': ''}) -%}

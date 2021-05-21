@@ -71,15 +71,21 @@
             mode="subcommand" />
         <PARAM
             name="ipv4-l4-src-port"
-            help="IPv4 Protocol"
+            help="IPv4 L4 Source Port"
             ptype="SUBCOMMAND"
             dbpath="sonic-loadshare-mode:sonic-loadshare-mode/ECMP_LOADSHARE_TABLE_IPV4/ECMP_LOADSHARE_TABLE_IPV4_LIST/ipv4_l4_src_port=true"
             mode="subcommand" />
         <PARAM
             name="ipv4-l4-dst-port"
-            help="IPv4 Protocol"
+            help="IPv4 L4 Destination Port"
             ptype="SUBCOMMAND"
             dbpath="sonic-loadshare-mode:sonic-loadshare-mode/ECMP_LOADSHARE_TABLE_IPV4/ECMP_LOADSHARE_TABLE_IPV4_LIST/ipv4_l4_dst_port=true"
+            mode="subcommand" />
+        <PARAM
+            name="symmetric"
+            help="IPv4 Symmetric Hash mode"
+            ptype="SUBCOMMAND"
+            dbpath="sonic-loadshare-mode:sonic-loadshare-mode/ECMP_LOADSHARE_TABLE_IPV4/ECMP_LOADSHARE_TABLE_IPV4_LIST/ipv4_symmetric=true"
             mode="subcommand" />
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_ip_loadshare patch_loadshare_ipv4_config ${__params}</ACTION>
@@ -126,15 +132,21 @@
             mode="subcommand" />
         <PARAM
             name="ipv6-l4-src-port"
-            help="IPv6 L4 Source port"
+            help="IPv6 L4 Source Port"
             ptype="SUBCOMMAND"
             dbpath="sonic-loadshare-mode:sonic-loadshare-mode/ECMP_LOADSHARE_TABLE_IPV6/ECMP_LOADSHARE_TABLE_IPV6_LIST/ipv6_l4_src_port=true"
             mode="subcommand" />
         <PARAM
             name="ipv6-l4-dst-port"
-            help="IPv6 L4 Destination port"
+            help="IPv6 L4 Destination Port"
             ptype="SUBCOMMAND"
             dbpath="sonic-loadshare-mode:sonic-loadshare-mode/ECMP_LOADSHARE_TABLE_IPV6/ECMP_LOADSHARE_TABLE_IPV6_LIST/ipv6_l4_dst_port=true"
+            mode="subcommand" />
+        <PARAM
+            name="symmetric"
+            help="IPv6 Symmetric Hash mode"
+            ptype="SUBCOMMAND"
+            dbpath="sonic-loadshare-mode:sonic-loadshare-mode/ECMP_LOADSHARE_TABLE_IPV6/ECMP_LOADSHARE_TABLE_IPV6_LIST/ipv6_symmetric=true"
             mode="subcommand" />
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_ip_loadshare patch_loadshare_ipv6_config ${__params}</ACTION>
@@ -203,12 +215,17 @@
             mode="subcommand" />
         <PARAM
             name="ipv4-l4-src-port"
-            help="IPv4 Protocol"
+            help="IPv4 L4 Source Port"
             ptype="SUBCOMMAND"
             mode="subcommand" />
         <PARAM
             name="ipv4-l4-dst-port"
-            help="IPv4 Protocol"
+            help="IPv4 L4 Destination Port"
+            ptype="SUBCOMMAND"
+            mode="subcommand" />
+        <PARAM
+            name="symmetric"
+            help="IPv4 Symmetric Hash mode"
             ptype="SUBCOMMAND"
             mode="subcommand" />
         </PARAM>
@@ -252,12 +269,17 @@
             mode="subcommand" />
         <PARAM
             name="ipv6-l4-src-port"
-            help="IPv6 L4 Source port"
+            help="IPv6 L4 Source Port"
             ptype="SUBCOMMAND"
             mode="subcommand" />
         <PARAM
             name="ipv6-l4-dst-port"
-            help="IPv6 L4 Destination port"
+            help="IPv6 L4 Destination Port"
+            ptype="SUBCOMMAND"
+            mode="subcommand" />
+        <PARAM
+            name="symmetric"
+            help="IPv6 Symmetric Hash mode"
             ptype="SUBCOMMAND"
             mode="subcommand" />
         </PARAM>

@@ -26,7 +26,7 @@ def invoke_api(func, args):
 	       flowlimit = "MIN"
        elif args[0] == "none":
                flowlimit = "NONE"
-        
+
        body =  {
                 "openconfig-system-ext:swresource": {
                          "resource": [
@@ -34,7 +34,7 @@ def invoke_api(func, args):
                             "name": "DROP_MONITOR",
                             "config": {
                             "name": "DROP_MONITOR",
-                            "flows": flowlimit 
+                            "flows": flowlimit
                              }
                             }
                                      ]
@@ -48,9 +48,32 @@ def invoke_api(func, args):
         path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:swresource',)
         return api.delete(path)
 
-    elif func == 'get_openconfig_system_ext_system_swresource':
-	path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:swresource')
-        return api.get(path)
+    # check paths and data
+    elif func == 'patch_openconfig_system_ext_system_swresource_routes':
+        path = cc.Path('/restconf/data/openconfig-system:system/openconfig-system-ext:swresource')
+
+        if args[0] == "default":
+	        routescale = "DEFAULT"
+        elif args[0] == "max":
+            routescale = "MAX"
+
+        print "L2, L3 host and route scaling numbers may change. Config save, reboot is required for this change to take effect"
+
+        body =  {
+                "openconfig-system-ext:swresource": {
+                        "resource": [
+                                        {
+                                        "name": "ROUTE_SCALE",
+                                        "config": {
+                                            "name": "ROUTE_SCALE",
+                                            "routes": routescale
+                                            }
+                                        }
+                                    ]
+                        }
+                }
+
+        return api.patch(path, body)
 
 
     return api.cli_not_implemented(func)

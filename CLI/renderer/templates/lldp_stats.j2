@@ -1,0 +1,21 @@
+{{'LLDP Statistics'.ljust(20)}}
+{{'---------------------------------'}}
+{% for port in json_output %}
+   {% if 'state' in port and 'counters' in port['state'] %}
+      {% if 'name' in port %}
+         {% set intf = port['name'].strip() %}
+      {% endif %}
+      {% set tx_cnt = port['state']['counters']['frame-out'] %}
+      {% set rx_cnt = port['state']['counters']['frame-in'] %}
+      {% set unk_cnt = port['state']['counters']['tlv-unknown'] %}
+      {% set dis_cnt = port['state']['counters']['frame-discard'] %}
+      {% set age_cnt = port['state']['counters']['openconfig-lldp-ext:ageout'] %}
+{{'%-10s'|format("Interface:")}} {{'%s'|format(intf)}}
+{{'%3s'|format(" ")}} {{'%-16s'|format("Transmitted")}} {{'%s'|format(":")}} {{'%s'|format(tx_cnt)}}
+{{'%3s'|format(" ")}} {{'%-16s'|format("Received")}} {{'%s'|format(":")}} {{'%s'|format(rx_cnt)}}
+{{'%3s'|format(" ")}} {{'%-16s'|format("Discarded")}} {{'%s'|format(":")}} {{'%s'|format(dis_cnt)}}
+{{'%3s'|format(" ")}} {{'%-16s'|format("Unrecognized TLV")}} {{'%s'|format(":")}} {{'%s'|format(unk_cnt)}}
+{{'%3s'|format(" ")}} {{'%-16s'|format("Ageout")}} {{'%s'|format(":")}} {{'%s'|format(age_cnt)}}
+{{'---------------------------------'}}
+   {% endif %}
+{% endfor %}

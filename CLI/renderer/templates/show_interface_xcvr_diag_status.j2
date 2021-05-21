@@ -1,0 +1,97 @@
+{% if json_output -%}
+{% for ifName in json_output %}
+
+{{' '}}
+{{ifName}}
+{{'---------------------------------------------------------------------'}}
+{{'Attribute'.ljust(36)}}:  {{'Value/State'}}
+{{'---------------------------------------------------------------------'}}
+
+{% if 'loopbacks' in json_output[ifName] %}
+
+{{'Loopback'}}
+{% set data = json_output[ifName]['loopbacks'] %}
+
+{% set cfg = data['config'].get('lb-host-input-enabled') %}
+{% set sta = data['state'].get('lb-host-input-enabled') %}
+{{"    Host Side Input".ljust(36)}}:  {{"Enabled" if sta else "Disable"}} {{'('}} {{"Enabled" if cfg else "Disable"}} {{'in Config )'}}
+
+{% set cfg = data['config'].get('lb-host-output-enabled') %}
+{% set sta = data['state'].get('lb-host-output-enabled') %}
+{{"    Host Side Output".ljust(36)}}:  {{"Enabled" if sta else "Disable"}} {{'('}} {{"Enabled" if cfg else "Disable"}} {{'in Config )'}}
+
+{% set cfg = data['config'].get('lb-media-input-enabled') %}
+{% set sta = data['state'].get('lb-media-input-enabled') %}
+{{"    Media Side Input".ljust(36)}}:  {{"Enabled" if sta else "Disable"}} {{'('}} {{"Enabled" if cfg else "Disable"}} {{'in Config )'}}
+
+{% set cfg = data['config'].get('lb-media-output-enabled') %}
+{% set sta = data['state'].get('lb-media-output-enabled') %}
+{{"    Media Side Output".ljust(36)}}:  {{"Enabled" if sta else "Disable"}} {{'('}} {{"Enabled" if cfg else "Disable"}} {{'in Config )'}}
+
+{% endif %}
+
+{{' '}}
+
+{% if 'patterns' in json_output[ifName] %}
+
+{{'Pattern Generation and Checking'}}
+{% set data = json_output[ifName]['patterns'] %}
+
+{% set cfg = data['config'].get('pattern-chk-host-enabled') %}
+{% set sta = data['state'].get('pattern-chk-host-enabled') %}
+{{"    Host Side Pattern Checker".ljust(36)}}:  {{"Enabled" if sta else "Disable"}} {{'('}} {{"Enabled" if cfg else "Disable"}} {{'in Config )'}}
+
+{% set cfg = data['config'].get('pattern-gen-host-enabled') %}
+{% set sta = data['state'].get('pattern-gen-host-enabled') %}
+{{"    Host Side Pattern Generator".ljust(36)}}:  {{"Enabled" if sta else "Disable"}} {{'('}} {{"Enabled" if cfg else "Disable"}} {{'in Config )'}}
+
+{% set cfg = data['config'].get('pattern-chk-media-enabled') %}
+{% set sta = data['state'].get('pattern-chk-media-enabled') %}
+{{"    Media Side Pattern Checker".ljust(36)}}:  {{"Enabled" if sta else "Disable"}} {{'('}} {{"Enabled" if cfg else "Disable"}} {{'in Config )'}}
+
+{% set cfg = data['config'].get('pattern-gen-media-enabled') %}
+{% set sta = data['state'].get('pattern-gen-media-enabled') %}
+{{"    Media Side Pattern Generator".ljust(36)}}:  {{"Enabled" if sta else "Disable"}} {{'('}} {{"Enabled" if cfg else "Disable"}} {{'in Config )'}}
+
+{{' '}}
+{{'Error Information'}}
+{% set host  = json_output[ifName]['reports']['host']['state'] %}
+{% set media = json_output[ifName]['reports']['media']['state'] %}
+{{"    Host side BER1".ljust(36)}}: {{host['ber1']}}
+{{"    Host side BER2".ljust(36)}}: {{host['ber2']}}
+{{"    Host side BER3".ljust(36)}}: {{host['ber3']}}
+{{"    Host side BER4".ljust(36)}}: {{host['ber4']}}
+{{"    Host side BER5".ljust(36)}}: {{host['ber5']}}
+{{"    Host side BER6".ljust(36)}}: {{host['ber6']}}
+{{"    Host side BER7".ljust(36)}}: {{host['ber7']}}
+{{"    Host side BER8".ljust(36)}}: {{host['ber8']}}
+{{"    Media side BER1".ljust(36)}}: {{media['ber1']}}
+{{"    Media side BER2".ljust(36)}}: {{media['ber2']}}
+{{"    Media side BER3".ljust(36)}}: {{media['ber3']}}
+{{"    Media side BER4".ljust(36)}}: {{media['ber4']}}
+{{"    Media side BER5".ljust(36)}}: {{media['ber5']}}
+{{"    Media side BER6".ljust(36)}}: {{media['ber6']}}
+{{"    Media side BER7".ljust(36)}}: {{media['ber7']}}
+{{"    Media side BER8".ljust(36)}}: {{media['ber8']}}
+{{' '}}
+{{"    Host side SNR1".ljust(36)}}: {{host['snr1']}}
+{{"    Host side SNR2".ljust(36)}}: {{host['snr2']}}
+{{"    Host side SNR3".ljust(36)}}: {{host['snr3']}}
+{{"    Host side SNR4".ljust(36)}}: {{host['snr4']}}
+{{"    Host side SNR5".ljust(36)}}: {{host['snr5']}}
+{{"    Host side SNR6".ljust(36)}}: {{host['snr6']}}
+{{"    Host side SNR7".ljust(36)}}: {{host['snr7']}}
+{{"    Host side SNR8".ljust(36)}}: {{host['snr8']}}
+{{"    Media side SNR1".ljust(36)}}: {{media['snr1']}}
+{{"    Media side SNR2".ljust(36)}}: {{media['snr2']}}
+{{"    Media side SNR3".ljust(36)}}: {{media['snr3']}}
+{{"    Media side SNR4".ljust(36)}}: {{media['snr4']}}
+{{"    Media side SNR5".ljust(36)}}: {{media['snr5']}}
+{{"    Media side SNR6".ljust(36)}}: {{media['snr6']}}
+{{"    Media side SNR7".ljust(36)}}: {{media['snr7']}}
+{{"    Media side SNR8".ljust(36)}}: {{media['snr8']}}
+
+{% endif %}
+
+{% endfor %}
+{% endif %}

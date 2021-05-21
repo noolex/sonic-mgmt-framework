@@ -30,8 +30,11 @@ from netaddr import *
 from scripts.render_cli import show_cli_output
 import subprocess
 import re
+from itertools import groupby
+from operator import itemgetter
 from sonic_intf_utils import name_to_int_val
 from natsort import natsorted
+import sonic_intf_utils as ifutils
 
 import urllib3
 urllib3.disable_warnings()
@@ -70,6 +73,8 @@ def rangetolst(givenifrange):
         else:
             givenifrange.append(i)
     ifrangelist = [iftype+str(i) for i in givenifrange]
+    if '.' in idlst[0]:
+        iftype = 'SubInterface'
     return iftype, ifrangelist
 
 # Function to check if intf fall inside any subset in the range list
@@ -102,7 +107,7 @@ def eth_intf_range_expand(givenifrange):
         if check_in_range(p, rangelst):
             intf_list.add(p)
     return list(intf_list)
-
+    
 def generate_body(func, args=[]):
 
     body = {}
@@ -237,11 +242,17 @@ def generate_body(func, args=[]):
             speed = speed_map.get(args[1])
             body["openconfig-if-ethernet:ethernet"]["config"].update( { "openconfig-if-ethernet:port-speed": speed } )
     elif func == 'patch_ipv6_enabled':
-        body = { "name": args[0] }
-        if args[0].startswith("Vlan"):
+        parent_if=args[0]
+        sub_if = 0
+        if '.' in parent_if:
+            parent_if = args[0].split('.')[0]
+            sub_if = int(args[0].split('.')[1])
+        parent_if = parent_if.replace("po", "PortChannel")
+        body = { "name": parent_if }
+        if parent_if.startswith("Vlan"):
             body.update({"openconfig-vlan:routed-vlan" : {"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}}})
         else:
-            body.update({"subinterfaces" : {"subinterface": [ {"index": 0,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }})
+            body.update({"subinterfaces" : {"subinterface": [ {"index": sub_if,"openconfig-if-ip:ipv6": {"config": {"enabled": bool(args[1])}}} ] }})
 
     # FEC config
     elif func == 'patch_port_fec':
@@ -270,6 +281,10 @@ def invoke_api(func, args=[]):
 
     # Delete interface
     if func == 'delete_interface':
+        if '.' in args[0]:
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={sub}', 
+                name=args[0].split('.')[0], sub=args[0].split('.')[1])
+            return api.delete(path)
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}', name=args[0])
         return api.delete(path)
 
@@ -289,6 +304,10 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
 
+    elif func == 'delete_trunk_vlan_all':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-ethernet:ethernet/openconfig-vlan:switched-vlan/config/trunk-vlans',name=args[0])
+        return api.delete(path)
+
     #Remove aggregate access vlan
     elif func == 'delete_aggregate_access_vlan':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/access-vlan', name=args[0])
@@ -299,6 +318,10 @@ def invoke_api(func, args=[]):
         vlanStr = args[1].replace('-', '..')
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans={trunk}', name=args[0], trunk=vlanStr)
         return api.delete(path)
+    
+    elif func == 'delete_aggregate_trunk_vlan_all':
+	path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config/trunk-vlans',name=args[0])
+	return api.delete(path)
 
     #Remove all vlans
     elif func == 'delete_all_vlan':
@@ -309,6 +332,14 @@ def invoke_api(func, args=[]):
     elif func == 'delete_aggregate_all_vlan':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-if-aggregate:aggregation/openconfig-vlan:switched-vlan/config', name=args[0])
         return api.delete(path)
+
+    elif func == 'rpc_replace_vlan':
+        vlanlst = args[1].split(',')
+        vlanlst = [sub.replace('-', '..') for sub in vlanlst]
+	ifList = args[0]
+        body = {"openconfig-interfaces-ext:input":{"ifname":ifList,"vlanlist":vlanlst}}
+        path = cc.Path('/restconf/operations/openconfig-interfaces-ext:vlan-replace')
+        return api.post(path,body)
 
     #Delete port speed to revert the speed to default.
     elif func == 'delete_port_speed':
@@ -334,7 +365,13 @@ def invoke_api(func, args=[]):
 	if args[0].startswith("Vlan"):
             path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/config/enabled', name=args[0])
         else:
-            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/config/enabled', name=args[0], index="0")
+            parent_if=args[0]
+            sub_if="0"
+            if '.' in parent_if:
+                parent_if = args[0].split('.')[0]
+                sub_if = args[0].split('.')[1]
+            parent_if = parent_if.replace("po", "PortChannel")
+            path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/config/enabled', name=parent_if, index=sub_if)
         return api.delete(path)
 
     # Get interface
@@ -376,6 +413,16 @@ def invoke_api(func, args=[]):
 	    	tbl_key = "sonic-portchannel:PORTCHANNEL_LIST"
 		if tbl_key in intf_map:
 		    iflist = [i["name"] for i in intf_map[tbl_key] if i["name"].startswith("PortChannel")]
+	elif args[0] == "SubInterface":
+            path = cc.Path('/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST')
+            responseSubIntfTbl = api.get(path)
+	    iflist = []
+            if responseSubIntfTbl.ok():
+		intf_map = responseSubIntfTbl.content
+	    	tbl_key = "sonic-interface:VLAN_SUB_INTERFACE_LIST"
+		if tbl_key in intf_map:
+		    iflist = [i["id"] for i in intf_map[tbl_key] if i["id"].startswith("Po")]
+        
 	return iflist
 
     elif func == 'create_if_range': 
@@ -422,9 +469,9 @@ def invoke_api(func, args=[]):
 
 def check_response(response, func, args):
     if response.ok():
-        if response.content is not None:
+        api_response = response.content
+        if api_response is not None:
             # Get Command Output
-            api_response = response.content
             if 'openconfig-interfaces:interfaces' in api_response:
                 value = api_response['openconfig-interfaces:interfaces']
                 if 'interface' in value:
@@ -435,10 +482,6 @@ def check_response(response, func, args):
                 if 'PORT_TABLE_LIST' in value:
                     tup = value['PORT_TABLE_LIST']
                     value['PORT_TABLE_LIST'] =  sorted(tup, key=getSonicId)
-
-            if api_response is None:
-                print("%Error: Internal error.")
-                return 1
             else:
                 if func == 'get_openconfig_interfaces_interfaces_interface':
                     show_cli_output(args[1], api_response)
@@ -473,22 +516,54 @@ def run(func, args):
             return res
 
 	elif func == 'vlan_trunk_if_range':
-	    if args[3] == 'add':
+            if args[2] == 'all':
+                args.insert(2,'1..4094')
+                func = 'config_if_range'
+                response = invoke_api(func, args)
+                return check_response(response, func, args)
+	    elif args[2] == 'none':
+		func = 'delete_if_range'
+		args[1] = 'delete_trunk_vlan_all'
+	    elif args[3] == 'add':
 		func = 'config_if_range'
 		response = invoke_api(func, args)
 		return check_response(response, func, args)
-	    else:
+	    elif args[3] == 'except':
+		exceptStr = ifutils.vlanExceptList(args[2])
+		args[2] = exceptStr
+		func = 'replace_vlan'
+		args[1] = 'rpc_replace_vlan'
+	    elif args[3] == 'remove':
 		func = 'delete_if_range'
 		args[1] = 'delete_trunk_vlan'
+	    else:
+                func = 'replace_vlan'
+                args[1] = 'rpc_replace_vlan'
 
 	elif func == 'vlan_trunk_if_range_pc':
-	    if args[3] == 'add':
+	    if args[2] == 'all':
+		args.insert(2,'1..4094')
+		func = 'config_if_range'
+		response = invoke_api(func, args)
+		return check_response(response, func, args)
+	    elif args[2] == 'none':
+		func = 'delete_if_range'
+		args[1] = 'delete_aggregate_trunk_vlan_all'
+	    elif args[3] == 'add':
 	        func = 'config_if_range'
                	response = invoke_api(func, args)
                 return check_response(response, func, args)
-	    else:
+            elif args[3] == 'except':
+                exceptStr = ifutils.vlanExceptList(args[2])
+                args[2] = exceptStr
+                func = 'replace_vlan'
+                args[1] = 'rpc_replace_vlan'
+	    elif args[3] == 'remove':
 		func = 'delete_if_range'
 		args[1] = 'delete_aggregate_trunk_vlan'
+	    else:
+	        func = 'replace_vlan'
+                args[1] = 'rpc_replace_vlan'
 
         if func == 'delete_if_range':
             """
@@ -569,6 +644,24 @@ def run(func, args):
                 return 1
             print("%Info: Configuring only existing interfaces in range")
             return 0
+        elif func == 'replace_vlan':
+            iflistStr = args[0].split("=")[1]
+            if iflistStr == "":
+                return 1
+            iflist = iflistStr.rstrip().split(',')
+            subfunc = args[1]
+	    intfargs = [iflist]+ args[2:]
+            response = invoke_api(subfunc, intfargs)
+            if response and response.ok() and (response.content is not None):
+                api_response = response.content
+                if 'openconfig-interfaces-ext:output' in api_response:
+                    value = api_response['openconfig-interfaces-ext:output']
+                    if value["status"] != 0:
+                        if value["status-detail"] != '':
+                            print("%Error: {}".format(value["status-detail"]))
+                        else:
+                            print "%Error: replacing VLANs for interface range failed"
+
         else:
             response = invoke_api(func, args)
             return check_response(response, func, args)

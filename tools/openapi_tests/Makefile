@@ -3,7 +3,7 @@
 TOPDIR             := ../..
 PYANG_PLUGINS_DIR  := $(TOPDIR)/tools/pyang/pyang_plugins
 
-all: test-rpc test-data-nodes test-complex-model test-complex-model-no-oneof
+all: test-rpc test-data-nodes test-complex-model test-complex-model-no-oneof test-notification
 
 # This will cover RPC statements with only input, only output and with
 # both input and output
@@ -26,3 +26,6 @@ test-complex-model:
 # Test without one-oneof
 test-complex-model-no-oneof:
 	pyang -f swaggerapi --plugindir $(PYANG_PLUGINS_DIR) ietf-snmp.yang ietf-snmp-community.yang | diff ietf-snmp.no-oneof.yang.expect -
+
+test-notification:
+	pyang -f swaggerapi --plugindir $(PYANG_PLUGINS_DIR) test-notification.yang | diff test-notification.yang.expect -

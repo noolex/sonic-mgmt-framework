@@ -24,6 +24,7 @@ import cli_client as cc
 from datetime import datetime, timedelta
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
+from urllib import quote
 
 import urllib3
 urllib3.disable_warnings()
@@ -84,16 +85,16 @@ def get_keypath(func,args):
         #generate keypath
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/global'
 
-        if inputDict.get('jpi') is not None:
+        if inputDict.get('jpi'):
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"join-prune-interval": float(inputDict.get('jpi'))}}}
-        elif inputDict.get('kat') is not None:
+        elif inputDict.get('kat'):
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"keep-alive-timer": float(inputDict.get('kat'))}}}
-        elif inputDict.get('pln') is not None:
+        elif inputDict.get('pln'):
             body = {"openconfig-network-instance:global": {"ssm": {"config": {"ssm-ranges": inputDict.get('pln')}}}}
         #as rebalance is a child of ecmp, check it first
-        elif inputDict.get('rebalance') is not None:
+        elif inputDict.get('rebalance'):
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-rebalance-enabled": True}}}
-        elif inputDict.get('ecmp') is not None:
+        elif inputDict.get('ecmp'):
             body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-enabled": True}}}
 
     ##############################################################
@@ -109,16 +110,16 @@ def get_keypath(func,args):
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/global'
 
         #generate del request based on the input
-        if inputDict.get('jpi') is not None:
+        if inputDict.get('jpi'):
             path = path + "/openconfig-pim-ext:config/join-prune-interval"
-        elif inputDict.get('kat') is not None:
+        elif inputDict.get('kat'):
             path = path + "/openconfig-pim-ext:config/keep-alive-timer"
-        elif inputDict.get('pln') is not None:
+        elif inputDict.get('pln'):
             path = path + "/ssm/config/ssm-ranges"
         #as rebalance is a child of ecmp, check it first
-        elif inputDict.get('rebalance') is not None:
+        elif inputDict.get('rebalance'):
             path = path + "/openconfig-pim-ext:config/ecmp-rebalance-enabled"
-        elif inputDict.get('ecmp') is not None:
+        elif inputDict.get('ecmp'):
             path = path + "/openconfig-pim-ext:config/ecmp-enabled"
 
     ##############################################################
@@ -177,25 +178,23 @@ def get_keypath(func,args):
         #generate keypath
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim'
 
-        if ((inputDict.get('intf') is not None) or
-            (inputDict.get('nbr') is not None)):
+        if ((inputDict.get('interface')) or
+            (inputDict.get('nbr'))):
             path = path + "/interfaces"
-            port = inputDict.get('port')
-            if port is not None:
-                if port.lower().startswith('e'):
-                    path = path + "/interface=" + port
-                else:
-                    path = path + "/interface=" + inputDict.get('ifType') + port
+            ifName = inputDict.get('ifName')
+            if ifName:
+		ifName =  quote(ifName, safe='')
+                path = path + "/interface=" + ifName
 
-        if (inputDict.get('ssm') is not None):
+        if (inputDict.get('ssm')):
             path = path + "/global/ssm"
-        if (inputDict.get('srcAddr') is not None):
+        if (inputDict.get('srcAddr')):
             path = path + "/global/openconfig-pim-ext:tib/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr') + "/state/src-entries/src-entry=" + inputDict.get('srcAddr') + ",SG"
-        elif (inputDict.get('grpAddr') is not None):
+        elif (inputDict.get('grpAddr')):
             path = path + "/global/openconfig-pim-ext:tib/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr')
-        elif (inputDict.get('topology') is not None):
+        elif (inputDict.get('topology')):
             path = path + "/global/openconfig-pim-ext:tib"
-        elif (inputDict.get('rpf') is not None):
+        elif (inputDict.get('rpf')):
             path = "/restconf/operations/sonic-pim-show:show-pim"
             body = {"sonic-pim-show:input":{"vrf-name": vrf, "address-family": "IPV4_UNICAST", "query-type": "RPF", "rpf": True}}
 
@@ -204,18 +203,21 @@ def get_keypath(func,args):
     ##############################################################
     if 'clear_pim' in func:
         path = "/restconf/operations/sonic-pim-clear:clear-pim"
-        if (inputDict.get('interfaces') is not None):
+        if (inputDict.get('interfaces')):
             body = {"sonic-pim-clear:input": {"vrf-name": vrf, "address-family":"IPV4_UNICAST", "config-type":"ALL-INTERFACES", "all-interfaces": True}}
-        elif (inputDict.get('oil') is not None):
+        elif (inputDict.get('oil')):
             body = {"sonic-pim-clear:input": {"vrf-name": vrf, "address-family":"IPV4_UNICAST", "config-type":"ALL-OIL", "all-oil": True}}
 
     keypath = cc.Path(path)
     return keypath, body
 
+
 def get_vrf(intf):
     request = ''
 
-    if intf.lower().startswith('e'):
+    if "." in intf:
+        request = '/restconf/data/sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST=' + intf + '/vrf_name'
+    elif intf.lower().startswith('e'):
         request = '/restconf/data/sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST=' + intf + '/vrf_name'
     elif intf.lower().startswith('vlan'):
         request = '/restconf/data/sonic-vlan-interface:sonic-vlan-interface/VLAN_INTERFACE/VLAN_INTERFACE_LIST=' + intf + '/vrf_name'
@@ -235,11 +237,11 @@ def get_vrf(intf):
         if response is  None:
             return 'default'
 
-        if intf.lower().startswith('e'):
+        if intf.lower().startswith('e') or "." in intf:
             vrf = response.get('sonic-interface:vrf_name')
-        if intf.lower().startswith('vlan'):
+        elif intf.lower().startswith('vlan'):
             vrf = response.get('sonic-vlan-interface:vrf_name')
-        if intf.lower().startswith('p'):
+        elif intf.lower().startswith('p'):
             vrf = response.get('sonic-portchannel-interface:vrf_name')
 
         if vrf is None or vrf == '':
@@ -251,17 +253,17 @@ def get_vrf(intf):
         return None
 
 def show_response(response):
-    if (inputDict.get('intf') is not None):
+    if (inputDict.get('interface')):
         show_intf_info(response)
-    elif (inputDict.get('nbr') is not None):
+    elif (inputDict.get('nbr')):
         show_nbr_info(response)
-    elif (inputDict.get('ssm') is not None):
+    elif (inputDict.get('ssm')):
         show_ssm_info(response)
-    elif (inputDict.get('srcAddr') is not None):
+    elif (inputDict.get('srcAddr')):
         show_topology_src_info(response)
-    elif (inputDict.get('topology') is not None):
+    elif (inputDict.get('topology')):
         show_topology_info(response)
-    elif (inputDict.get('rpf') is not None):
+    elif (inputDict.get('rpf')):
         show_rpf_info(response)
     return
 
@@ -275,7 +277,7 @@ def show_intf_info(response):
     if not response:
         return
 
-    if inputDict.get('port') is not None:
+    if inputDict.get('ifName'):
         intfList = response.get('openconfig-network-instance:interface')
     else:
         intfsContainer = response.get('openconfig-network-instance:interfaces')
@@ -388,43 +390,47 @@ def show_topology_src_info(response):
 
         inIntf = srcState.get('incoming-interface')
         if inIntf is None:
-            inIntf = ""
+            inIntf = "-"
 
         rpfNbr = ""
-        rpfState = srcState.get('rpf-info').get('state')
-        if rpfState is not None:
-            rpfNbr = rpfState.get('rpf-neighbor-address')
-            if rpfNbr is None:
-                rpfNbr = ""
+        rpfInfo = srcState.get('rpf-info')
+        if rpfInfo:
+            rpfState = rpfInfo.get('state')
+            if rpfState:
+                rpfNbr = rpfState.get('rpf-neighbor-address')
+                if rpfNbr is None:
+                    rpfNbr = ""
 
-        oilList = srcState.get('oil-info-entries').get('oil-info-entry')
-        if oilList is not None:
-            for oil in oilList:
-                outIntf = oil.get('outgoing-interface')
-                if  outIntf is None:
-                    continue
+        oilContainer = srcState.get('oil-info-entries')
+        if oilContainer:
+            oilList = oilContainer.get('oil-info-entry')
+            if oilList:
+                for oil in oilList:
+                    outIntf = oil.get('outgoing-interface')
+                    if  outIntf is None:
+                        continue
 
-                oilState = oil.get('state')
-                if  oilState is None:
-                    continue
+                    oilState = oil.get('state')
+                    if  oilState is None:
+                        continue
 
-                oilExpiry = oilState.get('expiry')
-                if oilExpiry is None:
-                    oilExpiry = "Never"
-                else:
-                    oilExpiry = seconds_to_wdhm_str(oilExpiry, False)
+                    oilExpiry = oilState.get('expiry')
+                    if oilExpiry is None:
+                        oilExpiry = "Never"
+                    else:
+                        oilExpiry = seconds_to_wdhm_str(oilExpiry, False)
 
-                oilUpTime = oilState.get('uptime')
-                if oilUpTime is None:
-                    oilUpTime = "--:--:--"
-                else:
-                    oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
+                    oilUpTime = oilState.get('uptime')
+                    if oilUpTime is None:
+                        oilUpTime = "--:--:--"
+                    else:
+                        oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
 
-                oilEntry = {'outIntf': outIntf,
-                            'oilExpiry': oilExpiry,
-                            'oilUpTime': oilUpTime
-                           }
-                oilList2.append(oilEntry)
+                    oilEntry = {'outIntf': outIntf,
+                                'oilExpiry': oilExpiry,
+                                'oilUpTime': oilUpTime
+                               }
+                    oilList2.append(oilEntry)
 
         srcEntry = {'grpAddr': grpAddr,
                     'srcAddr': srcAddr,
@@ -463,7 +469,7 @@ def show_topology_info(response):
         return
 
     try:
-        if inputDict.get('grpAddr') is not None:
+        if inputDict.get('grpAddr'):
             ipList = response.get('openconfig-pim-ext:ipv4-entry')
         else:
             tmpContainer = response.get('openconfig-pim-ext:tib')
@@ -488,7 +494,11 @@ def show_topology_info(response):
             if grpAddr is None:
                 continue
 
-            srcList = state.get('src-entries').get('src-entry')
+            srcEntries = state.get('src-entries')
+            if srcEntries is None:
+                continue
+
+            srcList = srcEntries.get('src-entry')
             if srcList is None:
                 continue
 
@@ -520,45 +530,47 @@ def show_topology_info(response):
 
                 inIntf = srcState.get('incoming-interface')
                 if inIntf is None:
-                    inIntf = ""
+                    inIntf = "-"
 
                 rpfNbr = ""
-                rpfState = srcState.get('rpf-info').get('state')
-                if rpfState is not None:
-                    rpfNbr = rpfState.get('rpf-neighbor-address')
-                    if rpfNbr is None:
-                        rpfNbr = ""
+                rpfInfo = srcState.get('rpf-info')
+                if rpfInfo:
+                    rpfState = rpfInfo.get('state')
+                    if rpfState:
+                        rpfNbr = rpfState.get('rpf-neighbor-address')
+                        if rpfNbr is None:
+                            rpfNbr = ""
 
-                oilList = srcState.get('oil-info-entries').get('oil-info-entry')
-                if oilList is None:
-                    continue
+                oilContainer = srcState.get('oil-info-entries')
+                if oilContainer is not None:
+                    oilList = oilContainer.get('oil-info-entry')
+                    if oilList is not None:
+                        for oil in oilList:
+                            outIntf = oil.get('outgoing-interface')
+                            if  outIntf is None:
+                                continue
 
-                for oil in oilList:
-                    outIntf = oil.get('outgoing-interface')
-                    if  outIntf is None:
-                        continue
+                            oilState = oil.get('state')
+                            if  oilState is None:
+                                continue
 
-                    oilState = oil.get('state')
-                    if  oilState is None:
-                        continue
+                            oilExpiry = oilState.get('expiry')
+                            if oilExpiry is None:
+                                oilExpiry = "Never"
+                            else:
+                                oilExpiry = seconds_to_wdhm_str(oilExpiry, False)
 
-                    oilExpiry = oilState.get('expiry')
-                    if oilExpiry is None:
-                        oilExpiry = "Never"
-                    else:
-                        oilExpiry = seconds_to_wdhm_str(oilExpiry, False)
+                            oilUpTime = oilState.get('uptime')
+                            if oilUpTime is None:
+                                oilUpTime = "--:--:--"
+                            else:
+                                oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
 
-                    oilUpTime = oilState.get('uptime')
-                    if oilUpTime is None:
-                        oilUpTime = "--:--:--"
-                    else:
-                        oilUpTime = seconds_to_wdhm_str(oilUpTime, True)
-
-                    oilEntry = {'outIntf': outIntf,
-                                'oilExpiry': oilExpiry,
-                                'oilUpTime': oilUpTime
-                               }
-                    oilList2.append(oilEntry)
+                            oilEntry = {'outIntf': outIntf,
+                                        'oilExpiry': oilExpiry,
+                                        'oilUpTime': oilUpTime
+                                       }
+                            oilList2.append(oilEntry)
 
                 srcEntry = {'grpAddr': grpAddr,
                             'srcAddr': srcAddr,
@@ -645,7 +657,7 @@ def show_rpf_info(response):
 
         for subkey in rpfEntry.keys():
             rpfSubEntry = rpfEntry.get(subkey)
-            if rpfSubEntry is not None:
+            if rpfSubEntry:
                 outputList.append(rpfSubEntry)
 
     if len(outputList) > 0:
@@ -698,7 +710,7 @@ def show_nbr_info(response):
             if rcvdNbr is None:
                 continue
 
-            if givenNbr is not None:
+            if givenNbr:
                 if givenNbr != rcvdNbr:
                     continue
 
@@ -722,11 +734,22 @@ def show_nbr_info(response):
             if pimDrPrio is None:
                 pimDrPrio = ""
 
+            pimNbrBfdState = nbrState.get('openconfig-pim-ext:bfd-session-status')
+            if pimNbrBfdState is None:
+                pimNbrBfdState = "-"
+            elif pimNbrBfdState == "UP":
+                pimNbrBfdState = "Up"
+            elif pimNbrBfdState == "DOWN":
+                pimNbrBfdState = "Down"
+            else:
+                pimNbrBfdState = "-"
+
             nbrEntry = {'intfId':intfId,
                         'rcvdNbr':rcvdNbr,
                         'upTime':upTime,
                         'expiryTime':expiryTime,
                         'pimDrPrio':pimDrPrio,
+                        'pimNbrBfdState':pimNbrBfdState,
                         }
             outputList.append(nbrEntry)
 

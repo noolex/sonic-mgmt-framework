@@ -182,6 +182,20 @@ limitations under the License.
                  </PARAM>
             </PARAM>
             <PARAM
+                 name="subif-name"
+                 help="Select an interface"
+                 ptype="PHY_PO_SUB_INTERFACE"
+                 optional="true"
+                 >
+                 <PARAM
+                    help="Summary of NDP entries"
+                    name="summary"
+                       ptype="SUBCOMMAND"
+                       mode="subcommand"
+                       optional="true">
+                 </PARAM>
+            </PARAM>
+            <PARAM
                 name="Loopback"
                 help="Loopback Interface Configuration"
                 mode="subcommand"
@@ -276,6 +290,9 @@ limitations under the License.
             if test "${iftype}" = "phy-if-name"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_nbrs family:IPv6 intf:${phy-if-name} summary:${summary}&#xA;
             fi&#xA;
+            if test "${iftype}" = "subif-name"; then&#xA;
+                python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_nbrs family:IPv6 intf:${subif-name} summary:${summary}&#xA;
+            fi&#xA;
             if test "${iftype}" = "Loopback"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic-cli-neighbors.py get_nbrs family:IPv6 intf:${iftype}${lo-id} summary:${summary}&#xA;
             fi&#xA;
@@ -318,6 +335,12 @@ limitations under the License.
                 >
             </PARAM>
             <PARAM
+                name="subif-name"
+                help="Clear Sub interface NDP entries"
+                ptype="PHY_PO_SUB_INTERFACE"
+                >
+            </PARAM>
+            <PARAM
                 name="mgmt-if-name"
                 help="Clear Management interface NDP entries"
                 ptype="MGMT_INTERFACE"
@@ -337,7 +360,7 @@ limitations under the License.
             </PARAM>
         </PARAM>
         <ACTION>
-            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 intf:${interface-switch} phyIf:${phy-if-name} mgmtIf:eth0 vlanIf:${vlan-if-name} poIf:${po-if-name}&#xA;
+            python $SONIC_CLI_ROOT/sonic-cli-neighbors.py rpc_sonic_clear_neighbors family:IPv6 intf:${interface-switch} phyIf:${phy-if-name} subIf:${subif-name} mgmtIf:eth0 vlanIf:${vlan-if-name} poIf:${po-if-name}&#xA;
         </ACTION>
     </COMMAND>
 

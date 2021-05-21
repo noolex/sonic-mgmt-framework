@@ -188,6 +188,35 @@ limitations under the License.
                                 ptype="VLAN_RANGE"
                                 />
                         </PARAM>
+                        <PARAM
+                            name="except"
+                            help="Configure trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                                name="vlan_id_list"
+                                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                                ptype="VLAN_RANGE"
+                                />
+                        </PARAM>
+                       <PARAM
+                            name="all"
+                            help="Configures an interface on all VLANs"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            />
+                       <PARAM
+                            name="none"
+                            help="Remove all trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            />
+                       <PARAM
+                            name="vlan_id_list"
+                            help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                            ptype="VLAN_RANGE"
+                            />
 		    </PARAM>
                </PARAM>
             </PARAM>
@@ -330,6 +359,35 @@ limitations under the License.
                                 ptype="VLAN_RANGE"
                                 />
                         </PARAM>
+                        <PARAM
+                            name="except"
+                            help="Configure trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            >
+                            <PARAM
+                                name="vlan_id_list"
+                                help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                                ptype="VLAN_RANGE"
+                                />
+                        </PARAM>
+                        <PARAM
+                            name="all"
+                            help="Configures an interface on all VLANs"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            />
+                       <PARAM
+                            name="none"
+                            help="Remove all trunking parameters on an interface"
+                            ptype="SUBCOMMAND"
+                            mode="subcommand"
+                            />
+		      <PARAM
+                            name="vlan_id_list"
+                            help="(-) or (,) separated individual VLAN IDs and ranges of VLAN IDs; for example, 20,70-100,142"
+                            ptype="VLAN_RANGE"
+                            />
 		    </PARAM>
                 </PARAM>
             </PARAM>
@@ -432,3 +490,4 @@ limitations under the License.
 </MACRODEF>
 
 </ROOT>
+

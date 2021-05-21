@@ -1,0 +1,22 @@
+{% set vars = {'ifname': ""} %}
+{% set vars = {'source': ""} %}
+{% set vars = {'group': ""} %}
+{% set vars = {'ifaddr': ""} %}
+{% set vars = {'uptime': ""} %}
+{% set vars = {'sockfd': ""} %}
+{% if json_output -%}
+{{'Interface'.ljust(15)}}{{'Address'.ljust(15)}}{{'Source'.ljust(15)}}{{'Group'.ljust(15)}}{{'Socket'.ljust(10)}}{{'Uptime'}}
+{% for key in json_output -%}
+  {% if vars.update({'ifname':key}) %}{% endif -%}
+  {% set joins = json_output[key] -%}
+    {% for entry in joins -%}
+       {% set join = joins[entry] -%} 
+       {% if vars.update({'group':join["group"]}) %}{% endif -%}
+       {% if vars.update({'source':join["source"]}) %}{% endif -%}
+       {% if vars.update({'ifaddr':join["ifaddr"]}) %}{% endif -%}
+       {% if vars.update({'uptime':join["uptime"]}) %}{% endif -%}
+       {% if vars.update({'sockfd':join["sockfd"]}) %}{% endif -%}
+{% if vars.group %}{{(vars.ifname|string).ljust(15)}}{{(vars.ifaddr|string).ljust(15)}}{{(vars.source|string).ljust(15)}}{{(vars.group|string).ljust(15)}}{{(vars.sockfd|string).ljust(10)}}{{vars.uptime}}{{ '\n' -}}{% endif -%}
+{% endfor -%}
+{% endfor -%}
+{% endif -%}

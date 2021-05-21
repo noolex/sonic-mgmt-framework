@@ -39,13 +39,24 @@ limitations under the License.
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
+
+    <COMMAND name="show switch-resource route-scale" help="Show Route-Scale Switch Resource stats ">
+      <ACTION builtin="clish_pyobj">
+        sonic_cli_switch_resource get_openconfig_system_ext_system_swresource switch_resource_routes.j2
+      </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>Show warm restart </DESCRIPTION>
+          <EXAMPLE summary="Shows route-scale switch resource information">
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
   </VIEW>
 
   <VIEW name="configure-view">
-    <COMMAND name="switch-resource" 
-             help="Switch Resource Configuration" 
-             mode="subcommand" 
-             ptype="SUBCOMMAND" 
+    <COMMAND name="switch-resource"
+             help="Switch Resource Configuration"
+             mode="subcommand"
+             ptype="SUBCOMMAND"
              view="configure-switch-resource-view"
 	     viewid="switch-resource"
              view_keys="name=DROP_MONITOR"
@@ -53,8 +64,8 @@ limitations under the License.
 	     dbpath="sonic-switch-resource:sonic-switch-resource/SWITCH_RESOURCE_TABLE/SWITCH_RESOURCE_TABLE_LIST/name=DROP_MONITOR"/>
   </VIEW>
 
-  <VIEW name="configure-switch-resource-view" 
-        prompt="${SYSTEM_NAME}(config-switch-resource)# " 
+  <VIEW name="configure-switch-resource-view"
+        prompt="${SYSTEM_NAME}(config-switch-resource)# "
 	depth="2">
 	<NAMESPACE ref="configure-view" help="false" completion="false"/>
 
@@ -69,7 +80,7 @@ limitations under the License.
                    Use this command to remove drop monitor flow scale configuration.
 	   </USAGE>
 	   <EXAMPLE summary="Remove Drop Monitor Flow Scale Configurations">
-		   sonic(config)# no drop-monitor flows 
+		   sonic(config)# no drop-monitor flows
 	   </EXAMPLE>
         </DOCGEN>
     </COMMAND>
@@ -80,15 +91,49 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_switch_resource patch_openconfig_system_ext_system_swresource ${flows-name}</ACTION>
   	<DOCGEN>
 	   <DESCRIPTION>
-		   This CLI is used to create flow configuration for drop-monitor 
+		   This CLI is used to create flow configuration for drop-monitor
 	   </DESCRIPTION>
 	   <USAGE>
-		   This command is used to flow configurations for Drop-Monitor in the EM Entry Table 
+		   This command is used to flow configurations for Drop-Monitor in the EM Entry Table
 	   </USAGE>
 	   <EXAMPLE summary="Configure Drop Monitor Flow Scale configuration">
-		   sonic(config-switch-resource)# drop-monitor flows min  
+		   sonic(config-switch-resource)# drop-monitor flows min
 	   </EXAMPLE>
         </DOCGEN>
     </COMMAND>
+
+    <COMMAND name="no route-scale" help="Remove Route Scale configuration">
+      <PARAM name="routes" help="Route Scale configuration " ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_switch_resource patch_openconfig_system_ext_system_swresource_routes default</ACTION>
+  	<DOCGEN>
+	   <DESCRIPTION>
+		   Remove Route Scale configuration .
+	   </DESCRIPTION>
+	   <USAGE>
+       Use this command to remove route scale configuration.
+	   </USAGE>
+	   <EXAMPLE summary="Remove Route Scale Configurations">
+		   sonic(config)# no route-scale routes
+	   </EXAMPLE>
+    </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="route-scale" help="Route Scale Resource" command_tables="sonic-switch-resource:sonic-switch-resource/SWITCH_RESOURCE_TABLE/SWITCH_RESOURCE_TABLE_LIST" render_command_cb="switch_resource_flow_scale_entry">
+      <PARAM name="routes" help="Configure Route Scale " ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+      <PARAM name="max" help="Route scale that can be configured" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_switch_resource patch_openconfig_system_ext_system_swresource_routes max</ACTION>
+  	<DOCGEN>
+	   <DESCRIPTION>
+		   This CLI is used to route scale configuration
+	   </DESCRIPTION>
+	   <USAGE>
+		   This CLI is used to route scale configuration
+	   </USAGE>
+	   <EXAMPLE summary="Configure Route Scale">
+		   sonic(config-switch-resource)# route-scale routes max
+	   </EXAMPLE>
+        </DOCGEN>
+    </COMMAND>
+
   </VIEW>
 </CLISH_MODULE>

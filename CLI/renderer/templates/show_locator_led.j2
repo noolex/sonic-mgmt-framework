@@ -1,0 +1,13 @@
+{% for key,value in json_output.items() %}
+{% if 'openconfig-system-ext:output' == key %}
+{% for state, output in value.items() %}
+{% if 'status-detail' == state %} 
+{% for entry in value[state] %}
+{{ entry}}
+{% endfor %}
+{% else %}
+{{output}}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}

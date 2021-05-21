@@ -160,10 +160,12 @@ def run_config(func, args):
 
             if api_response is None:
                 print("%Error: Transaction Failure")
+                return 1
             else:
                 return
     else:
         print(response.error_message())
+        return 1
 
 def get_sonic_tacacs_all():
     get_sonic_tacacs_global()
@@ -177,7 +179,7 @@ def run(func, args):
     elif func == 'get_sonic_tacacs_all':
         get_sonic_tacacs_all()
     else:
-        run_config(func, args)
+        return run_config(func, args)
 
 if __name__ == '__main__':
     pipestr().write(sys.argv)

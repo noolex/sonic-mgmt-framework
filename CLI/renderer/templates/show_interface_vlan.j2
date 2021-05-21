@@ -1,13 +1,5 @@
-{% set vars = {'ipv4': ""} %}
-{% set vars = {'ipv6': ""} %}
-{% set vars = {'name': ""} %}
-{% set vars = {'admin_state': ""} %}
-{% set vars = {'mtu': ""} %}
-{% set vars = {'ipv4_src_pfx': ""} %}
-{% set vars = {'ipv6_src_pfx': ""} %}
-{% set vars = {'ipv6_status': ""} %}
-{% set vars = {'description': ""} %}
-{% set vars = {'ip_prim':""} %}
+{% set vars = {'ipv4': "", 'ipv6': "", 'name': "", 'admin_state': "up", 'oper_state': "", 'mtu': "",
+                'ipv4_src_pfx': "", 'ipv6_src_pfx': "", 'ipv6_status': "", 'description': "", 'ip_prim':""} %}
 {% set ip_sec_list = [] %}
 {% if json_output -%}
 {% for interfaces in json_output %}
@@ -17,7 +9,10 @@
     {% for key in interface %}
       {% if "state" in key %}
         {% if vars.update({'name':interface[key]["name"]}) %}{% endif %}
-        {% if vars.update({'admin_state':interface[key]["admin-status"]}) %}{% endif %}
+        {% if "admin_status" in interface[key] %}
+          {% if vars.update({'admin_state':interface[key]["admin-status"]}) %}{% endif %}
+        {% endif %}
+        {% if vars.update({'oper_state':interface[key]["oper-status"]}) %}{% endif %}
         {% if vars.update({'mtu':interface[key]["mtu"]}) %}{% endif %}
         {% if vars.update({'description':interface[key]["description"]}) %}{% endif %}
       {% endif %}
@@ -71,7 +66,7 @@
       {% endif %}
     {% endfor %}
 {% if vars.name %}
-{{ vars.name }} is {{ vars.admin_state|lower() }}
+{{ vars.name }} is {{ vars.admin_state|lower() }}, line protocol is {{vars.oper_state|lower() }}
 {% if vars.description %}
 Description: {{vars.description}}
 {% endif %}

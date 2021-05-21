@@ -24,9 +24,9 @@ import (
 	"net/http"
 	"path"
 	"regexp"
+	"runtime"
 	"strings"
 	"time"
-	"runtime"
 
 	"github.com/Azure/sonic-mgmt-common/translib"
 
@@ -77,7 +77,7 @@ func doRecover(w http.ResponseWriter, r *http.Request) {
 // ServeHTTP resolves and invokes the handler for http request r.
 // RESTCONF paths are served from the routeTree; rest from mux router.
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	defer doRecover(w,r)
+	defer doRecover(w, r)
 	path := cleanPath(r.URL.EscapedPath())
 	r = setContextValue(r, routerConfigContextKey, router)
 

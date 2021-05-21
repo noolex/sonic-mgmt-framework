@@ -117,6 +117,20 @@ def show_router_ospf_config(render_tables):
         match_value = { 'BRIEF' : '', 'DETAIL' : 'detail' }
         cmd_str += ospf_generate_command(tbl_rec, 'log-adjacency-changes', ' log-adjacency-changes', match_value=match_value)
 
+        mmrlsa_all_p, _, mmrlsa_all_v = ospf_get_key_value(tbl_rec, 'max-metric-router-lsa-all')
+        if mmrlsa_all_p == True :
+            if mmrlsa_all_v == 16777215 :
+                cmd_str += ' max-metric router-lsa all ;'
+            else :
+                cmd_str += ' max-metric router-lsa all {} ;'.format(mmrlsa_all_v)
+
+        mmrlsa_stb_p, _, mmrlsa_stb_v = ospf_get_key_value(tbl_rec, 'max-metric-router-lsa-stub')
+        if mmrlsa_stb_p == True :
+            if mmrlsa_stb_v == 16777215 :
+                cmd_str += ' max-metric router-lsa include-stub ;'
+            else :
+                cmd_str += ' max-metric router-lsa include-stub {} ;'.format(mmrlsa_stb_v)
+
         match_value = { True : 'administrative' }
         cmd_str += ospf_generate_command(tbl_rec, 'max-metric-administrative', ' max-metric router-lsa', match_value=match_value)
         cmd_str += ospf_generate_command(tbl_rec, 'max-metric-on-shutdown', ' max-metric router-lsa on-shutdown')

@@ -32,49 +32,99 @@ def invoke(func, args):
 
     # SAG delete ipv4 anycast gateway address
     if func == 'del_llist_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv4_sag_ipv4_config_static_anycast_gateway' :
-        sag_key = collections.defaultdict(dict)
-        sag_key = {
-            "name": args[0],
-            "static-anycast-gateway": args[1]
-                  }
 
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway={static-anycast-gateway}',
-                          **sag_key)
-        return aa.delete(keypath)         
+        parent_if = args[0]
+        sub_if = "0"
+
+        sag_key = collections.defaultdict(dict)
+
+        if '.' in parent_if:
+            parent_if = args[0].split('.')[0]
+            sub_if = args[0].split('.')[1]
+            sag_key = {
+                "name": parent_if,
+                "index": sub_if,
+                "static-anycast-gateway": args[1]
+                }
+
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway={static-anycast-gateway}', **sag_key)
+        else:
+            sag_key = {
+                "name": parent_if,
+                "static-anycast-gateway": args[1]
+                 }
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway={static-anycast-gateway}', **sag_key)
+
+        return aa.delete(keypath)
 
     # SAG configure ipv4 anycast gateway address
     if func == 'patch_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv4_sag_ipv4_config_static_anycast_gateway' :
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway',
-                          name=args[0])
+        parent_if = args[0]
+        sub_if = "0"
+
+        if '.' in parent_if:
+            parent_if = args[0].split('.')[0]
+            sub_if = args[0].split('.')[1]
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway',
+                              name=parent_if, index=sub_if)
+        else:
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv4/openconfig-interfaces-ext:sag-ipv4/config/static-anycast-gateway',
+                              name=args[0])
+
         body = collections.defaultdict(dict)
         body = {
                      "openconfig-interfaces-ext:static-anycast-gateway": [args[1]]
                }
 
         return aa.patch(keypath, body)
-        
+
     # SAG delete ipv6 anycast gateway address
     if func == 'del_llist_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv6_sag_ipv6_config_static_anycast_gateway' :
-        sag_key = collections.defaultdict(dict)
-        sag_key = {
-            "name": args[0],
-            "static-anycast-gateway": args[1]
-                  }
 
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway={static-anycast-gateway}',
-                          **sag_key)
-        return aa.delete(keypath)         
+        parent_if = args[0]
+        sub_if = "0"
+
+        sag_key = collections.defaultdict(dict)
+
+        if '.' in parent_if:
+            parent_if = args[0].split('.')[0]
+            sub_if = args[0].split('.')[1]
+            sag_key = {
+                "name": parent_if,
+                "index": sub_if,
+                "static-anycast-gateway": args[1]
+                }
+
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway={static-anycast-gateway}', **sag_key)
+        else:
+            sag_key = {
+                "name": parent_if,
+                "static-anycast-gateway": args[1]
+                 }
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway={static-anycast-gateway}', **sag_key)
+
+        return aa.delete(keypath)
 
     # SAG configure ipv6 anycast gateway address
     if func == 'patch_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ipv6_sag_ipv6_config_static_anycast_gateway' :
-        keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway',
-                          name=args[0])
+        parent_if = args[0]
+        sub_if = "0"
+
+        if '.' in parent_if:
+            parent_if = args[0].split('.')[0]
+            sub_if = args[0].split('.')[1]
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/subinterfaces/subinterface={index}/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway',
+                              name=parent_if, index=sub_if)
+        else:
+            keypath = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/openconfig-vlan:routed-vlan/openconfig-if-ip:ipv6/openconfig-interfaces-ext:sag-ipv6/config/static-anycast-gateway',
+                              name=args[0])
+
         body = collections.defaultdict(dict)
         body = {
-                    "openconfig-interfaces-ext:static-anycast-gateway": [args[1]]
+                     "openconfig-interfaces-ext:static-anycast-gateway": [args[1]]
                }
 
-        return aa.patch(keypath, body)      
+        return aa.patch(keypath, body)
 
     # SAG delete global mac
     if func == 'delete_openconfig_network_instance_ext_network_instances_network_instance_global_sag_config_anycast_mac' :

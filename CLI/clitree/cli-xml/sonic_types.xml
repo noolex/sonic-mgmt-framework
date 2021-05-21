@@ -38,15 +38,21 @@ limitations under the License.
 <!ENTITY ETH_PHY_NUM_RANGE_ALIAS "((&ETH_PHY_NUM_ALIAS;|&ETH_PAIR_ALIAS;)(,(&ETH_PHY_NUM_ALIAS;|&ETH_PAIR_ALIAS;))*)">
 <!ENTITY ETH_ALL_INTF_RANGE "(^[eE]([t]|(th)|(thernet))?\s*(&ETH_PHY_NUM_RANGE;$))">
 <!ENTITY ETH_ALL_INTF_RANGE_ALIAS "(^[eE]([t]|(th))?\s*(&ETH_PHY_NUM_RANGE_ALIAS;$))">
+<!ENTITY ETH_ALL_SUBINTF    "(^[eE]([t]|(th)|(thernet))?\s*((&ETH_PHY_NUM;(\.[1-9][0-9]*)$)))">
+<!ENTITY ETH_ALL_SUBINTF_ALIAS "(^[eE]([t]|(th))?\s*(&ETH_PHY_NUM_ALIAS;(\.[1-9][0-9]*)$))">
+<!ENTITY ETH_ALL_INTF_SUBIF    "(^[eE]([t]|(th)|(thernet))?\s*((&ETH_PHY_NUM;(\.[1-9][0-9]*)?$)))">
+<!ENTITY ETH_ALL_INTF_SUBIF_ALIAS "(^[eE]([t]|(th))?\s*(&ETH_PHY_NUM_ALIAS;(\.[1-9][0-9]*)?$))">
 <!ENTITY VLAN_NUM        "(409[0-4]|40[0-8][0-9]|[1-3][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])">
 <!ENTITY VLAN_ALL_INTF   "(^[vV]([l]|(lan))?\s*&VLAN_NUM;$)">
 <!ENTITY VLAN_RNG        "(&VLAN_NUM;-&VLAN_NUM;)">
 <!ENTITY VLAN_ALL_INTF_RANGE    "(^[vV]([l]|(lan))?\s*((&VLAN_NUM;|&VLAN_RNG;)(,(&VLAN_NUM;|&VLAN_RNG;))*)$)">
 <!ENTITY PO_INTF_VALUE   "(25[0-6]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[1-9])">
 <!ENTITY PO_ALL_INTF     "^[pP]([o]|(ortChannel))?\s*&PO_INTF_VALUE;$">
+<!ENTITY PO_ALL_INTF_SUBIF  "^[pP]([o]|(ortChannel))?\s*&PO_INTF_VALUE;(\.[1-9][0-9]*)?$">
 <!ENTITY PO_PAIR "((&PO_INTF_VALUE;)(\-(&PO_INTF_VALUE;))?)">
 <!ENTITY PO_RNG "((&PO_INTF_VALUE;|&PO_PAIR;)(,(&PO_INTF_VALUE;|&PO_PAIR;))*)">
 <!ENTITY PO_ALL_INTF_RANGE "(^[pP]([o]|(ortChannel))?\s*(&PO_RNG;$))">
+<!ENTITY PO_ALL_SUBINTF_RANGE "(^[pP]([o]|(ortChannel))?\s*([1-9][0-9]*\.[1-9][0-9]*)$)">
 <!ENTITY LOOPB_INTF_VAL  "([0-9]|[1-9][0-9]|[1-9][0-9]{2}|[1-9][0-9]{3}|1[0-5][0-9]{3}|16[0-2][0-9]{2}|163[0-7][0-9]|1638[0-3])">
 <!ENTITY LOOPB_OPTION    "(^[lL]([o]|(oop)|(oopback))?\s*)">
 <!ENTITY LOOPB_INTF      "&LOOPB_OPTION;&LOOPB_INTF_VAL;$">
@@ -89,7 +95,7 @@ limitations under the License.
     <PTYPE
         name="VLAN_RANGE"
         pattern="((&VLAN_NUM;|&VLAN_RNG;)(,(&VLAN_NUM;|&VLAN_RNG;))*)$"
-        help=""
+        help="&lt;1..4094>"
         />
     <!--=======================================================-->
     <PTYPE
@@ -137,7 +143,7 @@ limitations under the License.
         name="PO_INTERFACE_RANGE"
         method="regexp_select"
         ext_pattern="PortChannel(1..256)"
-        pattern="&PO_ALL_INTF_RANGE;"
+        pattern="&PO_ALL_INTF_RANGE;|&PO_ALL_SUBINTF_RANGE;"
         help="Interface PortChannel Range"
         />
     <!--=======================================================-->
@@ -154,6 +160,12 @@ limitations under the License.
         method="integer"
         pattern="1..256"
         help=""
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="LAG_ID_SUBID"
+        pattern="(^([0-9]+)\.([0-9]+)$)"
+        help="X.Y"
         />
     <!--=======================================================-->
     <PTYPE
@@ -191,6 +203,42 @@ limitations under the License.
         pattern="&ETH_ALL_INTF;|&LOOPB_INTF;|&MGMT_INTF;|&PO_ALL_INTF;|&VLAN_ALL_INTF;"
         alt_pattern="&ETH_ALL_INTF_ALIAS;|&LOOPB_INTF;|&MGMT_INTF;|&PO_ALL_INTF;|&VLAN_ALL_INTF;"
         help="Interface Type - Ranges"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="PHY_LB_MGMT_PO_VL_SUBINTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(Port[\.subport]) Loopback(0-16383) Management(0-0) PortChannel(1-128[\.subport]) Vlan(1-4093)"
+        alt_ext_pattern="Eth(slot/port[\.subport]) Loopback(0-16383) Management(0-0) PortChannel(1-128[\.subport]) Vlan(1-4093)"
+        ext_help="(Ethernet X.Y) (Loopback interface type) (Management interface type) (PortChannel X.Y) (Vlan interface type)"
+        pattern="&ETH_ALL_INTF_SUBIF;|&LOOPB_INTF;|&MGMT_INTF;|&PO_ALL_INTF_SUBIF;|&VLAN_ALL_INTF;"
+        alt_pattern="&ETH_ALL_INTF_SUBIF_ALIAS;|&LOOPB_INTF;|&MGMT_INTF;|&PO_ALL_INTF_SUBIF;|&VLAN_ALL_INTF;"
+        help="Interface Type - Ranges"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+ <PTYPE
+        name="PHY_PO_VL_SUBINTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(Port[\.subport]) PortChannel(1-128[\.subport]) Vlan(1-4093)"
+        alt_ext_pattern="Eth(slot/port[\.subport]) PortChannel(1-128[\.subport]) Vlan(1-4093)"
+        ext_help="(Ethernet X.Y) (PortChannel X.Y) (Vlan interface type)"
+        pattern="&ETH_ALL_INTF_SUBIF;|&PO_ALL_INTF_SUBIF;|&VLAN_ALL_INTF;"
+        alt_pattern="&ETH_ALL_INTF_SUBIF_ALIAS;|&PO_ALL_INTF_SUBIF;|&VLAN_ALL_INTF;"
+        help="Interface Type - Ranges"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="PHY_PO_SUB_INTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(port\.subport) PortChannel(X.Y) "
+        alt_ext_pattern="Eth(slot/port\.subport) PortChannel(X.Y)"
+        ext_help="(EthernetX.Y) (PortChannelX.Y)"
+        pattern="&ETH_ALL_SUBINTF;|&PO_ALL_SUBINTF_RANGE;"
+        alt_pattern="&ETH_ALL_SUBINTF_ALIAS;|&PO_ALL_SUBINTF_RANGE;"
+        help="Interface Type"
         preprocess="mode"
         />
     <!--=======================================================-->
@@ -413,10 +461,17 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
-	name="RANGE_1_128"
-	method="integer"
-	pattern="1..128"
-	help=""
+	    name="RANGE_1_128"
+	    method="integer"
+	    pattern="1..128"
+	    help=""
+    />
+    <!--=======================================================-->
+    <PTYPE
+	    name="RANGE_0_127"
+	    method="integer"
+	    pattern="0..127"
+	    help=""
     />
     <!--=======================================================-->
     <PTYPE
@@ -539,12 +594,6 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
-        name="VRF"
-        pattern="^Vrf([a-zA-Z0-9_-]){1,12}$"
-        help="WORD"
-        />
-    <!--=======================================================-->
-    <PTYPE
         name="STR_ASN_LST"
         pattern="^[0-9\,]*$"
         help="asn list"
@@ -615,7 +664,7 @@ limitations under the License.
     <PTYPE
         name="STRING_24"
         pattern="(^([a-zA-Z0-9_-]){1,24})$"
-        help="String(Max: 20 characters)"
+        help="String(Max: 24 characters)"
         />
     <!--=======================================================-->
     <PTYPE
@@ -717,7 +766,7 @@ limitations under the License.
     <!--=======================================================-->
     <PTYPE
         name="IP_ADDR_MASK"
-        pattern="(((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(/(1[0-9]|2[0-9]|3[0-2]|[0-9]))"
+        pattern="(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))(/(1[0-9]|2[0-9]|3[0-2]|[0-9])$)"
         help="A.B.C.D/mask"
         />
     <!--=======================================================-->
@@ -1307,6 +1356,28 @@ limitations under the License.
         />
     <!--=======================================================-->
     <PTYPE
+        name="PHY_SUB_INTERFACE"
+        method="regexp_select"
+        ext_pattern="Ethernet(port\.subport)"
+        alt_ext_pattern="Eth(slot/port\.subport)"
+        pattern="&ETH_ALL_SUBINTF;"
+        alt_pattern="&ETH_ALL_SUBINTF_ALIAS;"
+        help="EthernetX.Y"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
+        name="PHY_INTERFACE_SUBIF"
+        method="regexp_select"
+        ext_pattern="Ethernet(port\[\.subport\])"
+        alt_ext_pattern="Eth(slot/port\[\.subport\])"
+        pattern="&ETH_ALL_INTF_SUBIF;"
+        alt_pattern="&ETH_ALL_INTF_SUBIF_ALIAS;"
+        help="EthernetX.Y"
+        preprocess="mode"
+        />
+    <!--=======================================================-->
+    <PTYPE
         name="PHY_INTERFACE"
         method="regexp_select"
         ext_pattern="Ethernet(port)"
@@ -1353,6 +1424,14 @@ limitations under the License.
          />
     <!--=======================================================-->
     <PTYPE
+        name="PO_INTERFACE_SUBIF"
+        method="regexp_select"
+        ext_pattern="PortChannel(1..256\[\.subport\])"
+        pattern="&PO_ALL_INTF_SUBIF;"
+        help="PortChannelNUM"
+         />
+    <!--=======================================================-->
+    <PTYPE
 	name="LOOPBACK_INTERFACE"
 	method="regexp_select"
 	ext_pattern="Loopback(0..16383)"
@@ -1371,11 +1450,11 @@ limitations under the License.
     <PTYPE
         name="PHY_VL_PO_LB_INTERFACE"
         method="regexp_select"
-        ext_pattern="Ethernet(Port) PortChannel(1-128) Vlan(1-4093) Loopback(0..16383)"
-        alt_ext_pattern="Eth(slot/port[/subport]) PortChannel(1-128) Vlan(1-4093) Loopback(0..16383)"
-        ext_help="(Ethernet interface type) (PortChannel interface type) (Vlan interface type) (Loopback interface type)"
-        pattern="&ETH_ALL_INTF;|&VLAN_ALL_INTF;|&PO_ALL_INTF;|&LOOPB_INTF;"
-        alt_pattern="&ETH_ALL_INTF_ALIAS;|&VLAN_ALL_INTF;|&PO_ALL_INTF;|&LOOPB_INTF;"
+        ext_pattern="Ethernet(Port) Ethernet(Port).(Subinterface) Loopback(0..16383) PortChannel(1-128) PortChannel(1-128).(Subinterface) Vlan(1-4093)"
+        alt_ext_pattern="Eth(slot/port[/subport]) Eth(slot/port[/subport]).(Subinterface) Loopback(0..16383) PortChannel(1-128) PortChannel(1-128).(Subinterface) Vlan(1-4093)"
+        ext_help="(Ethernet interface type) (Ethernet subinterface type) (Loopback interface type) (PortChannel interface type) (PortChannel subinterface type) (Vlan interface type)"
+        pattern="&ETH_ALL_INTF;|&ETH_ALL_SUBINTF;|&LOOPB_INTF;|&PO_ALL_INTF_RANGE;|&PO_ALL_SUBINTF_RANGE;|&VLAN_ALL_INTF;"
+        alt_pattern="&ETH_ALL_INTF_ALIAS;|&ETH_ALL_SUBINTF_ALIAS;|&LOOPB_INTF;|&PO_ALL_INTF_RANGE;|&PO_ALL_SUBINTF_RANGE;|&VLAN_ALL_INTF;"
         help="Interface Type - Ranges"
         preprocess="mode"
         />

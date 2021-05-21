@@ -30,7 +30,7 @@ def invoke_api(func, args=[]):
     api = cc.ApiClient()
     keypath = []
     body = None
-    
+     
     #Patch cases
     if func == 'patch_bgp_evpn_advertise_all_vni':
         keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={vrf}'
@@ -198,6 +198,47 @@ def invoke_api(func, args=[]):
         body = { "openconfig-bgp-evpn-ext:route-distinguisher": args[3] }
         return api.patch(keypath, body)
 
+    #PIP cases
+    elif func == 'patch_bgp_evpn_advertise_pip':
+        # fetch parameter values
+        arg_map = {}
+        for i in range(len(args)):
+            arg_val = (args[i].split(":", 1))[-1]
+            arg_name = (args[i].split(":", 1))[0]
+
+            if arg_val :
+                arg_map[arg_name] = arg_val
+         
+        if 'enable' not in arg_map.keys() :
+            print("PIP comamnd option enable not present")
+            return None
+         
+        if  arg_map["enable"] != 'True' :
+            print("PIP comamnd option enable not true")
+            return None
+
+        pip_cfg_data = {}
+        pip_cfg_data.update({ 'openconfig-bgp-evpn-ext:advertise-pip': True })
+
+        if 'ip' in arg_map.keys() :
+            pip_cfg_data.update({ 'openconfig-bgp-evpn-ext:advertise-pip-ip': arg_map['ip'] })
+
+        if 'peer' in arg_map.keys() :
+            pip_cfg_data.update({ 'openconfig-bgp-evpn-ext:advertise-pip-peer-ip': arg_map['peer'] })
+
+        if 'mac' in arg_map.keys() :
+            pip_cfg_data.update({ 'openconfig-bgp-evpn-ext:advertise-pip-mac': arg_map['mac'] })
+
+        keypath_str =  '/restconf/data/openconfig-network-instance:network-instances/network-instance={}'.format(arg_map['vrf'])
+        keypath_str += '/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={}/l2vpn-evpn'.format(arg_map['af'])
+        keypath_str += '/openconfig-bgp-evpn-ext:config/'
+
+        keypath = cc.Path(keypath_str)
+        body = { 'openconfig-bgp-evpn-ext:config' : pip_cfg_data }
+        #print("PIP cmd keypath {}", keypath_str)
+        #print("PIP cmd body {}", body)
+
+        return api.patch(keypath, body)
 
     #Delete cases
     elif func == 'delete_bgp_evpn_advertise_all_vni':
@@ -332,6 +373,77 @@ def invoke_api(func, args=[]):
             +'/openconfig-bgp-evpn-ext:vnis/vni={vni_number}/config/route-distinguisher',
                 vrf=args[0], af_name=args[1], vni_number=args[2])
         return api.delete(keypath)
+
+    #Delete PIP cases
+    elif func == 'delete_bgp_evpn_advertise_pip':
+        #fetch parameter values
+        #print("PIP cmd input args {}", args)
+        arg_map = {}
+        for i in range(len(args)):
+            arg_val = (args[i].split(":", 1))[-1]
+            arg_name = (args[i].split(":", 1))[0]
+            if arg_val:
+                arg_map[arg_name] = arg_val
+        #print("PIP cmd arg map {}", arg_map)
+        #{'peer': 'peer-ip', 'ip': 'ip', 'enable': 'False', 'vrf': 'default', 'af': 'L2VPN_EVPN'}
+
+        if 'enable' not in arg_map.keys() :
+            print("PIP comamnd option enable not present")
+            return None
+
+        if  arg_map["enable"] != 'False' :
+            print("PIP comamnd option enable not false")
+            return None
+
+        keypath_str =  '/restconf/data/openconfig-network-instance:network-instances/network-instance={}'.format(arg_map['vrf'])
+        keypath_str += '/protocols/protocol=BGP,bgp/bgp/global/afi-safis/afi-safi={}/l2vpn-evpn'.format(arg_map['af'])
+        keypath_str += '/openconfig-bgp-evpn-ext:config/'
+        #print("PIP cmd keypath {}", keypath_str)
+
+        response = None
+        unconfig_pip_all = True
+
+        if 'ip' in arg_map.keys() :
+            unconfig_pip_all = False
+            keypath = cc.Path(keypath_str + 'advertise-pip-ip')
+            response = api.delete(keypath)
+            if response.ok() == False : return response
+
+        if 'peer' in arg_map.keys() :
+            unconfig_pip_all = False
+            keypath = cc.Path(keypath_str + 'advertise-pip-peer-ip')
+            response = api.delete(keypath)
+            if response.ok() == False : return response
+
+        if 'mac' in arg_map.keys() :
+            unconfig_pip_all = False
+            keypath = cc.Path(keypath_str + 'advertise-pip-mac')
+            response = api.delete(keypath)
+            if response.ok() == False : return response
+
+        if unconfig_pip_all :
+            if arg_map['vrf'] != 'default' :
+                return api._make_error_response("no advertise-pip command not allowed for non default VRFs")
+            keypath = cc.Path(keypath_str + 'advertise-pip-ip')
+            response = api.delete(keypath)
+            if response.ok() == False : return response
+            if arg_map['vrf'] == 'default' : 
+                keypath = cc.Path(keypath_str + 'advertise-pip-peer-ip')
+                response = api.delete(keypath)
+                if response.ok() == False : return response
+            if arg_map['vrf'] != 'default' :
+                 keypath = cc.Path(keypath_str + 'advertise-pip-mac')
+                 response = api.delete(keypath)
+                 if response.ok() == False : return response
+            keypath = cc.Path(keypath_str)
+            pip_cfg_data = {'openconfig-bgp-evpn-ext:advertise-pip': False }
+            body = { 'openconfig-bgp-evpn-ext:config' : pip_cfg_data }
+            response = api.patch(keypath, body)
+            #keypath = cc.Path(keypath_str + 'advertise-pip')
+            #response = api.delete(keypath)
+            if response.ok() == False : return response
+
+        return response
 
     else:
         body = {}
