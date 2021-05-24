@@ -99,10 +99,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
         {% if "sonic-interface:VLAN_SUB_INTERFACE_LIST" not in json_output -%}
             {% continue %}
         {% endif %}
-        {% if vars.name.startswith('Eth') and "sonic-port:PORT_TABLE_LIST" not in json_output -%}
-            {% continue %}
-        {% endif %}
-        {% if vars.name.startswith('PortChannel') and "sonic-portchannel:LAG_TABLE_LIST" not in json_output -%}
+        {% if "sonic-port:PORT_TABLE_LIST" not in json_output -%}
             {% continue %}
         {% endif %}
         {% set vlanSubIntfList = json_output["sonic-interface:VLAN_SUB_INTERFACE_LIST"] -%}
