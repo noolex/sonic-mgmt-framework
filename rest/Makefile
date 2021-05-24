@@ -28,6 +28,7 @@ REST_BUILD_DIR := $(BUILD_DIR)/rest_server
 REST_BIN := $(REST_BUILD_DIR)/main
 REST_TEST_BIN := $(BUILD_DIR)/tests/rest/server.test
 STATIC_CHECK  := $(REST_BUILD_DIR)/.staticcheck
+FORMAT_CHECK  := $(REST_BUILD_DIR)/.formatcheck
 
 REST_GO_SRCS   = $(shell find . -name '*.go' -not -name '*_test.go')
 REST_TEST_SRCS = $(shell find . -name '*_test.go')
@@ -43,7 +44,7 @@ REST_SRCS := $(REST_GO_SRCS) $(GENERATED_SRCS) $(MGMT_COMM_SRCS) $(OPENAPI_SPECS
 CERTGEN_BIN := $(REST_BUILD_DIR)/generate_cert
 
 
-DEFAULT_TARGETS = $(REST_BIN) $(CERTGEN_BIN) $(STATIC_CHECK)
+DEFAULT_TARGETS = $(REST_BIN) $(CERTGEN_BIN) $(STATIC_CHECK) $(FORMAT_CHECK)
 ifeq ($(NO_TEST_BINS),)
 DEFAULT_TARGETS += $(REST_TEST_BIN)
 endif
@@ -75,6 +76,10 @@ $(CERTGEN_BIN):
 
 $(STATIC_CHECK): $(REST_GO_SRCS) | $$(@D)/.
 	$(MGMT_COMMON_DIR)/tools/test/static-check.sh
+	touch $@
+
+$(FORMAT_CHECK): $(REST_GO_SRCS) $(REST_TEST_SRCS) | $$(@D)/.
+	$(MGMT_COMMON_DIR)/tools/test/format-check.sh
 	touch $@
 
 clean:

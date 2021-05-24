@@ -190,7 +190,7 @@ func TestErrorEntry(t *testing.T) {
 
 func testErrorEntry(err error,
 	expStatus int, expType, expTag, expPath, expMessage string) func(*testing.T) {
-		return testErrorEntry2(err, expStatus, expType, expTag, "", expPath, expMessage)
+	return testErrorEntry2(err, expStatus, expType, expTag, "", expPath, expMessage)
 }
 
 func testErrorEntry2(err error,

@@ -295,6 +295,30 @@
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
+
+    <!--show mclag peer gateway interfaces -->
+    <COMMAND name="show mclag peer-gateway-interfaces" help="Shows MCLAG Peer Gateway interface information">
+      <ACTION builtin="clish_pyobj">sonic_cli_mclag show_mclag_peer_gateway show_mclag_peer_gateway.j2  </ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Show command to display Vlan interfaces on which MCLAG Peer Gateway is configured.
+          </DESCRIPTION>
+          <USAGE>
+              sonic-cli# show mclag peer-gateway-interfaces
+          </USAGE>
+          <EXAMPLE summary="show mclag peer-gateway-interfaces">
+              sonic-cli# show mclag peer-gateway-interfaces
+
+              Interface Name
+              ===================
+              Vlan10
+              ===================
+              Total count : 1
+              ===================
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+
     <!-- show running-config-configuration mclag -->
     <COMMAND name="show running-configuration mclag" help="Shows current mclag configuration">
      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mclag </ACTION>
