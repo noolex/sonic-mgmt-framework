@@ -53,14 +53,14 @@ def run(func, args):
         elif api_response.ok():
             if api_response.content is not None:
                 response = api_response.content
-                if 'openconfig-system-ext:core-file-records' in response.keys():
+                if 'openconfig-system-ext:core-file-records' in list(response.keys()):
                     value = response['openconfig-system-ext:core-file-records']
                     if value is not None:
                         if func != 'info':
                             show_cli_output(args[0], value)
                         else:
                             show_coredump_record(args, value)
-                elif 'openconfig-system-ext:config' in response.keys():
+                elif 'openconfig-system-ext:config' in list(response.keys()):
                     value = response['openconfig-system-ext:config']
                     if func == 'config':
                         show_cli_output(args[0], value)
