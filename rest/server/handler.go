@@ -126,8 +126,8 @@ write_resp:
 		w.Write([]byte(data))
 		// if the size of byte array equals or greater than 10 MB, then free the memory
 		if len(data) >= 10000000 {
-			glog.Info("Calling FreeOSMemory..") 
-			debug.FreeOSMemory()	
+			glog.Info("Calling FreeOSMemory..")
+			debug.FreeOSMemory()
 		}
 	} else {
 		// No data, status only

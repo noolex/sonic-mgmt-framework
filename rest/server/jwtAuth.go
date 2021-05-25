@@ -3,12 +3,13 @@ package server
 import (
 	"crypto/rand"
 	"encoding/json"
-	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/golang/glog"
 	"net/http"
 	"os/user"
 	"strings"
 	"time"
+
+	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/golang/glog"
 )
 
 var (
