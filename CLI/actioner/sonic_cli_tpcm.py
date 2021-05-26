@@ -79,7 +79,7 @@ def run_tpcm_install(func, method, argv):
 
     body  = build_body(func, method, argv)
     
-    print "\nInstallation in process .....\n"
+    print("\nInstallation in process .....\n")
 
     api_response = aa.post(keypath, body)
 
@@ -88,7 +88,7 @@ def run_tpcm_install(func, method, argv):
             response = api_response.content
             show_cli_output(templ, response)
     else:
-        print api_response.error_message()
+        print(api_response.error_message())
 
 
 
@@ -99,7 +99,7 @@ def run_tpcm_upgrade(func, method, argv):
 
     body  = build_body(func, method, argv)
 
-    print "\nUpgrade in process .....\n"
+    print("\nUpgrade in process .....\n")
 
     api_response = aa.post(keypath, body)
 
@@ -108,7 +108,7 @@ def run_tpcm_upgrade(func, method, argv):
             response = api_response.content
             show_cli_output(templ, response)
     else:
-        print api_response.error_message()
+        print(api_response.error_message())
 
 def run_tpcm_uninstall(func, method, argv):
     aa = cc.ApiClient()
@@ -117,7 +117,7 @@ def run_tpcm_uninstall(func, method, argv):
 
     body  = build_body(func, method, argv)
 
-    print "\nUninstallation in process .....\n"
+    print("\nUninstallation in process .....\n")
 
     api_response = aa.post(keypath, body)
 
@@ -126,7 +126,7 @@ def run_tpcm_uninstall(func, method, argv):
             response = api_response.content
             show_cli_output(templ, response)
     else:
-        print api_response.error_message()
+        print(api_response.error_message())
 
 
 def run(func, args):

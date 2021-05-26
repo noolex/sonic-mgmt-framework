@@ -38,7 +38,7 @@ def set_openconfig_loglevel_severity(args):
            if response is not None and 'openconfig-system-ext:output' in response:
               show_cli_output(templ, response)
     except Exception as e:
-        print "%Error: Traction Failure: " + e
+        print("%Error: Traction Failure: " + e)
 
 def get_openconfig_loglevel_from_db(args):
     aa = cc.ApiClient()
@@ -53,7 +53,7 @@ def get_openconfig_loglevel_from_db(args):
            if response is not None and 'openconfig-system-ext:output' in response:
               show_cli_output(templ, response)
     except Exception as e:
-        print "%Error: Traction Failure: " + e
+        print("%Error: Traction Failure: " + e)
 
 def run(func, args):
     if func == 'set_openconfig_loglevel_severity':
