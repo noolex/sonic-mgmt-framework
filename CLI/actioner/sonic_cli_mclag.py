@@ -162,6 +162,14 @@ def invoke(func, args):
                             print("Removing interface "+ str(iname)+" from domain "+str(dmid))
                             keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_INTERFACE/MCLAG_INTERFACE_LIST={domain_id},{if_name}', domain_id=args[0], if_name=iname)
                             aa.delete(keypath)
+                mclag_unique_ip_list  = []
+                if "MCLAG_UNIQUE_IP" in response["sonic-mclag:sonic-mclag"]:
+                    mclag_unique_ip_list = response['sonic-mclag:sonic-mclag']['MCLAG_UNIQUE_IP']['MCLAG_UNIQUE_IP_LIST']
+                    for list_item  in mclag_unique_ip_list:
+                        iname=list_item["if_name"]
+                        print("Removing mclag-separate-ip from "+ str(iname))
+                        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST={if_name}', if_name=iname)
+                        aa.delete(keypath)
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST={domain_id}', domain_id=args[0])
         return aa.delete(keypath)
 
