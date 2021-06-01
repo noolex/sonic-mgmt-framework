@@ -6,6 +6,7 @@
 {% set vars = {'mode4': ""} %}
 {% set vars = {'mode6': ""} %}
 {% set vars = {'ip_prim':""} %}
+{% set vars = {'mac_address': ""} %}
 {% set ip_sec_list = [] %}
 {% set global = json_output['global'][0] %}
 {% if global %}
@@ -14,6 +15,9 @@
 {% endif %}
 {% endif %}
 
+{% if json_output['mac']['openconfig-interfaces:mac-address'] %}
+{% if vars.update({'mac_address':json_output['mac']['openconfig-interfaces:mac-address']}) %}{% endif %}
+{% endif %}
 {% if json_output['portchannel']['sonic-portchannel:LAG_TABLE'] and json_output['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] %}
 {% for po_intf in json_output['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] %}
 
@@ -42,6 +46,7 @@
 {% endif %}
 
 {{po_intf['lagname']}} is {{po_intf['admin_status']}}, line protocol is {{po_intf['oper_status']}}, mode {{mode}}
+Address is {{vars.mac_address}}
 {% if description %}
 Description: {{description}}
 {% endif %}
