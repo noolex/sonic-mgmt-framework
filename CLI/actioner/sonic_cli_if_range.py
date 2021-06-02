@@ -460,7 +460,6 @@ def invoke_api(func, args=[]):
         subfunc = args[1]
         for intf in iflist:
             intfargs = [intf]+ args[2:]
-            time.sleep(.1)
             body["openconfig-interfaces:interfaces"]["interface"].append(generate_body(subfunc, intfargs))
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces')
         return api.patch(path, body)
