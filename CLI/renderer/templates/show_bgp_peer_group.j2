@@ -79,8 +79,8 @@ BGP peer-group {{'%s'| format(vars.pg_name)}}{{'%s' |format(rAS)}}
     {{ items }}
   {% endfor %}
   {% endif %}
-   {% if "openconfig-bgp-ext:members-state" is in pg %}
-   {% set mems =  pg['openconfig-bgp-ext:members-state']['member'] %}
+   {% if "members-state" is in pg %}
+   {% set mems =  pg['members-state']['member'] %}
   Peer-group members:
    {% for mem in mems %}
    {{ mem['neighbor'] }} {{ mem['state']['state'] }}

@@ -88,18 +88,18 @@ def invoke_api(func, args=[]):
 
             keypath = cc.Path(uri, name=args[0], name1=args[1])
             if metric_value != '' :
-                body = {"openconfig-routing-policy-ext:config": { "action": metric_action, "metric": metric_value }}
+                body = {"config": { "action": metric_action, "metric": metric_value }}
             else :
-                body = {"openconfig-routing-policy-ext:config": { "action": metric_action }}
+                body = {"config": { "action": metric_action }}
             return api.patch(keypath, body)
 
         elif attr == 'openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_next_hop':
             if args[2] == 'ipv6' and args[3] == 'prefer-global':
-                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/openconfig-bgp-policy-ext:set-ipv6-next-hop-prefer-global', name=args[0], name1=args[1])
-                body = { "openconfig-bgp-policy-ext:set-ipv6-next-hop-prefer-global" : True }
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/set-ipv6-next-hop-prefer-global', name=args[0], name1=args[1])
+                body = { "set-ipv6-next-hop-prefer-global" : True }
             elif args[2] == 'ipv6' and args[3] == 'global':
-                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/openconfig-bgp-policy-ext:set-ipv6-next-hop-global', name=args[0], name1=args[1])
-                body = { "openconfig-bgp-policy-ext:set-ipv6-next-hop-global" : args[4] }
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/set-ipv6-next-hop-global', name=args[0], name1=args[1])
+                body = { "set-ipv6-next-hop-global" : args[4] }
             elif args[2] == 'ipv4':
                 keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/set-next-hop', name=args[0], name1=args[1])
                 body = { "openconfig-bgp-policy:set-next-hop" : args[3] }
@@ -157,9 +157,9 @@ def invoke_api(func, args=[]):
         uri = restconf_map[attr]
         if attr == 'openconfig_bgp_policy_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_config_set_next_hop':
             if args[2] == 'ipv6' and args[3] == 'prefer-global':
-                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/openconfig-bgp-policy-ext:set-ipv6-next-hop-prefer-global', name=args[0], name1=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/set-ipv6-next-hop-prefer-global', name=args[0], name1=args[1])
             elif args[2] == 'ipv6' and args[3] == 'global':
-                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/openconfig-bgp-policy-ext:set-ipv6-next-hop-global', name=args[0], name1=args[1])
+                keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/set-ipv6-next-hop-global', name=args[0], name1=args[1])
             elif args[2] == 'ipv4':
                 keypath = cc.Path('/restconf/data/openconfig-routing-policy:routing-policy/policy-definitions/policy-definition={name}/statements/statement={name1}/actions/openconfig-bgp-policy:bgp-actions/config/set-next-hop', name=args[0], name1=args[1])
             else:
