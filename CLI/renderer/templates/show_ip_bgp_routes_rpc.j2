@@ -33,8 +33,8 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
        {% if vars.update({'validRoute':path["valid"]}) %}{% endif %}
        {% if vars.update({'origin':path["origin"]}) %}{% endif %}
        {% if vars.update({'bestRoute':path["bestpath"]}) %}{% endif %}
-       {% if vars.update({'asPath': path['aspath']}) %}{% endif %}
-       {% if vars.update({'med':path['med']}) %}{% endif %}
+       {% if vars.update({'asPath': path['path']}) %}{% endif %}
+       {% if vars.update({'med':path['metric']}) %}{% endif %}
        {% set nexthops = path["nexthops"] %}
        {% for nexthop in nexthops %}
          {% if nexthop['used'] %}
