@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2020 Broadcom. The term Broadcom refers to Broadcom Inc. and/or
+its subsidiaries.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<CLISH_MODULE
+    xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+    http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
+    >
+
+    <VIEW name="enable-view">
+        <COMMAND
+            name="show subinterfaces"
+            help="Displays sub-interfaces information"
+            />
+        <COMMAND
+            name="show subinterfaces status"
+            help="Displays sub-interfaces status information"
+            >
+            <ACTION builtin="clish_pyobj">sonic_cli_show_subinterface status_sonic</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Display subinterface status in tabular format
+                </DESCRIPTION>
+                <USAGE>
+                    show subinterfaces status
+                </USAGE>
+                <EXAMPLE summary="Display all subinterfaces information">
+                    sonic-cli# show subinterfaces status
+                    -----------------------------------------------------------------------------------------------
+                    Sub port interface   Speed     MTU       Vlan      Admin     Type                          
+                    -----------------------------------------------------------------------------------------------
+                    Ethernet0.10         25000     2000      100       up        dot1q-encapsulation           
+                    PortChannel100.100   0         9100      1350      up        dot1q-encapsulation           
+                    sonic-cli# 
+                </EXAMPLE>
+                <FEATURE> Subinterface </FEATURE>                        
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND
+           name="show running-configuration subinterface"
+           help="Displays subinterface configuration">
+           <PARAM
+             name="if-subcommands"
+             help="Subinterface subcommands"
+             mode="switch"
+             ptype="SUBCOMMAND"
+             optional="true"
+             >
+             <PARAM
+               name="subifname"
+               help="Ethernet based subinterface"
+               ptype="PHY_SUB_INTERFACE"
+               optional="true">
+            </PARAM>
+            <PARAM
+                name="PortChannel"
+                help="PortChannel based subinterface"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                >
+                <PARAM
+                    name="pch_num"
+                    help="PortChannelID.subport"
+                    ptype="LAG_ID_SUBID"
+                    optional="true"
+                    >
+                </PARAM>
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-subif view_keys="name=${subifname}${PortChannel}${pch_num}" </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Display running config of subinterfaces or the specified subinterface
+                </DESCRIPTION>
+                <USAGE>
+                    show running-configuration subinterface &lt;subinterface-id&gt;
+                </USAGE>
+                <EXAMPLE summary="Display all subinterface config">
+                    sonic-cli# show running-configuration subinterface
+                    !
+                    interface Ethernet0.10
+                     encapsulation dot1q vlan-id 100
+                     mtu 2000
+                     no shutdown
+                     ip address 10.10.1.1/24
+                    !
+                    interface PortChannel100.100
+                     encapsulation dot1q vlan-id 1350
+                     no shutdown
+                     ip vrf forwarding Vrf1
+                    sonic-cli# 
+                </EXAMPLE>
+                <EXAMPLE summary="Display specific subinterface config">
+                    sonic-cli# show running-configuration subinterface PortChannel 100.100
+                    !
+                    interface PortChannel100.100
+                     encapsulation dot1q vlan-id 1350
+                     no shutdown
+                     ip vrf forwarding Vrf1
+                    sonic-cli# 
+                </EXAMPLE>
+                <FEATURE> Subinterface </FEATURE>                        
+            </DOCGEN>
+      </COMMAND>
+
+    </VIEW>
+
+
+
+    <VIEW
+        name="configure-subif-view"
+        prompt="${SYSTEM_NAME}(conf-subif-${iface})# "
+        depth="2"
+        >
+        <NAMESPACE
+            ref="configure-view"
+            help="false"
+            completion="false"
+            />
+        <COMMAND
+            name="show configuration"
+            help = "show configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-subif view_keys="name=${iface}" </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no"
+            help="Negate a command or set its defaults"
+            />
+        <COMMAND name="encapsulation" help="Configure encapsulation for sub-interface"/>
+        <COMMAND name="encapsulation dot1q" help="Configure encapsulation type as DOT1Q"/>
+        <COMMAND name="encapsulation dot1q vlan-id" help="Configure DOT1Q vlan ID" >
+            <PARAM name="vlanid" ptype="VLAN_ID" help="VLAN ID" dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/vlan"> </PARAM>
+            <ACTION
+                builtin="clish_restcl">
+                oper=PATCH 
+                url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/openconfig-vlan:vlan/config/vlan-id 
+                body={ "openconfig-vlan:vlan-id": ${vlanid} }
+            </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configures vlan tag for routed subinterface
+                </DESCRIPTION>
+                <USAGE>
+                    [no] encapsulation dot1q vlan-id &lt;vlan-tag&gt;
+                </USAGE>
+                <EXAMPLE summary="Configure dot1q vlan tag">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0.10
+                    sonic-cli(conf-subif-Ethernet0.10)# encapsulation dot1q vlan-id 100
+                    sonic-cli(config)#
+                </EXAMPLE>
+                <EXAMPLE summary="Unconfigure dot1q vlan tag">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0.10
+                    sonic-cli(conf-subif-Ethernet0.10)# no encapsulation
+                    sonic-cli(config)#
+                </EXAMPLE>
+                <FEATURE> Subinterface </FEATURE>                        
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND name="no encapsulation" help="Unconfigure encapsulation for sub-interface">
+            <ACTION
+                builtin="clish_restcl">
+                oper=DELETE 
+                url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/openconfig-vlan:vlan/config/vlan-id 
+            </ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="mtu"
+            help="Configure MTU">
+            <PARAM
+                name="mtu"
+                help="MTU of the interface"
+                dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/mtu"
+                ptype="RANGE_MTU" />
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/config/openconfig-interfaces-ext:mtu body={"openconfig-interfaces-ext:mtu": ${mtu}}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configures mtu for routed subinterface
+                </DESCRIPTION>
+                <USAGE>
+                    [no] mtu &lt;mtu-value&gt;
+                </USAGE>
+                <EXAMPLE summary="Configure mtu">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0.10
+                    sonic-cli(conf-subif-Ethernet0.10)# mtu 2000
+                    sonic-cli(config)#
+                </EXAMPLE>
+                <EXAMPLE summary="Unconfigure mtu">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0.10
+                    sonic-cli(conf-subif-Ethernet0.10)# no mtu
+                    sonic-cli(config)#
+                </EXAMPLE>
+                <FEATURE> Subinterface </FEATURE>                        
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND
+            name="no mtu"
+            help="Remove MTU">
+            <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/config/openconfig-interfaces-ext:mtu body={"openconfig-interfaces-ext:mtu": 9100}</ACTION>
+        </COMMAND>
+
+        <COMMAND
+            name="shutdown"
+            help="Disable the interface"
+            dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/admin_status=down">
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/config/enabled body={"openconfig-interfaces:enabled": false}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Configures admin status for routed subinterface
+                </DESCRIPTION>
+                <USAGE>
+                    [no] shutdown
+                </USAGE>
+                <EXAMPLE summary="Enable subinterface">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0.10
+                    sonic-cli(conf-subif-Ethernet0.10)# no shutdown
+                    sonic-cli(config)#
+                </EXAMPLE>
+                <EXAMPLE summary="Disable subinterface">
+                    sonic-cli# configure terminal
+                    sonic-cli(config)# interface Ethernet 0.10
+                    sonic-cli(conf-subif-Ethernet0.10)# shutdown
+                    sonic-cli(config)#
+                </EXAMPLE>
+                <FEATURE> Subinterface </FEATURE>                        
+            </DOCGEN>
+        </COMMAND>
+        <COMMAND
+            name="no shutdown"
+            help="Enable the interface"
+            dbpath="sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/admin_status=up">
+        <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-interfaces:interfaces/interface=${parent}/subinterfaces/subinterface=${index}/config/enabled body={"openconfig-interfaces:enabled": true}</ACTION>
+        </COMMAND>
+
+        <MACRO name="IP-UNNUM-CONFIG-OPTIONS" arg="${parent}.${index},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST"> </MACRO>
+        <MACRO name="IP-UNNUM-NO-CONFIG-OPTIONS" arg="${parent}.${index} "> </MACRO>
+    </VIEW>
+</CLISH_MODULE>

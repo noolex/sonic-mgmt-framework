@@ -82,11 +82,23 @@ limitations under the License.
             </EXAMPLE>
         </DOCGEN>
       </COMMAND>
+
+      <COMMAND name="show running-configuration vrf" help="Show VRF configuration information">
+        <PARAM
+          name="vrf-name"
+          help="Name of VRF"
+          ptype="ALL_VRF"
+          >
+        </PARAM>
+        <ACTION
+          builtin="clish_pyobj">sonic_cli_vrf showrun ${vrf-name}
+        </ACTION>
+      </COMMAND>
     </VIEW>
 
     <VIEW name="configure-view">
     <!-- vrf configuration commands -->
-    <COMMAND name="ip vrf mgmt" help="Management VRF configuration" mode="subcommand" ptype="SUBCOMMAND" command_tables="sonic-mgmt-vrf:sonic-mgmt-vrf/MGMT_VRF_CONFIG/MGMT_VRF_CONFIG_LIST/vrf_global_name={name}" command_keys="name=vrf_global" dbpath="sonic-mgmt-vrf:sonic-mgmt-vrf/MGMT_VRF_CONFIG/MGMT_VRF_CONFIG_LIST/mgmtVrfEnabled=true">
+    <COMMAND name="ip vrf mgmt" help="Management VRF configuration" mode="subcommand" ptype="SUBCOMMAND" command_tables="sonic-mgmt-vrf:sonic-mgmt-vrf/MGMT_VRF_CONFIG/MGMT_VRF_CONFIG_LIST/vrf_global_name={name}" command_keys="name=vrf_global" dbpath="sonic-mgmt-vrf:sonic-mgmt-vrf/MGMT_VRF_CONFIG/MGMT_VRF_CONFIG_LIST/mgmtVrfEnabled=true" render_command_viewid="renderCfg_ipvrfmgmt">
       <ACTION 
         builtin="clish_pyobj">sonic_cli_vrf set_openconfig_vrf "mgmt"
       </ACTION> 
@@ -110,6 +122,7 @@ limitations under the License.
       mode="subcommand"
       ptype="SUBCOMMAND"
       command_tables="sonic-vrf:sonic-vrf/VRF/VRF_LIST/vrf_name={name}"
+      render_command_viewid="renderCfg_ipvrf"
       >
       <PARAM
         name="vrf-name"
@@ -193,6 +206,10 @@ limitations under the License.
 
 <VIEW name="configure-if-view">
     <MACRO name="BIND-INTF-TO-VRF" arg="${iface_uri},${iface},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/portname={name},sonic-interface:sonic-interface/INTERFACE/INTERFACE_LIST/vrf_name"></MACRO>
+</VIEW>
+
+<VIEW name="configure-subif-view">
+    <MACRO name="BIND-INTF-TO-VRF" arg="${iface_uri},${iface},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/id={name},sonic-interface:sonic-interface/VLAN_SUB_INTERFACE/VLAN_SUB_INTERFACE_LIST/vrf_name"></MACRO>
 </VIEW>
 
 <VIEW name="configure-if-range-view">

@@ -98,12 +98,13 @@ limitations under the License.
              mode="subcommand"
              command_keys="type=global"
              command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/type={type}"
-             render_command_cb="tacacs_server_source_if">
+             render_command_cb="tacacs_server_source_if"
+             render_command_viewid="renderCfg_tacacs">
         <PARAM name="iftype" help="interface type" mode="switch" ptype="SUBCOMMAND">
-          <PARAM name="Ethernet" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand"/>
+          <PARAM name="Ethernet" help="Ethernet interface or sub-interface" ptype="PHY_INTERFACE_SUBIF" mode="subcommand"/>
           <PARAM name="Loopback" help="Loopback interface" ptype="LOOPBACK_INTERFACE" mode="subcommand"/>
           <PARAM name="Management" help="Management interface" ptype="MGMT_INTERFACE" mode="subcommand"/>
-          <PARAM name="PortChannel" help="PortChannel interface" ptype="PO_INTERFACE" mode="subcommand"/>
+          <PARAM name="PortChannel" help="PortChannel interface or sub-interface" ptype="PO_INTERFACE_SUBIF" mode="subcommand"/>
           <PARAM name="Vlan" help="Vlan interface" ptype="VLAN_INTERFACE" mode="subcommand"/>
         </PARAM>
           <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_sonic_tacacs_global_src_intf ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan} ${instance} </ACTION>
@@ -115,7 +116,8 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand"
              command_keys="type=global"
-             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/type={type}">
+             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/type={type}"
+             render_command_viewid="renderCfg_tacacs">
       <PARAM name="timeout"
              help="timeout (default: 5)"
              ptype="TACACS_TIMEOUT"
@@ -132,7 +134,8 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand"
              command_keys="type=global"
-             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/type={type}">
+             command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/type={type}"
+             render_command_viewid="renderCfg_tacacs">
       <PARAM name="auth-type"
              help="Authentication type (default: pap)"
              ptype="AAA_AUTH_TYPE"
@@ -150,7 +153,8 @@ limitations under the License.
              mode="subcommand"
              command_keys="type=global"
              command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/type={type}"
-             escape_chars="">
+             escape_chars=""
+             render_command_viewid="renderCfg_tacacs">
       <PARAM name="secret-key"
              help=""
              ptype="TACACS_KEY"
@@ -167,7 +171,8 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand"
              command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/ipaddress={addr}"
-             escape_chars="">
+             escape_chars=""
+             render_command_viewid="renderCfg_tacacs">
       <PARAM name="host"
              help="Hostname (Max: 63 characters) or IPv4/IPv6 address of TACACS+ server"
              ptype="HOSTNAME_OR_IPADDR"

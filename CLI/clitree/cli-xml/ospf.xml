@@ -753,6 +753,12 @@
         <PARAM name="on-startup" help="Enables infinite metric advertising at OSPFv2 router startup" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
           <PARAM name="interdistance" help="Duration in seconds to advertise max metric" ptype="RANGE_5_86400" />
         </PARAM>
+        <PARAM name="all" help="Enables router LSA all link max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="maxmetricvalue" help="Max metric value" ptype="RANGE_0_16777215" default="16777215" optional="true"/>
+        </PARAM>
+        <PARAM name="include-stub" help="Enables router LSA stub link max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
+          <PARAM name="maxmetricvalue" help="Max metric value" ptype="RANGE_0_16777215" default="16777215" optional="true"/>
+        </PARAM>
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config ${vrf-name} ${__full_line} </ACTION>
@@ -783,6 +789,8 @@
         <PARAM name="on-shutdown" help="Disables infinite metric advertising before OSPFv2 router shutdown" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
 -->
         <PARAM name="on-startup" help="Disables infinite metric advertising at OSPFv2 router startup" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="all" help="Disables router LSA all link max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
+        <PARAM name="include-stub" help="Disables router LSA stub link max metric advertising" ptype="SUBCOMMAND" mode="subcommand" optional="true" />
       </PARAM>
     </PARAM>
     <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config ${vrf-name} ${__full_line} </ACTION>
@@ -1338,6 +1346,10 @@
     <MACRO name="BIND-INTF-TO-OSPF" arg="${lo_name}"></MACRO>
 </VIEW>
 
+<VIEW name="configure-subif-view">
+    <MACRO name="BIND-INTF-TO-OSPF" arg="${iface}"></MACRO>
+</VIEW>
+
 
 <!--=======================================================-->
 <!--            OSPFv2 show and clear commands             -->
@@ -1397,15 +1409,14 @@
       <PARAM name="vrf" help="Displays VRF specific OSPFv2 information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name = "vrftype" help = "" ptype = "SUBCOMMAND" mode="switch" >
           <PARAM name="vrf-name" help="VRF name (prefixed by Vrf)" ptype="STRING_15" default="default"/>
+          <!--
           <PARAM name = "all" help = "All VRF router information" ptype="SUBCOMMAND" mode="subcommand" />
+          -->
         </PARAM>
       </PARAM>
 
       <PARAM name = "cmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
         <PARAM name="border-routers" help="Displays all OSPFv2 ABR's and ASBR's" ptype="SUBCOMMAND" mode="subcommand">
-        </PARAM>
-
-        <PARAM name="route" help="Displays OSPFv2 routing table" ptype="SUBCOMMAND" mode="subcommand">
         </PARAM>
 
         <PARAM name="database" help="Displays OSPFv2 Database summary" ptype="SUBCOMMAND" mode="subcommand" >
@@ -2017,13 +2028,15 @@ N    101.1.1.0/24          [10] area: 0.0.0.0
             </DOCGEN>
      </COMMAND>
 
+     <!--
      <COMMAND name="show ip ospf vrfs" help="Displays OSPFv2 VRFs" >
         <ACTION builtin="clish_nop"></ACTION>
      </COMMAND>
 
      <COMMAND name="show ip ospf router-info" help="Displays OSPFv2 Router information" >
         <ACTION builtin="clish_nop"></ACTION>
-  </COMMAND>
+     </COMMAND>
+     -->
 
 </VIEW>
 

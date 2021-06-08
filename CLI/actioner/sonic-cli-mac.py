@@ -44,24 +44,29 @@ def mac_fill_count(mac_entries):
     return mac_entry_table
 
 def fill_mac_info(mac_entry):
-    ip_address = "0.0.0.0"
+    if (('vlan' not in mac_entry) or ('mac-address' not in mac_entry) or ('state' not in mac_entry)):
+        return
     if ('openconfig-vxlan:peer' in mac_entry):
-        ip_address = mac_entry['openconfig-vxlan:peer']['state']['peer-ip']
-
-    if ip_address == '0.0.0.0':
-        mac_entry_table = {'Vlan':mac_entry['vlan'], 
+        mac_entry_table = {'Vlan':mac_entry['vlan'],
+                           'mac-address':mac_entry['mac-address'],
+                           'entry-type': mac_entry['state']['entry-type'],
+                           'port': "VxLAN DIP: " + mac_entry['openconfig-vxlan:peer']['state']['peer-ip']
+                          }
+    elif ('interface' in mac_entry):
+        mac_entry_table = {'Vlan':mac_entry['vlan'],
                            'mac-address':mac_entry['mac-address'],
                            'entry-type': mac_entry['state']['entry-type'],
                            'port': mac_entry['interface']['interface-ref']['state']['interface']
                           }
     else:
-        mac_entry_table = {'Vlan':mac_entry['vlan'], 
-                           'mac-address':mac_entry['mac-address'],
-                           'entry-type': mac_entry['state']['entry-type'],
-                           'port': "VxLAN DIP: " + mac_entry['openconfig-vxlan:peer']['state']['peer-ip']
-                          }
+        return 
     return mac_entry_table
 
+def fill_mac_table_list_info(mac_table_list, mac_entry):
+    mac_table_entry = fill_mac_info(mac_entry)
+    if mac_table_entry is not None:
+        mac_table_list.append(mac_table_entry)
+ 
 def invoke(func, args):
     body = None
     aa = cc.ApiClient()
@@ -191,72 +196,69 @@ def run(func, args):
         if func == 'get_openconfig_network_instance_network_instances_network_instance_fdb_mac_table_entries':
             if args[1] == 'show': #### -- show mac address table --- ###
                 for mac_entry in mac_entries:
-                    mac_table_list.append(fill_mac_info(mac_entry))
+                    fill_mac_table_list_info(mac_table_list, mac_entry)
 
             elif args[1] == 'mac-addr': #### -- show mac address table [address <mac-address>]--- ###
                 for mac_entry in mac_entries:
                     if args[2] == mac_entry['mac-address'].lower():
-                        mac_table_list.append(fill_mac_info(mac_entry))
+                        fill_mac_table_list_info(mac_table_list, mac_entry)
 
             elif args[1] == 'vlan': #### -- show mac address table [vlan <vlan-id>]--- ###
                 for mac_entry in mac_entries:
                     if (int(args[2].lower().strip("vlan")) == mac_entry['vlan']):
-                        mac_table_list.append(fill_mac_info(mac_entry))
+                        fill_mac_table_list_info(mac_table_list, mac_entry)
  
             elif args[1] == 'interface': #### -- show mac address table [interface {Ethernet <id> | Portchannel <id>}]--- ###
                 for mac_entry in mac_entries:
                     if 'interface' in mac_entry:
                         if args[2] == mac_entry['interface']['interface-ref']['state']['interface']:
-                            mac_table_list.append(fill_mac_info(mac_entry))
+                            fill_mac_table_list_info(mac_table_list, mac_entry)
 
             #### -- show mac address table [static {address <mac-address> | vlan <vlan-id> | interface {Ethernet <id>| Portchannel <id>}}]--- ###
             elif args[1] == 'static':
                 if args[2] == 'address':
                     for mac_entry in mac_entries:
                         if args[3] == mac_entry['mac-address'].lower() and mac_entry['state']['entry-type'] == 'STATIC':
-                            mac_table_list.append(fill_mac_info(mac_entry))
+                            fill_mac_table_list_info(mac_table_list, mac_entry)
 
                 elif args[2] == 'vlan':
                     for mac_entry in mac_entries:
                         if (int(args[3].lower().strip("vlan")) == mac_entry['vlan']) and mac_entry['state']['entry-type'] == 'STATIC':
-                            mac_table_list.append(fill_mac_info(mac_entry))
+                            fill_mac_table_list_info(mac_table_list, mac_entry)
                 
                 elif args[2] == 'interface':
                     for mac_entry in mac_entries:
                         if 'interface' in mac_entry:
                             if args[3] == mac_entry['interface']['interface-ref']['state']['interface'] and mac_entry['state']['entry-type'] == 'STATIC':
-                                mac_table_list.append(fill_mac_info(mac_entry))
+                                fill_mac_table_list_info(mac_table_list, mac_entry)
 
                 else:
                     for mac_entry in mac_entries:
                         if mac_entry['state']['entry-type'] == 'STATIC':
-                            mac_table_list.append(fill_mac_info(mac_entry))
+                            fill_mac_table_list_info(mac_table_list, mac_entry)
 
             #### -- show mac address table [dynamic {address <mac-address> | vlan <vlan-id> | interface {Ethernet <id>| Portchannel <id>}}]--- ###
             elif args[1] == 'dynamic':
                 if args[2] == 'address':
                     for mac_entry in mac_entries:
                         if args[3] == mac_entry['mac-address'].lower() and mac_entry['state']['entry-type'] == 'DYNAMIC':
-
-                            mac_table_list.append(fill_mac_info(mac_entry))
+                            fill_mac_table_list_info(mac_table_list, mac_entry)
 
                 elif args[2] == 'vlan':
                     for mac_entry in mac_entries:
                         if (int(args[3].lower().strip("vlan")) == mac_entry['vlan']) and mac_entry['state']['entry-type'] == 'DYNAMIC':
-                            mac_table_list.append(fill_mac_info(mac_entry))
+                            fill_mac_table_list_info(mac_table_list, mac_entry)
 
                 elif args[2] == 'interface':
                     for mac_entry in mac_entries:
                         if 'interface' in mac_entry:
                             if args[3] == mac_entry['interface']['interface-ref']['state']['interface'] and mac_entry['state']['entry-type'] == 'DYNAMIC':
-                                mac_table_list.append(fill_mac_info(mac_entry))
+                                fill_mac_table_list_info(mac_table_list, mac_entry)
 
                 else:
                     for mac_entry in mac_entries:
                         if mac_entry['state']['entry-type'] == 'DYNAMIC':
-                            mac_table_list.append(fill_mac_info(mac_entry))
-
-
+                            fill_mac_table_list_info(mac_table_list, mac_entry)
         elif func == 'get_openconfig_network_instance_ext_network_instances_network_instance_fdb_state':
             if args[1] == 'count': #### -- show mac address table count --- ###
                 mac_table_list.append(mac_fill_count(mac_entries))

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 ###########################################################################
 #
-# Copyright 2019 Dell, Inc.
+# Copyright 2020 Dell, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,6 +43,18 @@ def decodePsuStats(psu):
     if 'openconfig-platform-psu:output-voltage' in psu['power-supply']['state']:
         psu['power-supply']['state']['openconfig-platform-psu:output-voltage'] = \
             convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-psu:output-voltage'])
+    if 'openconfig-platform-psu:temperature' in psu['power-supply']['state']:
+        psu['power-supply']['state']['openconfig-platform-psu:temperature'] = \
+            convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-psu:temperature'])
+    if 'openconfig-platform-psu:input-current' in psu['power-supply']['state']:
+        psu['power-supply']['state']['openconfig-platform-psu:input-current'] = \
+            convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-psu:input-current'])
+    if 'openconfig-platform-ext:input-power' in psu['power-supply']['state']:
+        psu['power-supply']['state']['openconfig-platform-ext:input-power'] = \
+            convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-ext:input-power'])
+    if 'openconfig-platform-psu:input-voltage' in psu['power-supply']['state']:
+        psu['power-supply']['state']['openconfig-platform-psu:input-voltage'] = \
+            convert4BytesToStr(psu['power-supply']['state']['openconfig-platform-psu:input-voltage'])
 
 def run(func, args):
 
@@ -82,7 +94,7 @@ def run(func, args):
                 show_cli_output(template, response.content)
             else:
                 print response.error_message()
-                return
+                return 1
         elif (func == 'get_openconfig_platform_components_component_psu_status' or
             func == 'get_openconfig_platform_components_component_psu_summary'):
             template = sys.argv[2]
@@ -93,7 +105,7 @@ def run(func, args):
                 if not response.ok():
                     if not hasValidComp:
                         print response.error_message()
-                        return
+                        return 1
                     break
                 if response.content == None:
                     break
@@ -113,7 +125,7 @@ def run(func, args):
                     if not response.ok():
                         if not hasValidComp:
                             print response.error_message()
-                            return
+                            return 1
                         break
                     if (response.content is None or len(response.content) == 0 or
                         not ('openconfig-platform:component' in response.content) or
@@ -133,7 +145,7 @@ def run(func, args):
                 if not response.ok():
                     if not hasValidComp:
                         print response.error_message()
-                        return
+                        return 1
                     break
                 if response.content is None:
                     break
@@ -161,13 +173,17 @@ def run(func, args):
                 response = aa.get(path)
                 if not response.ok():
                     print response.error_message()
-                    return
+                    return 1
                 if not response.content is None:
                     try:
                         for d in response.content['sonic-port:PORT_LIST']:
                             if_list.append(d['ifname'])
                     except:
-                        return
+                        return 1
+            elif if_name == 'Ethernet_X_SUMMARY':
+                summary = True
+                if_name = sys.argv[7]
+                if_list.append(if_name)
             else:
                 # Singleton
                 if_list.append(if_name)
@@ -180,7 +196,7 @@ def run(func, args):
                 response = aa.get(path)
                 if not response.ok():
                     print response.error_message()
-                    return
+                    return 1
                 if response.content is None:
                     xcvrInfo[nm] = {}
                     continue
@@ -230,7 +246,7 @@ def run(func, args):
                 if not response.ok():
                     if not hasValidComp:
                         print response.error_message()
-                        return
+                        return 1
                     break
                 if response.content is None:
                     break
@@ -247,12 +263,57 @@ def run(func, args):
                     tempInfo[tempName] = OrderedDict()
             tempInfo = OrderedDict(sorted(tempInfo.items()))
             show_cli_output(template, tempInfo)
+        elif func == 'get_openconfig_platform_components_component_firmware':
+            template = sys.argv[2]
+            firmInfo = OrderedDict()
+            for i in xrange(1, 10):
+                path = cc.Path('/restconf/data/openconfig-platform:components/component=FIRMWARE %s'%i)
+                response = aa.get(path)
+                if not response.ok():
+                    if not hasValidComp:
+                        print response.error_message()
+                        return 1
+                    break
+                if response.content is None:
+                    break
+                hasValidComp = True
+                if (response.content is None or len(response.content) == 0 or
+                    not ('openconfig-platform:component' in response.content) or
+                    len(response.content['openconfig-platform:component']) == 0 or
+                    not ('state' in response.content['openconfig-platform:component'][0])):
+                    break
+                firmName = response.content['openconfig-platform:component'][0]['state']['name']
+                resp = response.content['openconfig-platform:component'][0]
+                chassisName = 'N/A'
+                moduleName = 'N/A'
+
+                if ('chassis' in resp and 'state' in resp['chassis'] and
+                    'openconfig-platform-ext:name' in resp['chassis']['state']):
+                    chassisName = resp['chassis']['state']['openconfig-platform-ext:name']
+                if ('chassis' in resp and 'state' in resp['chassis'] and
+                    'openconfig-platform-ext:module' in resp['chassis']['state']):
+                    chassisName = resp['chassis']['state']['openconfig-platform-ext:module']
+
+                if chassisName not in firmInfo:
+                    firmInfo[chassisName] = OrderedDict()
+                if moduleName not in firmInfo[chassisName]:
+                    firmInfo[chassisName][moduleName] = OrderedDict()
+                firmInfo[chassisName][moduleName][firmName] = resp['state']
+
+            firmInfo = OrderedDict(sorted(firmInfo.items()))
+            for chassis in firmInfo:
+                firmInfo[chassis] = OrderedDict(sorted(firmInfo[chassis].items()))
+                for module in firmInfo[chassis]:
+                    firmInfo[chassis][module] = OrderedDict(sorted(firmInfo[chassis][module].items()))
+            show_cli_output(template, firmInfo)
     except Exception as e:
         print("%Error: Transaction Failure")
-        return
+        return 1
+    return 0
 
 if __name__ == '__main__':
 
     func = sys.argv[1]
-    run(func, sys.argv[2:])
+    ret = run(func, sys.argv[2:])
+    sys.exit(ret)
 

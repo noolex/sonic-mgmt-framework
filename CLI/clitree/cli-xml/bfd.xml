@@ -45,7 +45,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <PARAM name = "interface" help = "Specify local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "STRING" default="null"> </PARAM>
+                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "PHY_VL_PO_LB_INTERFACE" default="null"> </PARAM>
             </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_openconfig_bfd_ext_bfd_sessions show_bfd_peers.j2 ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
         <DOCGEN>
@@ -119,7 +119,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <PARAM name = "interface" help = "Specify local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "STRING" default="null"> </PARAM>
+                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "PHY_VL_PO_LB_INTERFACE" default="null"> </PARAM>
             </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_openconfig_bfd_ext_bfd_sessions show_bfd_counters.j2 ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
     <DOCGEN>
@@ -286,7 +286,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <PARAM name = "interface" help = "Specify local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "STRING"> </PARAM>
+                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "PHY_VL_PO_LB_INTERFACE"> </PARAM>
             </PARAM>
             <PARAM name = "counters" help = "Clear BFD peer counters information" ptype="SUBCOMMAND" mode="subcommand" > </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd_clear clear_bfd ${__full_line} </ACTION> 
@@ -382,7 +382,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <PARAM name = "interface" help = "Configure local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Configure local interface name" ptype = "STRING" default="null" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
+                <PARAM name = "interfacename" help = "Configure local interface name" ptype = "PHY_VL_PO_LB_INTERFACE" default="null" view="configure-peer-view" viewid="peer-ipv4addr=${peer_ipv4};peer-ipv6addr=${peer_ipv6};vrf-name=${vrfname};local-ipv4addr=${local_ipv4};local-ipv6addr=${local_ipv6};interface-name=${interfacename};multi-hop=${multihop};address-family=${address}"> </PARAM>
             </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd patch_openconfig_bfd_ext_bfd_sessions ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
         <DOCGEN>
@@ -432,7 +432,7 @@ limitations under the License.
                 </PARAM>
             </PARAM>
             <PARAM name = "interface" help = "Specify local interface" optional = "true" ptype = "SUBCOMMAND" mode="subcommand"> 
-                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "STRING" default="null"> </PARAM>
+                <PARAM name = "interfacename" help = "Specify local interface name" ptype = "PHY_VL_PO_LB_INTERFACE" default="null"> </PARAM>
             </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd delete_openconfig_bfd_ext_bfd_sessions  ${multihop} ${address} ${peer_ipv4} ${peer_ipv6} ${local_ipv4} ${local_ipv6} ${interfacename} ${vrfname} </ACTION>
         <DOCGEN>
@@ -469,6 +469,14 @@ limitations under the License.
     prompt="${SYSTEM_NAME}(conf-bfd-peer)# "
     depth="3"
     >
+
+    <NAMESPACE ref="configure-view"
+                help="false"
+                completion="false"/>
+
+    <NAMESPACE ref="configure-bfd-view"
+                help="false"
+                completion="false"/>
 
     <NAMESPACE ref="configure-peer-view"
                 help="false"

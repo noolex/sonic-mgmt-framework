@@ -41,7 +41,7 @@ def invoke_api(func, args=[]):
     if func == 'get_sonic_portchannel_sonic_portchannel_lag_member_table':
         path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/LAG_MEMBER_TABLE')
         return api.get(path)
-        
+
     if func == 'get_sonic_portchannel_sonic_portchannel_portchannel':
         path = cc.Path('/restconf/data/sonic-portchannel:sonic-portchannel/PORTCHANNEL')
         return api.get(path)
@@ -53,11 +53,11 @@ def invoke_api(func, args=[]):
     if func == 'get_openconfig_lacp_lacp_interfaces':
         path = cc.Path('/restconf/data/openconfig-lacp:lacp/interfaces')
         return api.get(path)
-        
+
     if func == 'get_openconfig_lacp_lacp_interfaces_interface':
         path = cc.Path('/restconf/data/openconfig-lacp:lacp/interfaces/interface={name}', name=args[0])
-        return api.get(path)        
-            
+        return api.get(path)
+
     if func == 'get_openconfig_interfaces_interfaces_interface_state_counters':
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/counters', name=args[0])
         return api.get(path)
@@ -68,9 +68,9 @@ def invoke_api(func, args=[]):
     if func == 'get_sonic_portchannel_sonic_portchannel_ip_addr_list':
         path = cc.Path('/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST')
         return api.get(path)
- 
+
     return api.cli_not_implemented(func)
-    
+
 def filter_address(api_response,lagName):
     output ={}
     ipv4_addr =[]
@@ -95,11 +95,11 @@ def get_lag_data(lagName):
         if lagName == "all": #get_all_portchannels
             portchannel_func = 'get_sonic_portchannel_sonic_portchannel_lag_table'
             portchannel_conf_func = 'get_sonic_portchannel_sonic_portchannel_portchannel'
-	    portchannel_ip = 'get_sonic_portchannel_sonic_portchannel_ip_addr_list'
+            portchannel_ip = 'get_sonic_portchannel_sonic_portchannel_ip_addr_list'
         else :
             portchannel_func = 'get_sonic_portchannel_sonic_portchannel_lag_table_lag_table_list'
             portchannel_conf_func = 'get_sonic_portchannel_sonic_portchannel_portchannel_portchannel_list'
-    	    portchannel_ip = 'get_sonic_portchannel_sonic_portchannel_ip_addr_list'
+            portchannel_ip = 'get_sonic_portchannel_sonic_portchannel_ip_addr_list'
         output = {}
         response = invoke_api(portchannel_func, args)
         if response.ok():
@@ -111,7 +111,7 @@ def get_lag_data(lagName):
                     if 'sonic-portchannel:LAG_TABLE_LIST' in api_response.keys():
                         output['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] = api_response['sonic-portchannel:LAG_TABLE_LIST']
                 else:
-                    output = api_response        
+                    output = api_response
 
         responseIp = invoke_api(portchannel_ip,args)
         if responseIp.ok():
@@ -121,7 +121,7 @@ def get_lag_data(lagName):
                     output_filter = filter_address(api_response,lagName)
                     output['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv4'] = output_filter['ipv4']
                     output['sonic-portchannel-interface:PORTCHANNEL_INTERFACE_IPADDR_LIST:ipv6'] = output_filter['ipv6']
-					
+
         # GET Config params
         resp = invoke_api(portchannel_conf_func, args)
         if resp.ok():
@@ -174,13 +174,13 @@ def get_lacp_data(lagName):
                         resp['openconfig-lacp:interfaces']['interface'] = api_response1['openconfig-lacp:interface']
                 else:
                      resp = api_response1
-                
+
     except Exception as e:
         print("Exception when calling get_lacp_data : %s\n" %(e))
-    
+
     return resp
 
-    
+
 def get_counters(api_response):
 
     try:
@@ -191,9 +191,9 @@ def get_counters(api_response):
                 response['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] = api_response['sonic-portchannel:LAG_TABLE_LIST']
         else:
             response = api_response
-        
+
         if 'LAG_TABLE_LIST' in response['sonic-portchannel:LAG_TABLE']:
-          for po_intf in response['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST']:        
+          for po_intf in response['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST']:
             resp = invoke_api('get_openconfig_interfaces_interfaces_interface_state_counters', [po_intf['lagname']])
             if resp.ok():
                 if resp.content is not None:
@@ -235,10 +235,11 @@ def run():
         if sys.argv[2] == "":
             return
 
-        iflist = sys.argv[2].rstrip().split(',') 
+        iflist = sys.argv[2].rstrip().split(',')
         template_file = sys.argv[3]
 
     global_config_response = get_global_config_data()
+
     lag_list =[]
     pc_list =[]
     lacp_list = []
@@ -251,17 +252,18 @@ def run():
         api_response = get_lag_data(intf)
         api_response1 = get_lacp_data(intf)
         get_counters(api_response)
+
         if intf is not 'all':
             checkAll = False
             lag_list.append(api_response['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0])
             pc_list.append(api_response['sonic-portchannel:PORTCHANNEL']['PORTCHANNEL_LIST'][0])
-	    if 'openconfig-lacp:interfaces' in api_response1.keys() and api_response1['openconfig-lacp:interfaces']['interface']:
+            if 'openconfig-lacp:interfaces' in api_response1.keys() and api_response1['openconfig-lacp:interfaces']['interface']:
                 lacp_list.append(api_response1['openconfig-lacp:interfaces']['interface'][0])
 
     if checkAll is False:
         api_response['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'] = lag_list
         api_response['sonic-portchannel:PORTCHANNEL']['PORTCHANNEL_LIST'] = pc_list
-	if lacp_list:
+        if lacp_list:
             if 'openconfig-lacp:interfaces' not in api_response1.keys():
                 lacp_tbl['interface'] = lacp_list
                 api_response1['openconfig-lacp:interfaces']= lacp_tbl

@@ -64,7 +64,7 @@ limitations under the License.
   <VIEW name="enable-view">
     <COMMAND name="show aaa"
              help="Show aaa info">
-      <ACTION>python $SONIC_CLI_ROOT/sonic-cli-aaa.py get_openconfig_system_system_aaa show_aaa.j2</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_aaa get_openconfig_system_system_aaa show_aaa.j2</ACTION>
     </COMMAND>
   </VIEW>
 
@@ -86,12 +86,7 @@ limitations under the License.
              help="failthrough status"
              ptype="ENA_DISA">
       </PARAM>
-      <ACTION> if test "${enable}" = "enable" ; then&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-aaa.py patch_openconfig_system_ext_system_aaa_authentication_config_failthrough True&#xA;
-          else&#xA;
-        python $SONIC_CLI_ROOT/sonic-cli-aaa.py patch_openconfig_system_ext_system_aaa_authentication_config_failthrough False&#xA;
-          fi&#xA;
-      </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_aaa patch_openconfig_system_ext_system_aaa_authentication_config_failthrough ${enable}</ACTION>
       <DOCGEN>
         <DESCRIPTION>Configures AAA authentication failthrough</DESCRIPTION>
         <EXAMPLE>
@@ -150,7 +145,7 @@ limitations under the License.
               </PARAM>
           </PARAM>
       </PARAM>
-      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-aaa.py patch_openconfig_system_system_aaa_authentication_config_authentication_method ${login} ${local} ${tacacs+} ${radius} </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_aaa patch_openconfig_system_system_aaa_authentication_config_authentication_method ${login} ${local} ${tacacs+} ${radius} </ACTION>
     </COMMAND>
     <COMMAND name="no aaa"
              help="Unconfigures AAA"/>
@@ -265,7 +260,7 @@ limitations under the License.
         </PARAM>
       </PARAM>
 
-      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-aaa.py patch_openconfig_system_system_aaa_authentication_config_login ${__params} </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_aaa patch_openconfig_system_system_aaa_authentication_config_login ${__params} </ACTION>
       <DOCGEN>
         <DESCRIPTION>Configures AAA login authentication default list to authentication first with tacacs+, and, if none respond, (or failthrough is configured) with local next</DESCRIPTION>
         <EXAMPLE>

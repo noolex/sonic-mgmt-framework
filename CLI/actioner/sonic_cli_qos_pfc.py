@@ -110,7 +110,7 @@ def getPfcQueueCounters(ifName, queue):
             for stat in STATS_DISPLAY_ORDER:
                 counters.append(data[stat])
 
-    if not response.ok():
+    if (response is not None) and (not response.ok()):
         counters = [0,0,0,0,0,0,0,0,0,0]
         err = response.error_message()
 

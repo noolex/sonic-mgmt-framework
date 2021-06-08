@@ -57,6 +57,8 @@ codegenTypesToYangTypesMap = {"int8":   {"type": "integer", "format": "int32", "
                               "counter64": {"type": "integer", "format": "int64", "x-yang-type": "counter64", "minimum": 0, "maximum": 18446744073709551615},
                               "long": {"type": "integer", "format": "int64", "x-yang-type": "long", "minimum": -9223372036854775808, "maximum": 9223372036854775807}
                               }
+ignoreKeywords = [ "notification" ]
+
 moduleDict = OrderedDict()
 nodeDict = OrderedDict()
 XpathToBodyTagDict = OrderedDict()
@@ -214,7 +216,6 @@ def resetSwaggerDict():
 
 
 def snake_to_camel(word):
-    word = word.replace('__', '_')
     return ''.join(x.capitalize() or '_' for x in word.split('_'))
 
 
@@ -768,6 +769,9 @@ def handle_rpc(child, actXpath, pathstr):
 
 
 def walk_child(child):
+    if child.keyword in ignoreKeywords:
+        return
+
     global XpathToBodyTagDict
     global XpathToBodyTagDict_with_config_false
     customName = None

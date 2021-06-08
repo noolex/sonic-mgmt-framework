@@ -43,5 +43,11 @@ limitations under the License.
     <COMMAND name="show platform temperature detail" ptype="SUBCOMMAND" mode="subcommand" help="Show detailed temperature sensors information">
       <ACTION> python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_temperature platform_temperature_detail_show.j2 ${__full_line} </ACTION>
     </COMMAND>
+    <COMMAND name="show platform firmware" ptype="SUBCOMMAND" mode="subcommand" help="Show platform firmware">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_firmware platform_firmware_show.j2 ${__full_line} </ACTION>
+    </COMMAND>
+    <COMMAND name="show platform firmware detail" ptype="SUBCOMMAND" mode="subcommand" help="Show detailed firmware information">
+      <ACTION> python $SONIC_CLI_ROOT/sonic-cli-pfm.py get_openconfig_platform_components_component_firmware platform_firmware_detail_show.j2 ${__full_line} </ACTION>
+    </COMMAND>
   </VIEW>
 </CLISH_MODULE>

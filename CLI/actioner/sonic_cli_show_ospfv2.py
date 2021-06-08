@@ -33,11 +33,11 @@ def generate_show_ip_ospf(vrf):
     vrfName = ""
     i = 0
     vrfName = vrf
-
     d = {}
     dlist = []
     area_id_list = []
     d = { 'vrfName': vrfName }
+
     area_id_list = build_area_id_list (vrfName)
     dlist.append(d)
     keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/protocols/protocol=OSPF,ospfv2/ospfv2/global/state', name=vrfName)
@@ -177,7 +177,8 @@ def generate_show_ip_ospf_interfaces(vrf, template, intfname):
     areasInfo['area'] = areaInfoList
     areasOuter = OrderedDict()
     areasOuter['openconfig-network-instance:areas'] = areasInfo  
-    if '.' in intfname or ':' in intfname:
+    #if '.' in intfname or ':' in intfname:
+    if ':' in intfname:
         countNbr = ospfv2_filter_neighbors_by_neighbor_id(areasOuter, intfname)
         if countNbr == 0 and template == "show_ip_ospf_neighbor_detail.j2":
             print("No such interface.")
@@ -379,6 +380,28 @@ def build_area_id_list (vrf_name):
 
 def invoke_show_api(func, args=[]):
     vrf = args[0]
+
+    if vrf == 'all' :
+        print("%Error: OSPF state display for VRF all not supported!");
+        return
+
+    vrf_name_valid = False
+    if vrf == '' or vrf == 'default' :
+        vrf_name_valid = True
+    elif vrf.startswith("Vrf") :
+        vrf_name_valid = True
+    if not vrf_name_valid :
+        print("%Error: Invalid VRF name {}".format(vrf))
+        return
+
+    api = cc.ApiClient()
+    keypath = cc.Path('/restconf/data/openconfig-network-instance:network-instances/network-instance={name}/config', name= vrf)
+    vrf_config = api.get(keypath)
+    if vrf_config.ok():
+        if vrf_config.content == None:
+           print("%Error: VRF instance not found")
+           return
+
     i = 3
     if 'do' in args and args[1] == 'do':
         # By default, the leftmost entry is removed
@@ -399,7 +422,7 @@ def invoke_show_api(func, args=[]):
                     if (neiarg == "detail"):
                         detail = True
                     elif (neiarg == "all"):
-                        allneigh = true
+                        allneigh = True
                     elif (("." in neiarg) or (":" in neiarg)):
                         intfname = neiarg
                     elif (neiarg == "\|"):

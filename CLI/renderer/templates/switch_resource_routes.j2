@@ -1,0 +1,10 @@
+{% if json_output and 'openconfig-system-ext:swresource' in json_output -%}
+{% set scale_info_all = json_output['openconfig-system-ext:swresource']['resource'] %}
+{% for scale_info in scale_info_all %}
+{% if scale_info['name'] == 'ROUTE_SCALE' -%}
+{% if scale_info['config']['routes']   -%}
+{{'Configured             :   '}}{{scale_info['config']['routes']|lower}}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}

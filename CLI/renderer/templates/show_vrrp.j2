@@ -51,14 +51,14 @@
     {{'Track interface:'}}
 
     {% if 'openconfig-interfaces-ext:vrrp-track' in vrrpbase %}
-        {{'Interface       State  Priority'}}
+        {{'Interface            State  Priority'}}
         {% for track in vrrpbase['openconfig-interfaces-ext:vrrp-track']['vrrp-track-interface'] %}
 
         {% if track['state']['priority-increment'] != 0 %}
-        {{ '%-14s     Up  %-8s'|format(track['track-intf'], track['config']['priority-increment']) }}
+        {{ '%-19s     Up  %-8s'|format(track['track-intf'], track['config']['priority-increment']) }}
         {% set vec.curr_priority = vec.curr_priority + track['config']['priority-increment'] %}
         {% else %}
-        {{ '%-14s   Down  %-8s'|format(track['track-intf'], track['config']['priority-increment']) }}
+        {{ '%-19s   Down  %-8s'|format(track['track-intf'], track['config']['priority-increment']) }}
         {% endif %}
 
         {% endfor %}

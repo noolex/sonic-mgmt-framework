@@ -44,6 +44,8 @@ def invoke(func, args):
             body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-dst-ip": True}}}
         elif args[0] == 'ipv4-ip-proto':
             body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-ip-proto": True}}}
+        elif args[0] == 'symmetric':
+            body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-symmetric": True}}}
         return aa.patch(keypath, body)
 
     elif func == 'delete_loadshare_ipv4_config':
@@ -58,6 +60,8 @@ def invoke(func, args):
             body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-dst-ip": False}}}
         elif args[0] == 'ipv4-ip-proto':
             body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-ip-proto": False}}}
+        elif args[0] == 'symmetric':
+            body = {"openconfig-loadshare-mode-ext:ipv4-attrs": {"config": {"ipv4": "ipv4", "ipv4-symmetric": False}}}
         return aa.patch(keypath, body)
 
     if func == 'patch_loadshare_ipv6_config':
@@ -72,6 +76,8 @@ def invoke(func, args):
             body = {"openconfig-loadshare-mode-ext:ipv6-attrs": {"config": {"ipv6": "ipv6", "ipv6-dst-ip": True}}}
         elif args[0] == 'ipv6-next-hdr':
             body = {"openconfig-loadshare-mode-ext:ipv6-attrs": {"config": {"ipv6": "ipv6", "ipv6-next-hdr": True}}}
+        elif args[0] == 'symmetric':
+            body = {"openconfig-loadshare-mode-ext:ipv6-attrs": {"config": {"ipv6": "ipv6", "ipv6-symmetric": True}}}
         return aa.patch(keypath, body)
 
     elif func == 'delete_loadshare_ipv6_config':
@@ -86,6 +92,8 @@ def invoke(func, args):
             body = {"openconfig-loadshare-mode-ext:ipv6-attrs": {"config": {"ipv6": "ipv6", "ipv6-dst-ip": False}}}
         elif args[0] == 'ipv6-next-hdr':
             body = {"openconfig-loadshare-mode-ext:ipv6-attrs": {"config": {"ipv6": "ipv6", "ipv6-next-hdr": False}}}
+        elif args[0] == 'symmetric':
+            body = {"openconfig-loadshare-mode-ext:ipv6-attrs": {"config": {"ipv6": "ipv6", "ipv6-symmetric": False}}}
         return aa.patch(keypath, body)
 
     if func == 'patch_loadshare_seed_config':
@@ -111,6 +119,8 @@ def run(func, args):
             elif 'openconfig-loadshare-mode-ext:loadshare' in list(response.keys()):
                 show_cli_output("show_ip_loadshare.j2", response)
                 return
+        else:
+            print(api_response.error_message())
 
     except:
         # system/network error

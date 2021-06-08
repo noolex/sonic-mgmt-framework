@@ -5,6 +5,9 @@
 {% set sip = tunnel['src_ip'] %}
 {% if 'src_ip' in tunnel %}
 {{'VTEP Source IP   : '}} {{(tunnel.src_ip|string).ljust(8)}}
+{% if 'primary_ip' in tunnel %}
+{{'VTEP Primary IP  : '}} {{(tunnel.primary_ip|string).ljust(8)}}
+{% endif %}
 {% set qos_mode = tunnel['qos-mode'] %}
 {% if qos_mode == 'pipe' %}
 {% set dscp_value = tunnel.dscp %}
@@ -23,6 +26,9 @@
 {% for loIntfAttr in  json_output['sonic-loopback-interface:LOOPBACK_INTERFACE'] %}
 {% if loIntfAttr == 'src_if' %}
 {{'Source Interface : '}} {{(json_output['sonic-loopback-interface:LOOPBACK_INTERFACE']['src_if']|string).ljust(8)}}
+{% endif %}
+{% if loIntfAttr == 'pip_if' %}
+{{'PrimaryIP Interface : '}} {{(json_output['sonic-loopback-interface:LOOPBACK_INTERFACE']['pip_if']|string).ljust(8)}}
 {% endif %}
 {% endfor %}
 {% endif %}

@@ -21,6 +21,16 @@ def ospf_cli_log(log_string) :
     if ospf_config_cli_log_enabled :
         print(log_string)
 
+def get_ospf_if_and_subif(input_if_name):
+    if_name = input_if_name
+    subif = 0
+    if "." in input_if_name:
+        split_if_name = input_if_name.split(".")
+        if_name = split_if_name[0]
+        subif = int(split_if_name[1])
+    #print("get_ospf_if_and_subif if_name {} subif {}".format(if_name, subif))
+    return if_name, subif
+
 ############## OSPF uris
 def get_ospf_router_nw_instance_uri(vrf_name) :
     ospf_router_nwinst_uri = '/restconf/data/openconfig-network-instance:network-instances'
@@ -355,7 +365,9 @@ def patch_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_addr
     ospf_cli_log("patch_ospf_router_passive_interface_config: {} {} {} {}".format(vrf_name, intf_name, if_addr, cfg_body))
     ospf_rtr_pif_uri = get_ospf_router_uri(vrf_name)
 
-    key_data = {"name": intf_name, "address": if_addr }
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
+    key_data = {"name": intf_name, "subinterface":sub_intf, "address": if_addr }
     add_key_to_config_data(cfg_body, key_data)
 
     ospf_rtr_pif_uri_body = {
@@ -364,6 +376,7 @@ def patch_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_addr
                 "openconfig-ospfv2-ext:passive-interfaces": {
                     "passive-interface": [ {
                         "name": intf_name,
+                        "subinterface":sub_intf,
                         "address": if_addr
                      } ] } } } }
 
@@ -380,8 +393,11 @@ def delete_ospf_router_passive_interface_config(api, vrf_name, intf_name, if_add
     ospf_cli_log("delete_ospf_router_passive_interface_config: {} {} {} {}".format(vrf_name, intf_name, if_addr, cfg_field))
     ospf_rtr_pif_uri = get_ospf_router_uri(vrf_name, 'ospfv2')
     ospf_rtr_pif_uri += '/global/openconfig-ospfv2-ext:passive-interfaces'
+
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
     if intf_name != '' and if_addr != '' :
-        ospf_rtr_pif_uri += '/passive-interface={},{}'.format(quote(intf_name, safe=''), if_addr)
+        ospf_rtr_pif_uri += '/passive-interface={},{},{}'.format(quote(intf_name, safe=''), sub_intf, if_addr)
         if cfg_field != '' :
             ospf_rtr_pif_uri += '/{}'.format(cfg_field)
     ospf_cli_log("delete_ospf_router_passive_interface_config: uri {}".format(ospf_rtr_pif_uri))
@@ -400,7 +416,9 @@ def get_ospf_intf_uri(intf_name, sub_intf=0):
 
 def patch_ospf_interface_config(api, intf_name, intf_addr, cfg_body={}) :
     ospf_cli_log("patch_ospf_interface_config: {} {} {}".format(intf_name, intf_addr, cfg_body))
-    sub_intf = 0
+
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
     ospf_intf_uri = get_ospf_intf_uri(intf_name, sub_intf)
 
     key_data = {"address": intf_addr }
@@ -426,7 +444,7 @@ def patch_ospf_interface_config(api, intf_name, intf_addr, cfg_body={}) :
                              "address": intf_addr
                           }] } }  }] }
 
-        temp_entry = ospf_intf_uri_body["openconfig-interfaces:subinterface"][sub_intf]
+        temp_entry = ospf_intf_uri_body["openconfig-interfaces:subinterface"][0]
 
     temp_entry = temp_entry["openconfig-if-ip:ipv4"]["openconfig-ospfv2-ext:ospfv2"]
     uri_cfg_body = temp_entry["if-addresses"][0]
@@ -439,7 +457,10 @@ def patch_ospf_interface_config(api, intf_name, intf_addr, cfg_body={}) :
 
 def delete_ospf_interface_config(api, intf_name, intf_addr, cfg_field) :
     ospf_cli_log("delete_ospf_interface_config: {} {} {}".format(intf_name, intf_addr, cfg_field))
-    ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
+
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
+    ospf_intf_uri = get_ospf_intf_uri(intf_name, sub_intf)
 
     ospf_intf_uri += '/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2'
     if intf_addr != '' :
@@ -455,7 +476,10 @@ def delete_ospf_interface_config(api, intf_name, intf_addr, cfg_field) :
 ############## OSPF interface authentication config
 def patch_ospf_interface_md_auth_config(api, intf_name, intf_addr, auth_key, cfg_body={}) :
     ospf_cli_log("patch_ospf_interface_md_auth_config: {} {} {}".format(intf_name, intf_addr, cfg_body))
-    ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
+
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
+    ospf_intf_uri = get_ospf_intf_uri(intf_name, sub_intf)
 
     key_data = {"authentication-key-id": auth_key }
     add_key_to_config_data(cfg_body, key_data)
@@ -477,7 +501,7 @@ def patch_ospf_interface_md_auth_config(api, intf_name, intf_addr, auth_key, cfg
     else :
         ospf_intf_uri_body = {
             "openconfig-interfaces:subinterface": [{
-                "index": 0,
+                "index": sub_intf,
                 "openconfig-if-ip:ipv4": {
                      "openconfig-ospfv2-ext:ospfv2": {
                          "if-addresses": [{
@@ -501,7 +525,10 @@ def patch_ospf_interface_md_auth_config(api, intf_name, intf_addr, auth_key, cfg
 
 def delete_ospf_interface_md_auth_config(api, intf_name, intf_addr, auth_key, cfg_field) :
     ospf_cli_log("delete_ospf_interface_md_auth_config: {} {} {}".format(intf_name, intf_addr, cfg_field))
-    ospf_intf_uri = get_ospf_intf_uri(intf_name, 0)
+
+    intf_name, sub_intf = get_ospf_if_and_subif(intf_name)
+
+    ospf_intf_uri = get_ospf_intf_uri(intf_name, sub_intf)
 
     ospf_intf_uri += '/openconfig-if-ip:ipv4/openconfig-ospfv2-ext:ospfv2'
     if intf_addr != '' :
@@ -550,6 +577,17 @@ def invoke_api(func, args=[]):
     body = None
 
     ospf_cli_log("invoke_api: argslen {} args={}".format(len(args), args))
+
+    if func.find('openconfig_interfaces_interface_subinterfaces_subinterface') != -1 :
+        if len(args) >= 2 and 'PortChannel' in args[0] and 'PortChannel' in args[1] :
+            temp_args = []
+            temp_args.insert(0, args[0])
+            idx = 2
+            while idx < len(args) :
+              temp_args.insert(idx-1, args[idx])
+              idx = idx + 1
+            args = temp_args
+            ospf_cli_log("invoke_api: adjusted argslen {} args={}".format(len(args), args))
 
     #Ospf router config
     if func == 'patch_openconfig_network_instance_network_instances_network_instance_protocols_protocol_ospfv2_global_config':
@@ -769,19 +807,29 @@ def invoke_api(func, args=[]):
         sratupmetricval = ""
 
         i = 0
+        body = {}
         for arg in args:
             if (arg == "administrative"):
-                metrictypeadmin = "administrative:"
-            if (arg == "on-startup"):
-                sratupmetricval = args[i + 1]
-            i = i +1
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:administrative": True}}}}
+            elif (arg == "on-startup"):
+                timervalue = args[i + 1]
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:on-startup": int(timervalue)} }}}
+            elif (arg == "all"):
+                if i + 1 < len(args) :
+                    maxmetricvalue = args[i + 1]
+                else :
+                    maxmetricvalue = '16777215'
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:router-lsa-all": int(maxmetricvalue) } }}}
+            elif (arg == "include-stub"):
+                if i + 1 < len(args) :
+                    maxmetricvalue = args[i + 1]
+                else :
+                    maxmetricvalue = '16777215'
+                body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:router-lsa-stub": int(maxmetricvalue) }}}}
 
-        if (metrictypeadmin != ""):
-            body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:administrative": True}}}}
-            return patch_ospf_router_global_config(api, args[0], body)
-        else:
-            body = { "timers" : { "max-metric" : { "config" : {"openconfig-ospfv2-ext:on-startup": int(sratupmetricval)} }}}
-            return patch_ospf_router_global_config(api, args[0], body)
+            i = i + 1
+            if len(body) :
+                return patch_ospf_router_global_config(api, args[0], body)
 
     elif func == 'delete_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_max_metric_config':
         vrf = args[0]
@@ -789,12 +837,13 @@ def invoke_api(func, args=[]):
 
         for arg in args:
             if (arg == "administrative"):
-                metrictypeadmin = "administrative:"
-
-        if (metrictypeadmin != ""):
-            return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:administrative')
-        else:
-            return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:on-startup')
+                return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:administrative')
+            elif (arg == "on-startup"):
+                return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:on-startup')
+            elif (arg == "all"):
+                return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:router-lsa-all')
+            elif (arg == "include-stub"):
+                return delete_ospf_router_global_config(api, args[0], 'timers/max-metric/config/openconfig-ospfv2-ext:router-lsa-stub')
 
     elif func == 'patch_openconfig_ospfv2_ext_network_instances_network_instance_protocols_protocol_ospfv2_global_timers_lsa_generation_config_refresh_timer':
         body = { "timers" : { "lsa-generation" : { "config" : {"openconfig-ospfv2-ext:refresh-timer": int(args[1])}}}}
@@ -1384,6 +1433,7 @@ def invoke_api(func, args=[]):
            if_address = args[2] if (len(args) >= 3 and args[2] != "") else "0.0.0.0"
 
         cfg_body = { "config" : {"authentication-type" : auth_type}}
+
         return patch_ospf_interface_config(api, if_name, if_address, cfg_body)
 
     elif func == 'delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_type' :

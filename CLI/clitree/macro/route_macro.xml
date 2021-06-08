@@ -48,7 +48,7 @@ limitations under the License.
 
 <MACRODEF name ="STATIC_ROUTE_IP_INTF_CFG">
      <PARAM name="interface" help="Select an interface" ptype="SUBCOMMAND" mode="subcommand">
-          <PARAM name="ifname" help="Interface-type number" ptype="PHY_LB_MGMT_PO_VL_INTERFACE">
+          <PARAM name="ifname" help="Interface-type number" ptype="PHY_LB_MGMT_PO_VL_SUBINTERFACE">
                 <PARAM help="switch subcommand" name="type_v" mode="switch" ptype="SUBCOMMAND" optional="true">
                       <PARAM help="Set next hop VRF" name="nexthop-vrf" ptype="SUBCOMMAND" mode="subcommand">
                             <PARAM name="next-hop-vrf" help="Name of next hop VRF" ptype="ALL_VRF">
@@ -67,7 +67,7 @@ limitations under the License.
 
 <MACRODEF name ="STATIC_ROUTE_INTF_CFG">
      <PARAM name="interface" help="Select an interface" ptype="SUBCOMMAND" mode="subcommand">
-          <PARAM name="ifname" help="Interface-type number" ptype="PHY_LB_MGMT_PO_VL_INTERFACE">
+          <PARAM name="ifname" help="Interface-type number" ptype="PHY_LB_MGMT_PO_VL_SUBINTERFACE">
                 <PARAM help="switch subcommand" name="type_v" mode="switch" ptype="SUBCOMMAND" optional="true">
                       <PARAM help="Set next hop VRF" name="nexthop-vrf" ptype="SUBCOMMAND" mode="subcommand">
                             <PARAM name="next-hop-vrf" help="Name of next hop VRF" ptype="ALL_VRF">
@@ -84,7 +84,7 @@ limitations under the License.
 
 <MACRODEF name ="STATIC_ROUTE_INTF_DEL">
      <PARAM name="interface" help="Select an interface" ptype="SUBCOMMAND" mode="subcommand">
-           <PARAM name="ifname" help="Interface-type number" ptype="PHY_LB_MGMT_PO_VL_INTERFACE">
+           <PARAM name="ifname" help="Interface-type number" ptype="PHY_LB_MGMT_PO_VL_SUBINTERFACE">
                 <PARAM name="nexthop-vrf" help="Select next hop VRF" ptype="SUBCOMMAND" mode="subcommand" optional="true">
                       <PARAM name="next-hop-vrf" help="Name of next hop VRF" ptype="ALL_VRF"> </PARAM>
                 </PARAM>

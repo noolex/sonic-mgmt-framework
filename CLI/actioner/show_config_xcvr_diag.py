@@ -35,7 +35,7 @@ def show_xcvr_diag_ctrl(render_tables):
     if render_tables is None:
         return 'CB_SUCCESS', ''
 
-    key = 'sonic-transceiver-diag:sonic-transceiver-diag/XCVR/XCVR_LIST'
+    key = 'sonic-transceiver:sonic-transceiver/TRANSCEIVER_DIAG/TRANSCEIVER_DIAG_LIST'
     if key in render_tables:
         data = render_tables[key]
     if len(data) < 1:
@@ -44,10 +44,27 @@ def show_xcvr_diag_ctrl(render_tables):
     # sort dictionary by value (i.e. config command)
     for row in natsorted(data, key=lambda x: x['ifname']):
         ifn = fixup_ifname(row['ifname'])
-        pre = 'interface transceiver-diagnostics loopback'
-        if row.get('host_side_input_loopback_enable') == 'True':
+
+        # interface transceiver diagnostics loopback
+        pre = 'interface transceiver diagnostics loopback'
+        if row.get('lb_host_input_enabled') == 'true':
             cmds.append("{0} host-side-input {1}".format(pre, ifn))
-        if row.get('media_side_input_loopback_enable') == 'True':
+        if row.get('lb_host_output_enabled') == 'true':
+            cmds.append("{0} host-side-output {1}".format(pre, ifn))
+        if row.get('lb_media_input_enabled') == 'true':
             cmds.append("{0} media-side-input {1}".format(pre, ifn))
+        if row.get('lb_media_output_enabled') == 'true':
+            cmds.append("{0} media-side-output {1}".format(pre, ifn))
+
+        # interface transceiver diagnostics pattern
+        pre = 'interface transceiver diagnostics pattern'
+        if row.get('prbs_chk_host_enabled') == 'true':
+            cmds.append("{0} checker-host {1}".format(pre, ifn))
+        if row.get('prbs_chk_media_enabled') == 'true':
+            cmds.append("{0} checker-media {1}".format(pre, ifn))
+        if row.get('prbs_gen_host_enabled') == 'true':
+            cmds.append("{0} generator-host {1}".format(pre, ifn))
+        if row.get('prbs_gen_media_enabled') == 'true':
+            cmds.append("{0} generator-media {1}".format(pre, ifn))
 
     return 'CB_SUCCESS', "\n".join(cmds)

@@ -31,8 +31,8 @@ Configured Anycast Gateway MAC address: {{gwmac}}
 Total number of gateway: {{total}}
 Total number of gateway admin UP: {{adminup}}
 Total number of gateway oper UP: {{operup}}
-{{'%-10s %-20s %-10s %-10s'|format("Interfaces", "Gateway Address", "Vrf", "Admin/Oper")}}
-{{'%-10s %-20s %-10s %-10s'|format("----------", "---------------", "------", "----------")}}
+{{'%-20s %-20s %-10s %-10s'|format("Interfaces         ", "Gateway Address", "Vrf", "Admin/Oper")}}
+{{'%-20s %-20s %-10s %-10s'|format("-------------------", "---------------", "------", "----------")}}
 {% endif %}
 {% endif %}
 
@@ -56,14 +56,14 @@ Total number of gateway oper UP: {{operup}}
                 {% if vars.update({'operStatus':json_output['miscmap'][vars.interface][vars.gwIp[0]]['oper_state']}) %}{% endif %}
                 {% if vars.update({'adminStatus':json_output['miscmap'][vars.interface][vars.gwIp[0]]['admin_state']}) %}{% endif %}
             {% endif %}
-{{'%-10s %-20s %-10s %5s/%-5s'|format(vars.interface, vars.gwIp[0], vars.master, vars.adminStatus, vars.operStatus)}}
+{{'%-20s %-20s %-10s %5s/%-5s'|format(vars.interface, vars.gwIp[0], vars.master, vars.adminStatus, vars.operStatus)}}
 {% for i in vars.gwIp %}
 {% if i != '' and i != vars.gwIp[0] %}
 {% if "miscmap" in json_output %}
     {% if vars.update({'operStatus':json_output['miscmap'][vars.interface][i]['oper_state']}) %}{% endif %}
     {% if vars.update({'adminStatus':json_output['miscmap'][vars.interface][i]['admin_state']}) %}{% endif %}
 {% endif %}
-{{'%-10s %-20s %-10s %5s/%-5s'|format('', i, '', vars.adminStatus, vars.operStatus)}}
+{{'%-20s %-20s %-10s %5s/%-5s'|format('', i, '', vars.adminStatus, vars.operStatus)}}
 {% endif %}
 {% endfor %}
             {% endif %}

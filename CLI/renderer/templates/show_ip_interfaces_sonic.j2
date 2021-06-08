@@ -3,7 +3,6 @@ INTF_TABLE for fetching IP address associated with phy, loopback, vlan and port-
 MGMT_INTF_TABLE for fetching IP address associated with mgmt-intf.
 And respective tables for different if-types for fetching admin/oper status like VLAN_TABLE, PORT_TABLE...etc
 #}
-
 {% set vars = {'name': ""} %}
 {% set vars = {'admin_state': ""} %}
 {% set vars = {'oper_state': "down"} %}
@@ -11,10 +10,11 @@ And respective tables for different if-types for fetching admin/oper status like
 {% set vars = {'vrf': ""} %}
 {% set vars = {'flags': ""} %}
 {% set vars = {'ipv4_src_pfx': ""} %}
-{% if (("sonic-interface:INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-sag:SAG_INTF_LIST" in json_output)) %}
+{% set INTF_NAME_WIDTH = '%-21s' %}
+{% if (("sonic-interface:INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-mgmt-interface:MGMT_INTF_TABLE_IPADDR_LIST" in json_output) or ("sonic-sag:SAG_INTF_LIST" in json_output) or ("sonic-interface:VLAN_SUB_INTERFACE_LIST" in json_output)) %}
 Flags: U-Unnumbered interface, A-Anycast IP
 -----------------------------------------------------------------------------------------------
-{{'%-20s'|format("Interface")}}{{'%-35s'|format("IP address/mask")}}{{'%-15s'|format("VRF")}}{{'%-15s'|format("Admin/Oper")}}{{'%-15s'|format("Flags")}}
+{{INTF_NAME_WIDTH|format("Interface")}}{{'%-35s'|format("IP address/mask")}}{{'%-15s'|format("VRF")}}{{'%-15s'|format("Admin/Oper")}}{{'%-15s'|format("Flags")}}
 -----------------------------------------------------------------------------------------------
 {% for key in json_output %}
    {% if "sonic-interface:INTF_TABLE_IPADDR_LIST" in key %}
@@ -54,7 +54,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
          {% endif %}
         {% set admin_op = vars.admin_state + "/" + vars.oper_state|string() %}
         {% if vars.update({'admin_oper':admin_op}) %}{% endif %}
-{{'%-20s'|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
+{{INTF_NAME_WIDTH|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
       {% endfor %}
    {% endif %}
     {% if "sonic-sag:SAG_INTF_LIST" in key -%}
@@ -84,16 +84,63 @@ Flags: U-Unnumbered interface, A-Anycast IP
                 {% endif -%}
             {% endif -%}
             {% if "v4GwIp" in sagIntf or "v6GwIp" in sagIntf -%}       
-{{'%-20s'|format(sagvars.name)}}{{'%-35s'|format(sagvars.ipv4_src_pfx[0])}}{{'%-15s'|format(sagvars.vrf)}}{{'%-15s'|format(sagvars.admin_oper)}}{{'%-15s'|format(sagvars.flags)}}
+{{INTF_NAME_WIDTH|format(sagvars.name)}}{{'%-35s'|format(sagvars.ipv4_src_pfx[0])}}{{'%-15s'|format(sagvars.vrf)}}{{'%-15s'|format(sagvars.admin_oper)}}{{'%-15s'|format(sagvars.flags)}}
             {% if sagvars.ipv4_src_pfx|length > 1 -%}
                 {% for pfx in sagvars.ipv4_src_pfx[1:] %}
-{{'%-20s'|format('')}}{{'%-35s'|format(pfx)}}
+{{INTF_NAME_WIDTH|format('')}}{{'%-35s'|format(pfx)}}
                 {% endfor %}
             {% endif %}
             {% endif %}
         {% endfor -%}    
     {% endif %}
    {% for ifKey in intfTblList %}
+    {% if '.' in ifKey["ifName"] %}
+        {% if vars.update({'name':ifKey["ifName"]}) %}{% endif %}
+        {% if "sonic-interface:VLAN_SUB_INTERFACE_LIST" not in json_output -%}
+            {% continue %}
+        {% endif %}
+        {% if vars.name.startswith('Eth') and "sonic-port:PORT_TABLE_LIST" not in json_output -%}
+            {% continue %}
+        {% endif %}
+        {% if vars.name.startswith('PortChannel') and "sonic-portchannel:LAG_TABLE_LIST" not in json_output -%}
+            {% continue %}
+        {% endif %}
+        {% set vlanSubIntfList = json_output["sonic-interface:VLAN_SUB_INTERFACE_LIST"] -%}
+        {% set portTblList = json_output["sonic-port:PORT_TABLE_LIST"] %}
+        {% set lagTblList = json_output["sonic-portchannel:LAG_TABLE_LIST"] %}
+        {% if vars.update({'name':ifKey["ifName"], 'flags':""}) %}{% endif %}
+        {% if vars.name.startswith('Eth') or vars.name.startswith('PortChannel') -%}
+            {% for vlanSubIntf in vlanSubIntfList -%}
+                {% if (vlanSubIntf["id"] != vars.name) %}
+                     {% continue %}
+                {% endif %}
+                {% if "unnumbered" in vlanSubIntf %}
+                     {% if vars.update({'flags':"U"}) %}{% endif %}
+                {% endif %}
+                {% if vars.update({'ipv4_src_pfx':ifKey["ipPrefix"]}) %}{% endif %}
+                {% if vars.update({'admin_state':"down"}) %}{% endif %}
+                {% if vars.update({'oper_state':"down"}) %}{% endif %}
+                {% if vars.update({'vrf':""}) %}{% endif %}
+                {% if "vrf_name" in vlanSubIntf and vlanSubIntf["vrf_name"] != 'default' %}
+                     {% if vars.update({'vrf':vlanSubIntf["vrf_name"]}) %}{% endif %}
+                {% endif %}
+                {% if "admin_status" in vlanSubIntf %}
+                    {% if vars.update({'admin_state':vlanSubIntf["admin_status"]}) %}{% endif %}
+                {% endif %}
+                {% for port in portTblList -%}
+                    {% if vars.name == port["ifname"] -%}
+                        {% if "oper_status" in port %}
+                            {% if vars.update({'oper_state':port["oper_status"]}) %}{% endif %}
+                        {% endif %}
+                    {% endif -%}
+                {% endfor -%}
+                {% set admin_op = vars.admin_state + "/" + vars.oper_state|string() %}
+                {% if vars.update({'admin_oper':admin_op}) %}{% endif %}
+{{INTF_NAME_WIDTH|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
+            {% endfor -%}
+        {% endif -%}
+        {% continue %}
+    {% endif %}
 	{% if "secondary" in ifKey %}
             {% if vars.update({'secondary':ifKey["secondary"]}) %}{% endif %}
             {% if vars.secondary == true %}
@@ -122,7 +169,6 @@ Flags: U-Unnumbered interface, A-Anycast IP
                         {% endif -%}
                     {% endfor -%}
                 {% endif -%}
-
                 {% if "sonic-port:PORT_TABLE_LIST" in nKey -%}
                     {% set portTblList = json_output["sonic-port:PORT_TABLE_LIST"] %}
                     {% for port in portTblList -%}
@@ -139,7 +185,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
                     {% endfor -%}
                 {% endif -%}
             {% endfor %}
-{{'%-20s'|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
+{{INTF_NAME_WIDTH|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
         {% endif %}
         {% if vars.name.startswith('PortChannel') %}
             {% if vars.update({'admin_state':"down"}) %}{% endif %}
@@ -176,10 +222,10 @@ Flags: U-Unnumbered interface, A-Anycast IP
                     {% endfor -%}
                 {% endif -%}
             {% endfor %}
-{{'%-20s'|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
+{{INTF_NAME_WIDTH|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
         {% endif %}
         {% if vars.name.startswith('Vlan') %}
-            {% if vars.update({'admin_state':"down"}) %}{% endif %}
+            {% if vars.update({'admin_state':"up"}) %}{% endif %}
             {% if vars.update({'oper_state':"down"}) %}{% endif %}
             {% if vars.update({'vrf':""}) %}{% endif %}
             {% if vars.update({'flags':""}) %}{% endif %}
@@ -213,7 +259,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
                     {% endfor -%}
                 {% endif %}
             {% endfor %}
-{{'%-20s'|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
+{{INTF_NAME_WIDTH|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
         {% endif -%}
         {% if vars.name.startswith('Loopback') %}
             {% if vars.update({'admin_state':"up"}) %}{% endif %}
@@ -234,7 +280,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
             {% endfor %}
             {% set admin_op = vars.admin_state + "/" + vars.oper_state|string() %}
             {% if vars.update({'admin_oper':admin_op}) %}{% endif %}
-{{'%-20s'|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
+{{INTF_NAME_WIDTH|format(vars.name)}}{{'%-35s'|format(vars.ipv4_src_pfx)}}{{'%-15s'|format(vars.vrf)}}{{'%-15s'|format(vars.admin_oper)}}{{'%-15s'|format(vars.flags)}}
         {% endif %}
     {% endfor %}
 {% endfor %}

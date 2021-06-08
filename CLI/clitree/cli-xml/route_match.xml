@@ -254,17 +254,13 @@ limitations under the License.
            mode="switch" 
            ptype="SUBCOMMAND">
            <PARAM name="phy-if-name" 
-              help="Select an interface" 
-              ptype="PHY_INTERFACE"> 
+              help="Select an interface or sub-interface" 
+              ptype="PHY_INTERFACE_SUBIF"> 
            </PARAM>
            <PARAM name="PortChannel" 
-              help="Port channel Interface Configuration" 
+              help="PortChannel interface or sub-interface configuration" 
               mode="subcommand" 
-              ptype="SUBCOMMAND">
-              <PARAM name="lag-id" 
-                 help="PortChannel identifier" 
-                 ptype="LAG_ID"
-              />
+              ptype="PO_INTERFACE_SUBIF">
            </PARAM>
            <PARAM name="Vlan" 
               help="Vlan Interface Configuration" 
@@ -276,7 +272,7 @@ limitations under the License.
               />
            </PARAM>
         </PARAM>
-       <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_interface_config_interface ${name} ${seq_num} ${if-type} ${phy-if-name}${lag-id}${vlan-id}</ACTION>
+       <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_interface_config_interface ${name} ${seq_num} ${if-type} ${phy-if-name}${PortChannel}${vlan-id}</ACTION>
     </COMMAND>
 
    <COMMAND
@@ -371,17 +367,13 @@ limitations under the License.
               ptype="IPV4V6_ADDR"
            />
            <PARAM name="phy-if-name" 
-              help="Select an interface" 
-              ptype="PHY_INTERFACE">
+              help="Select an interface or sub-interface" 
+              ptype="PHY_INTERFACE_SUBIF">
            </PARAM>
            <PARAM name="PortChannel" 
-              help="Port channel Interface Configuration" 
+              help="PortChannel interface or sub-interface configuration" 
               mode="subcommand" 
-              ptype="SUBCOMMAND">
-              <PARAM name="lag-id" 
-                 help="PortChannel identifier" 
-                 ptype="LAG_ID"
-              />
+              ptype="PO_INTERFACE_SUBIF">
            </PARAM>
            <PARAM name="Vlan" 
               help="Vlan Interface Configuration" 
@@ -393,7 +385,7 @@ limitations under the License.
               />
            </PARAM>
         </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_neighbor_set_config_address ${name} ${seq_num} ${peer-type} ${match-peer}${phy-if-name}${lag-id}${vlan-id}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_route_match patch_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_conditions_match_neighbor_set_config_address ${name} ${seq_num} ${peer-type} ${match-peer}${phy-if-name}${PortChannel}${vlan-id}</ACTION>
     </COMMAND>
 
     <COMMAND

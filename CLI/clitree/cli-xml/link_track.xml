@@ -236,6 +236,9 @@ limitations under the License.
     <VIEW name="configure-vlan-view">
         <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="1" />
     </VIEW>
+    <VIEW name="configure-subif-view">
+        <MACRO name="LINK-STATE-TRACK-INTF-UPSTR-DOWNSTR" arg="1" />
+    </VIEW>
 
     <VIEW name="enable-view">
         <COMMAND name="show link" help="Show link state tracking information" />

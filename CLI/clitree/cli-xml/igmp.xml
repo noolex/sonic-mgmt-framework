@@ -1,0 +1,265 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE CLISH_MODULE [
+]>
+
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema
+                        http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+
+<!-- show commands -->
+<!-- show ip igmp groups -->
+<!-- show ip igmp sources -->
+<!-- show ip igmp statistics -->
+<!-- show ip igmp interface [Vlanid] -->
+
+<VIEW name="enable-view">
+    <COMMAND
+        name="show ip igmp groups"
+        help="IGMP groups information">
+        <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_groups show_ip_igmp_groups.j2 ${vrf-name} </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show IGMP groups information
+                </DESCRIPTION>
+                <USAGE>
+                    sonic# show ip igmp groups
+                </USAGE>
+                <EXAMPLE summary="show ip igmp groups">
+                    #show ip igmp groups
+
+                    Interface        Address         Group              Mode Timer    Srcs    V    Uptime  
+                    Vlan301          33.33.33.1      232.1.1.1       ---- 00:00:03    1         2    00:00:02
+
+                </EXAMPLE>
+            </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="show ip igmp join"
+        help="IGMP joins information">
+        <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_joins show_ip_igmp_joins.j2 ${vrf-name} </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show IGMP static join information
+                </DESCRIPTION>
+                <USAGE>
+                    sonic# show ip igmp join
+                </USAGE>
+                <EXAMPLE summary="show ip igmp join">
+                    #show ip igmp join
+                    Interface        Address         Source          Group           Socket Uptime  
+                    Ethernet8        *               90.0.0.2        232.1.1.1           15 00:00:07
+                    Ethernet8        *               91.0.0.2        232.1.1.1           16 00:00:07
+
+                </EXAMPLE>
+            </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="show ip igmp interface"
+        help="IGMP interface information">
+        <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="false">
+
+          <PARAM
+              name="detail"
+              help="IGMP interface information in detail"
+              ptype="SUBCOMMAND" optional="true"
+              mode="subcommand"
+          >
+          </PARAM>
+        </PARAM>
+
+        <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_interface show_ip_igmp_interface.j2 ${vrf-name} ${interfacename}</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show IGMP interface information
+                </DESCRIPTION>
+                <USAGE>
+                    sonic# show ip igmp interface Vlan301
+                </USAGE>
+                <EXAMPLE summary="show ip igmp interface Vlan301">
+                    Interface : Vlan301
+                    State     : up
+                    Address   : 33.33.33.1
+                    Uptime    : 00:00:48
+                    Version   : 2
+
+                     Querier
+                    -------
+                     Querier     : local
+                     Start Count : 0
+                     Query Timer : 00:00:01
+                     Other Timer : --:--:--
+ 
+ 
+                    Timers
+                     ------
+                    Group Membership Interval      : 5s
+                    Last Member Query Count        : 2
+                    Last Member Query Time         : 2s
+                    Older Host Present Interval    : 5s
+                    Other Querier Present Interval : 4s
+                    Query Interval                 : 2s
+                    Query Response Interval        : 1s
+                    Robustness Variable            : 2
+                    Startup Query Interval         : 1s
+
+                    Flags
+                    -----
+                     All Multicast   : no
+                     Broadcast       : yes
+                     Deleted         : no
+                     Interface Index : 185
+                     Multicast       : yes
+                     Multicast Loop  : 0
+                     Promiscuous     : no
+                </EXAMPLE>
+            </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="show ip igmp sources"
+        help="IGMP sources information">
+        <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_sources show_ip_igmp_sources.j2 ${vrf-name} </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show IGMP sources information
+                </DESCRIPTION>
+                <USAGE>
+                    sonic# show ip igmp sources
+                </USAGE>
+                <EXAMPLE summary="show ip igmp sources">
+                    #show ip igmp sources
+
+                    Interface        Address         Group           Source  Timer    Fwd    Uptime
+                    Vlan301          33.33.33.1      232.1.1.1         *    00:00:03   Y     00:00:02
+
+                </EXAMPLE>
+            </DOCGEN>
+    </COMMAND>
+    <COMMAND
+        name="show ip igmp statistics"
+        help="IGMP statistics information">
+        <PARAM name = "interface" help="IGMP interface information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name ="interfacename" help = "Interface name" ptype = "STRING"/></PARAM>
+        <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_statistics show_ip_igmp_statistics.j2 ${vrf-name} ${interfacename} </ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show IGMP RX statistics information
+                </DESCRIPTION>
+                <USAGE>
+                    sonic# show ip igmp sources
+                </USAGE>
+                <EXAMPLE summary="show ip igmp statistics">
+                    #show ip igmp statistics 
+                    IGMP RX statistics
+                    Interface       : global
+                    V1 query        : 0
+                    V2 query        : 0
+                    V3 query        : 36
+                    V2 leave        : 0
+                    V1 report       : 0
+                    V2 report       : 0
+                    V3 report       : 74
+                    mtrace response : 0
+                    mtrace request  : 0
+                    unsupported     : 0
+
+                </EXAMPLE>
+            </DOCGEN>
+    </COMMAND>
+
+    <COMMAND name="show ip igmp vrf" help="IGMP vrf information">
+
+      <PARAM name = "vrftype" help = "" ptype = "SUBCOMMAND" mode="switch" >
+          <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>
+          <PARAM name = "all" help = "All VRFs" ptype="SUBCOMMAND" mode="subcommand" />
+      </PARAM>
+
+      <PARAM name = "cmdtype" help= "" ptype="SUBCOMMAND" mode="switch" optional="true">
+
+      <PARAM name = "interface" help="IGMP interface information" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="interfacename" help = "Interface name" ptype = "STRING" optional="true" >
+        <PARAM name="detail" help="IGMP interface information in detail" ptype="SUBCOMMAND" optional="true" mode="subcommand"/></PARAM>
+      </PARAM>
+
+      <PARAM name = "statistics" help="IGMP statistics information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name = "interface" help="IGMP interface information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+        <PARAM name ="interfacename" help = "Interface name" ptype = "STRING"/></PARAM>
+      </PARAM>
+
+      <PARAM name = "groups" help="IGMP groups information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      </PARAM>
+
+      <PARAM name = "sources" help="IGMP sources information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      </PARAM>
+
+      <PARAM name = "join" help="IGMP static join information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      </PARAM>
+
+      </PARAM>
+
+      <ACTION builtin="clish_pyobj">
+           sonic_cli_igmp show_ip_igmp_vrf show_ip_igmp_sources.j2 ${__params}</ACTION>
+
+    </COMMAND>
+
+    <COMMAND
+        help="clear IP  commands"
+        name="clear ip igmp"
+        >
+    </COMMAND>
+
+
+    <COMMAND name = "clear ip igmp vrf"
+        help = "Clear igmp for all interfaces for vrf"
+        >
+        <PARAM name="vrf-name" help="VRF Name" ptype="STRING" optional="false" >
+            <PARAM name="interfaces" help="Interface" ptype="SUBCOMMAND" mode="subcommand">
+            </PARAM>
+        </PARAM>
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_igmp clear_igmp_vrf vrf=${vrf-name}
+        </ACTION>
+      <DOCGEN>
+        <DESCRIPTION>
+          This command clears/resets igmp .
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to clear igmp. Following is a partial list of
+          information with command syntax that can be cleared.
+          - clear ip igmp vrf VRF-NAME interfaces
+            This command clears all igmp in VRF VRF-NAME
+        </USAGE>
+        <EXAMPLE summary="Below command clear igmp">
+          sonic# clear ip igmp vrf default interfaces
+        </EXAMPLE>
+      </DOCGEN>
+
+    </COMMAND>
+
+    <COMMAND name = "clear ip igmp interfaces"
+        help = "Clear ip for all interfaces"
+        >
+        <ACTION builtin="clish_pyobj">
+            sonic_cli_igmp clear_igmp
+        </ACTION>
+        <DOCGEN>
+        <DESCRIPTION>
+          This command clears/resets igmp .
+        </DESCRIPTION>
+        <USAGE>
+          Use this command to clear igmp. Following is a partial list of
+          information with command syntax that can be cleared.
+          - clear ip igmp interfaces
+            This command clears all igmp
+        </USAGE>
+        <EXAMPLE summary="Below command clear igmp">
+          sonic# clear ip igmp interfaces
+        </EXAMPLE>
+      </DOCGEN>
+
+    </COMMAND>
+
+</VIEW>
+</CLISH_MODULE>
