@@ -91,13 +91,13 @@ def run(func, args):
         elif api_response.ok():
             if api_response.content is not None:
                 response = api_response.content
-                if 'openconfig-system-ext:state' in response.keys():
+                if 'openconfig-system-ext:state' in list(response.keys()):
                     value = response['openconfig-system-ext:state']
                     if value is not None:
                         show_cli_output(args[0], value)
                         if func == 'status':
                             run('files', ['show_oc_kdump_files.j2'])
-                elif 'openconfig-system-ext:kdump-records' in response.keys():
+                elif 'openconfig-system-ext:kdump-records' in list(response.keys()):
                     value = response['openconfig-system-ext:kdump-records']
                     if value is not None:
                         if func != 'log':

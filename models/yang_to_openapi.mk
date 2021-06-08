@@ -31,6 +31,13 @@ YANG_MOD_FILES              := $(shell find $(YANGDIR)/ -maxdepth 1 -name '*.yan
 YANG_MOD_FILES              += $(shell find $(YANGDIR_EXTENSIONS) -maxdepth 1 -name '*.yang')
 YANG_COMMON_FILES           := $(shell find $(YANGDIR_COMMON) -name '*.yang')
 
+MGMT_COMMON_DIR             ?= $(abspath ../../sonic-mgmt-common)
+YANGDIR_PATCH               := $(MGMT_COMMON_DIR)/models/yang/patches
+BUILD_YANGDIR               := $(MGMT_COMMON_DIR)/build/yang
+BUILD_YANGDIR_COMMON        := $(BUILD_YANGDIR)/common
+BUILD_YANGDIR_EXTENSIONS    := $(BUILD_YANGDIR)/extensions
+YANG_PATCH_FILES            := $(shell find $(YANGDIR_PATCH) -name '*.patch' | sort)
+
 YANGDIR_SONIC               := $(YANGDIR)/sonic
 YANGDIR_SONIC_COMMON        := $(YANGDIR_SONIC)/common
 SONIC_YANG_MOD_FILES        := $(shell find $(YANGDIR_SONIC) -maxdepth 1 -name '*.yang')
@@ -58,7 +65,9 @@ $(YANGAPI_DIR)/.openapi_gen_ut: $(PYANG_PLUGIN_DIR)/openapi.py | $(YANGAPI_DIR)/
 #======================================================================
 # Generate YAML files for Yang modules
 #======================================================================
-$(YANGAPI_DIR)/.done: $(YANG_MOD_FILES) $(YANG_COMMON_FILES) | $(OPENAPI_GEN_PRE)
+$(YANGAPI_DIR)/.done: BUILD_YANG_MOD_FILES = $(shell find $(BUILD_YANGDIR) -maxdepth 1 -name '*.yang' | sort)
+$(YANGAPI_DIR)/.done: BUILD_YANG_MOD_FILES += $(shell find $(BUILD_YANGDIR_EXTENSIONS) -maxdepth 1 -name '*.yang' | sort)
+$(YANGAPI_DIR)/.done: $(YANG_MOD_FILES) $(YANG_COMMON_FILES) $(YANG_PATCH_FILES) | $(OPENAPI_GEN_PRE)
 	@echo "+++++ Generating YAML files for Yang modules +++++"
 	$(PYANG) \
 		-f swaggerapi \
@@ -68,8 +77,8 @@ $(YANGAPI_DIR)/.done: $(YANG_MOD_FILES) $(YANG_COMMON_FILES) | $(OPENAPI_GEN_PRE
 		--md-outdir $(MD_DIR) \
 		--with-serverstub \
 		--stub-outdir $(SERVER_DIST_DIR) \
-		-p $(YANGDIR_COMMON):$(YANGDIR):$(YANGDIR_EXTENSIONS) \
-		$(YANG_MOD_FILES)
+		-p $(BUILD_YANGDIR_COMMON):$(BUILD_YANGDIR):$(BUILD_YANGDIR_EXTENSIONS) \
+		$(BUILD_YANG_MOD_FILES)
 	@echo "+++++ Generation of  YAML files for Yang modules completed +++++"
 	touch $@
 

@@ -271,9 +271,9 @@ def run(func, args):
             else:
                 keypath = cc.Path('/restconf/data/sonic-vrf:sonic-vrf/VRF/VRF_LIST={}'.format(args[0]))
                 if args[0] == 'default':
-                    showrun_list = [ ('show_view', "views=renderCfg_ipvrf", 'view_keys="name=default"'), ('show_view', "views=renderCfg_ippim", 'view_keys="vrfname=default"'), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if,configure-subif,renderCfg_iprte"), ('show_view', "views=configure-router-bgp", 'view_keys="vrf-name=default"') ]
+                    showrun_list = [ ('show_view', "views=renderCfg_ipvrf", 'view_keys="name=default"'), ('show_view', "views=renderCfg_ippim", 'view_keys="vrfname=default"'), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if,configure-subif,renderCfg_iprte"), ('show_view', "views=configure-router-bgp", 'view_keys="vrf-name=default"'), ('show_view', "views=configure-router-ospf", 'view_keys="vrf-name=default"'), ('show_view', "views=configure-vxlan") ]
                 else:
-                    showrun_list = [ ('show_view', "views=renderCfg_ipvrf", 'view_keys="name={}"'.format(args[0])), ('show_view', "views=configure"), ('show_view', "views=renderCfg_ippim", 'view_keys="vrfname={}"'.format(args[0])), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if,configure-subif,renderCfg_iprte"), ('show_view', "views=configure-router-bgp", 'view_keys="vrf-name={}"'.format(args[0])) ]
+                    showrun_list = [ ('show_view', "views=renderCfg_ipvrf", 'view_keys="name={}"'.format(args[0])), ('show_view', "views=configure"), ('show_view', "views=renderCfg_ippim", 'view_keys="vrfname={}"'.format(args[0])), ('show_multi_views', "views=configure-vlan,configure-lo,configure-lag,configure-if,configure-subif,renderCfg_iprte"), ('show_view', "views=configure-router-bgp", 'view_keys="vrf-name={}"'.format(args[0])), ('show_view', "views=configure-router-ospf", 'view_keys="vrf-name={}"'.format(args[0])), ('show_view', "views=configure-vxlan") ]
             response = api.get(keypath)
             if response.content == None or not response.content:
                  # vrf not found
@@ -291,7 +291,11 @@ def run(func, args):
                          continue
                 else:
                    if re.search('\\bvrf\\b', cfgl) and not re.search('\\bvrf (forwarding )?default\\b', cfgl):
-                      continue
+                      # Interface vxlan (from configure-vxlan view) can specify multiple different vrfs.
+                      # if only one vni-vlan per vrf and if there are more vni-vlans than vni-vrfs, then
+                      # those are on default vrf.
+                      if cfgl[:20] != 'interface vxlan vtep' or cfgl.count(' vlan ') <=  cfgl.count(' vrf '):
+                         continue
                 if gotSep:
                    vrfcfgs += '\n!\n' + cfgl
                    gotSep = False

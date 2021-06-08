@@ -299,24 +299,28 @@ limitations under the License.
     <!--============================== INTERFACE ETHERNET MODE COMMANDS ======================-->
     <VIEW name="configure-if-view">
         <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
+        <COMMAND name="no mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE PORTCHANNEL MODE COMMANDS ======================-->
     <VIEW name="configure-lag-view">
         <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
+        <COMMAND name="no mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== INTERFACE VLAN MODE COMMANDS ======================-->
     <VIEW name="configure-vlan-view">
         <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
+        <COMMAND name="no mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
     <!--============================== SUB-INTERFACE MODE COMMANDS ======================-->
     <VIEW name="configure-subif-view">
         <COMMAND name="mac" help="Configure MAC parameters" data_and_render_cb="acl_bind_cb"/>
+        <COMMAND name="no mac" help="Configure MAC parameters"/>
         <MACRO name="ACL-BINDING-OPTIONS" arg=""/>
     </VIEW>
 
@@ -536,6 +540,25 @@ limitations under the License.
         <!-- Inheritance -->
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
+        <COMMAND name="show configuration" help="Show current MAC ACL configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mac-acl view_keys="access-list-name=${name}"</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show current MAC ACL configuration.
+                </DESCRIPTION>
+                <USAGE>
+                    Displays the configuration of the given MAC ACLs.
+                </USAGE>
+                <EXAMPLE summary="show running-configuration mac access-list">
+                    mac access-list macacl-example
+                     seq 10 permit host 00:00:10:00:00:01 host 00:00:20:00:00:01
+                     seq 20 permit host 00:00:10:00:00:02 host 00:00:20:00:00:02
+                     seq 30 permit host 00:00:10:00:00:03 host 00:00:20:00:00:03
+                     seq 40 permit host 00:00:10:00:00:04 host 00:00:20:00:00:04
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_L2"/>
         <COMMAND name="seq" help="Sequence number">
             <PARAM name="seq-no" help="Sequence number" ptype="RANGE_1_65535">
@@ -594,6 +617,25 @@ limitations under the License.
         <!-- Inheritance -->
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
+        <COMMAND name="show configuration" help="Show current IPv4 ACL configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipv4-acl view_keys="access-list-name=${name}"</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show current IPv4 ACL configuration.
+                </DESCRIPTION>
+                <USAGE>
+                    Displays the configuration of the current IPv4 ACLs.
+                </USAGE>
+                <EXAMPLE summary="show configuration">
+                    ip access-list ipacl-example
+                     seq 10 permit ip host 10.1.1.1 host 20.1.1.1
+                     seq 20 permit ip host 10.1.1.2 host 20.1.1.2
+                     seq 30 permit ip host 10.1.1.3 host 20.1.1.3
+                     seq 40 permit ip host 10.1.1.4 host 20.1.1.4
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
+
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV4"/>
 
         <COMMAND name="seq" help="Sequence number">
@@ -627,6 +669,23 @@ limitations under the License.
     <VIEW name="configure-ipv6-acl-view" prompt="${SYSTEM_NAME}(config-ipv6-acl)# " depth="2">
         <!-- Inheritance -->
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
+        <COMMAND name="show configuration" help="Show current IPv6 ACL configuration">
+            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipv6-acl view_keys="access-list-name=${name}"</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Show current IPv6 ACL configuration.
+                </DESCRIPTION>
+                <USAGE>
+                    Displays the configuration of the current IPv6 ACLs.
+                </USAGE>
+                <EXAMPLE summary="show configuration">
+                    ipv6 access-list ipv6acl-example
+                      seq 100 permit ipv6 host abcd::1 host bcde::1
+                      seq 200 permit tcp host abcd::2 host bcde::2
+                      seq 300 permit udp host abcd::3 host bcde::3
+                </EXAMPLE>
+            </DOCGEN>
+        </COMMAND>
 
         <MACRO name="ACL-COMMON-OPTIONS" arg="ACL_IPV6"/>
 

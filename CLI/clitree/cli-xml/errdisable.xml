@@ -10,7 +10,7 @@
     <PTYPE
         name = "ERR_DISABLE_RECOVERY_CAUSE"
         method="select"
-        pattern="udld bpduguard"
+        pattern="udld bpduguard link-flap"
         help="Cause for error disable"
     />
     <PTYPE
@@ -46,6 +46,28 @@
                 <FEATURE> ERRDISABLE </FEATURE>
             </DOCGEN>
         </COMMAND>
+        <!-- show errdisable link-flap -->
+        <COMMAND name = "show errdisable link-flap"
+            help = "Show error disable information incase of exessive link flaps.">
+            <ACTION builtin="clish_pyobj">sonic_cli_errdisable show_errdisable_link_flap show_errdisable_link_flap.j2</ACTION>
+            <DOCGEN>
+                <DESCRIPTION>
+                    Shows error disable recovery information incase of exessive link flaps.
+                </DESCRIPTION>
+                <USAGE>
+                    Use this command to check status of error disable recovery for exessive link flaps.
+                </USAGE>
+                <EXAMPLE summary="Shows status of error disable recovery for exessive link flaps.">
+                    sonic#show errdisable link-flap
+                    Interface  Flap-threshold  Sampling-time   Recovery-timeout Status
+                    ---------------------------------------------------------------------------
+                    Ethernet0  10              3               30              Errdisabled
+                    Ethernet4  10              3               60              Not-errdisabled
+
+                </EXAMPLE>
+                <FEATURE> ERRDISABLE </FEATURE>
+            </DOCGEN>
+        </COMMAND>
     </VIEW>
 
 
@@ -76,6 +98,14 @@
                 <PARAM
                     name="bpduguard"
                     help="Enable error disable for STP bpduguard"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+                <PARAM
+                    name="link-flap"
+                    help="Enables error disable for link-flaps"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -117,6 +147,14 @@
                 <PARAM
                     name="bpduguard"
                     help="Disable error disable for STP bpduguard"
+                    ptype="SUBCOMMAND"
+                    mode="subcommand"
+                    optional="true"
+                    >
+                </PARAM>
+                <PARAM
+                    name="link-flap"
+                    help="Disables error disable for link-flaps"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"

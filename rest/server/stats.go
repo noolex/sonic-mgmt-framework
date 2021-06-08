@@ -20,8 +20,6 @@
 package server
 
 import (
-	"github.com/Azure/sonic-mgmt-common/cvl"
-	"github.com/Azure/sonic-mgmt-common/translib/db"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -29,6 +27,9 @@ import (
 	"sync"
 	"text/tabwriter"
 	"time"
+
+	"github.com/Azure/sonic-mgmt-common/cvl"
+	"github.com/Azure/sonic-mgmt-common/translib/db"
 )
 
 func init() {
@@ -164,33 +165,36 @@ func getStatsHandler(w http.ResponseWriter, r *http.Request) {
 
 // writeStatsDBStatsText dumps out one table/map worth of DB Stats
 func writeDBStatsText(tw *tabwriter.Writer, name string, stats *db.Stats) {
-	fmt.Fprintf(tw,"\tTable Name:%s\n", name)
+	fmt.Fprintf(tw, "\tTable Name:%s\n", name)
 	fmt.Fprintln(tw,
-		"\t\tGetEntry\tGetKeys\tGetKeysPattern\tGetMap\tGetMapAll\tTotal")
+		"\t\tGetEntry\tGetKeys\tGetKeysPattern\tGetMap\tGetMapAll\tSCNew\tSCDel\tGetNextKeys\tTotal")
 	fmt.Fprintln(tw,
-		"\t\t--------\t-------\t--------------\t------\t---------\t-----")
-	fmt.Fprintf(tw, "\tHits\t%d\t%d\t%d\t%d\t%d\t%d\n",
+		"\t\t--------\t-------\t--------------\t------\t---------\t-----\t-----\t-----------\t-----")
+	fmt.Fprintf(tw, "\tHits\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
 		stats.GetEntryHits,
 		stats.GetKeysHits, stats.GetKeysPatternHits,
 		stats.GetMapHits, stats.GetMapAllHits,
+		stats.NewScanCursorHits, stats.DeleteScanCursorHits,
+		stats.GetNextKeysHits,
 		stats.Hits)
 	fmt.Fprintf(tw, "\tCacheHits\t%d\t%d\t%d\t%d\t%d\n",
 		stats.GetEntryCacheHits,
 		stats.GetKeysCacheHits, stats.GetKeysPatternCacheHits,
 		stats.GetMapCacheHits, stats.GetMapAllCacheHits)
-	fmt.Fprintf(tw, "\tTime\t%s\t%s\t%s\t%s\t%s\t%s\n",
+	fmt.Fprintf(tw, "\tTime\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
 		stats.GetEntryTime,
 		stats.GetKeysTime, stats.GetKeysPatternTime,
 		stats.GetMapTime, stats.GetMapAllTime,
+		time.Duration(0), time.Duration(0), stats.GetNextKeysTime,
 		stats.Time)
-	fmt.Fprintf(tw, "\tPeak\t%s\t%s\t%s\t%s\t%s\t%s\n",
+	fmt.Fprintf(tw, "\tPeak\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
 		stats.GetEntryPeak,
 		stats.GetKeysPeak, stats.GetKeysPatternPeak,
 		stats.GetMapPeak, stats.GetMapAllPeak,
+		time.Duration(0), time.Duration(0), stats.GetNextKeysPeak,
 		stats.Peak)
 	fmt.Fprintln(tw, "")
 }
-
 
 // writeStatsText dumps all stats into a http.ResponseWriter in tabular format.
 func writeStatsText(w http.ResponseWriter) {
@@ -202,7 +206,7 @@ func writeStatsText(w http.ResponseWriter) {
 
 	// Get DB Stats
 	dbHits, dbTime, dbPeak := db.GetDBStatsTotals()
-	dbStat,_ := db.GetDBStats()
+	dbStat, _ := db.GetDBStats()
 
 	fmt.Fprintln(tw, "API TYPE\tTIMER TYPE\tNUM HITS\tTOTAL TIME\tPEAK")
 	fmt.Fprintln(tw, "============\t============\t==========\t============\t============")
@@ -231,7 +235,7 @@ func writeStatsText(w http.ResponseWriter) {
 	}
 	for dbN, dbS := range dbStat.Databases {
 		if (dbS.AllTables.Hits == 0) && (dbS.AllMaps.Hits == 0) &&
-				(len(dbS.Tables) == 0) && (len(dbS.Maps) == 0) {
+			(len(dbS.Tables) == 0) && (len(dbS.Maps) == 0) {
 			continue
 		}
 		fmt.Fprintf(tw, "\t%d:\n", dbN)
@@ -241,10 +245,10 @@ func writeStatsText(w http.ResponseWriter) {
 		if dbS.AllMaps.Hits != 0 {
 			writeDBStatsText(tw, "AllMaps", &(dbS.AllMaps))
 		}
-		for name,stats := range dbS.Tables {
+		for name, stats := range dbS.Tables {
 			writeDBStatsText(tw, name, &stats)
 		}
-		for name,stats := range dbS.Maps {
+		for name, stats := range dbS.Maps {
 			writeDBStatsText(tw, name, &stats)
 		}
 	}
@@ -266,9 +270,9 @@ func writeStatsJSON(w http.ResponseWriter) {
 
 	// Get DB Stats
 	dbHits, dbTime, dbPeak := db.GetDBStatsTotals()
-	dbOpStat := opStat{ Hits: dbHits, Time: dbTime, Peak: dbPeak}
+	dbOpStat := opStat{Hits: dbHits, Time: dbTime, Peak: dbPeak}
 
-	dbStat,_ := db.GetDBStats()
+	dbStat, _ := db.GetDBStats()
 
 	data["rest-api"] = map[string]interface{}{
 		"server":   apiRequestStat,

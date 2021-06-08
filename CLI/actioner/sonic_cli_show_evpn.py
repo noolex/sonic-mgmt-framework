@@ -1,4 +1,7 @@
 #!/usr/bin/python
+"""
+This module handles EVPN Display commands via RPC
+"""
 ###########################################################################
 #
 # Copyright 2019 Broadcom, Inc.
@@ -17,25 +20,23 @@
 #
 ###########################################################################
 
+import os
 import cli_client as cc
 from scripts.render_cli import show_cli_output
-import os
 
 def run(func, args):
+    """Main landing function"""
     full_cmd = os.getenv('USER_COMMAND', None).split('|')[0].lstrip('do ')
     if func == "get_evpn":
         keypath = cc.Path('/restconf/operations/sonic-bgp-show:show-bgp-evpn')
-        body = {"sonic-bgp-show:input": { "cmd":full_cmd }}
+        body = {"sonic-bgp-show:input": {"cmd":full_cmd}}
         response = cc.ApiClient().post(keypath, body, response_type='string')
         if not response:
-            print "No response"
-            return 1
+            print("No response")
         if response.ok():
             if response.content is not None:
                 content = response.content
                 content = content[38:-3].replace('\u003e', '>')
                 show_cli_output("dump.j2", content)
         else:
-            print response.error_message()
-            return 1
-        return
+            print(response.error_message())
