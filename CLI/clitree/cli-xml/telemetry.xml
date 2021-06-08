@@ -404,7 +404,7 @@ limitations under the License.
       <NAMESPACE ref="configure-view" help="false" completion="false" />
     <COMMAND name="no" help="Unconfigure telemetry and monitoring feature" />
     <COMMAND name="switch-id" help="Configure unique switch identifier (up to 32 bit number)" ptype="SUBCOMMAND" mode="subcommand">
-      <PARAM name="id" help="Configurs switch-id value (32 bit)" ptype="RANGE_1_4294967295"/>
+      <PARAM name="id" help="Configure switch-id value (32 bit)" ptype="RANGE_1_4294967295"/>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry patch_switch_id {"id":${id},"feature":"ANY","method":"PATCH"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>

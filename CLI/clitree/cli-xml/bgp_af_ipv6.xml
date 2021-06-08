@@ -160,7 +160,7 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-nbr-view" help="false" completion="false" />
-   <COMMAND name="show configuration" help="Show bgp neighbor IPv6 configuration">
+   <COMMAND name="show configuration" help="Show BGP neighbor IPv6 configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr-ipv6 view_keys="vrf-name=${vrf-name},nbr=${nbr-addr},afi-safi=ipv6_unicast" </ACTION>
     </COMMAND>
   <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/admin_status=true">

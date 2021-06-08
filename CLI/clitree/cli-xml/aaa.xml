@@ -164,7 +164,7 @@ limitations under the License.
 
     <COMMAND name="aaa authentication login default"
              help="Configure AAA login authentication default list"
-             mode="subcommannd"
+             mode="subcommand"
              ptype="SUBCOMMAND">
       <PARAM name="login"
              help="Select authentication method"

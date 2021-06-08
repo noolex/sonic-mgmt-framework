@@ -205,8 +205,8 @@
     </COMMAND>
 
     <COMMAND
-        help="clear IP  commands"
-        name="Clear IP igmp"
+        help="Clear IP commands"
+        name="clear ip igmp"
         >
     </COMMAND>
 
