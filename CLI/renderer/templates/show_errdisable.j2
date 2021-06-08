@@ -13,6 +13,11 @@
 {%else %}
 {{'bpduguard           disabled'}}
 {%endif%}
+{% if 'openconfig-errdisable-types:LINK_FLAP' in errdisable_info['config']['cause'] %}
+{{'link-flap           enabled'}}
+{%else %}
+{{'link-flap           disabled'}}
+{%endif%}
 {% if errdisable_info['config']['interval'] %}
 {{'Timeout for Auto-recovery: '}} {{errdisable_info['config']['interval']}} seconds
 {%else %}
