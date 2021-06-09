@@ -23,7 +23,7 @@ limitations under the License.
 
   <VIEW name="enable-view">
     <!-- clear logging  -->
-    <COMMAND help="Show in-memory-logging information" name="show in-memory-logging">
+    <COMMAND help="Display in-memory-logging information" name="show in-memory-logging">
         <ACTION builtin="clish_pyobj">sonic_cli_in_memory_logging get_openconfig_system_in_memory_logging tpcm.j2</ACTION>
     </COMMAND>
     <COMMAND help="Output of last NUM lines" name="show in-memory-logging lines">

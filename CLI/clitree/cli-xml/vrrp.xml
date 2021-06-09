@@ -26,7 +26,7 @@ limitations under the License.
 <VIEW name="enable-view">
 <!--show vrrp -->
     <COMMAND name = "show vrrp"
-        help = "Show IPv4 VRRP instance information"
+        help = "Display IPv4 VRRP instance information"
         >
         <PARAM
             name="interface"
@@ -100,7 +100,7 @@ limitations under the License.
 
 <!--show vrrp6 -->
     <COMMAND name = "show vrrp6"
-        help = "Show IPv6 VRRP instance information"
+        help = "Display IPv6 VRRP instance information"
         >
         <PARAM
             name="interface"

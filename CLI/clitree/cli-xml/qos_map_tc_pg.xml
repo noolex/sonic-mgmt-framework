@@ -95,7 +95,7 @@ limitations under the License.
         completion="false"
         />
 
-     <COMMAND name="show configuration" help="Show tc-pg-map configuration">
+     <COMMAND name="show configuration" help="Display tc-pg-map configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-tc-pg-map view_keys="name=${map_name}"</ACTION>
      </COMMAND>
 
@@ -150,7 +150,7 @@ limitations under the License.
   <VIEW name="enable-view">
 
     <!--show forwarding-group-priority-group-map -->
-    <COMMAND name="show qos map tc-pg" help="Show configured traffic-class-priority-group-map">
+    <COMMAND name="show qos map tc-pg" help="Display configured traffic-class-priority-group-map">
       <PARAM name="name" help="Name of the traffic-class-priority-group-map" ptype="STRING_32" optional="true"> </PARAM>
       <ACTION>
           if test "${name}" = "" ; then&#xA;

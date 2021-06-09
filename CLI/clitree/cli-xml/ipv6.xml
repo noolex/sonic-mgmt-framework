@@ -425,7 +425,7 @@ limitations under the License.
 
 <VIEW name="enable-view">
     <COMMAND
-        help="Show IP commands"
+        help="Display IP commands"
         name="show ipv6"
         >
     <ACTION builtin="clish_nop"/>
@@ -531,7 +531,7 @@ limitations under the License.
     </COMMAND>
     <!-- show ipv6 dhcp-relay -->
     <COMMAND
-        help="Show IPv6 DHCP relay information"
+        help="Display IPv6 DHCP relay information"
         name="show ipv6 dhcp-relay">
         <MACRO name="DHCP-RELAY-SHOW-OPTIONS" arg=""/>
         <ACTION> if test -n "${intfName}"; then&#xA;

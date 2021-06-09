@@ -71,7 +71,7 @@ limitations under the License.
 <VIEW name="enable-view">
     <COMMAND
         name="show radius-server"
-        help="Show RADIUS information"
+        help="Display RADIUS information"
         >
     <ACTION builtin="clish_pyobj">sonic_cli_radius get_sonic_radius</ACTION>
     </COMMAND>

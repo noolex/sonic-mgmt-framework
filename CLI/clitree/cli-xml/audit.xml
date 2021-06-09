@@ -36,11 +36,11 @@ limitations under the License.
     <!-- show audit-log -->
     <COMMAND
         name="show audit-log"
-        help="Show audit log"
+        help="Display audit log"
         mode="subcommand"
         ptype="SUBCOMMAND">
         <PARAM name="stype"
-            help="Show all of audit log"
+            help="Display all of audit log"
             ptype="AUDIT_SHOW_TYPE"
             optional="true">
         </PARAM>

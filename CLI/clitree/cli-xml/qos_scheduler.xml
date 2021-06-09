@@ -67,7 +67,7 @@ limitations under the License.
         help="false"
         completion="false"
         />
-    <COMMAND name="show configuration" help="Show scheduler-policy configuration">
+    <COMMAND name="show configuration" help="Display scheduler-policy configuration">
            <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-qos-scheduler-policy view_keys="name=${scheduler_policy_name}" </ACTION>
     </COMMAND>
 
@@ -144,7 +144,7 @@ limitations under the License.
         help="false"
         completion="false"
         />
-    <COMMAND name="show configuration" help="Show scheduler_policy queue configuration">
+    <COMMAND name="show configuration" help="Display scheduler_policy queue configuration">
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-qos-scheduler-policy-per-queue view_keys="name=${top_scheduler_policy_name}@${scheduler_policy_per_queue_name}" </ACTION>
     </COMMAND>
 
@@ -306,7 +306,7 @@ limitations under the License.
         help="false"
         completion="false"
         />
-    <COMMAND name="show configuration" help="Show scheduler_policy port configuration" >
+    <COMMAND name="show configuration" help="Display scheduler_policy port configuration" >
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-qos-scheduler-policy-per-port view_keys="name=${top_scheduler_policy_name}@255" </ACTION>
     </COMMAND>
 
@@ -357,7 +357,7 @@ limitations under the License.
 
 
   <VIEW name="enable-view">
-    <COMMAND name="show qos scheduler-policy" help="Show scheduler policy information">
+    <COMMAND name="show qos scheduler-policy" help="Display scheduler policy information">
         <PARAM 
             name="name"
             help="Name of scheduler policy"

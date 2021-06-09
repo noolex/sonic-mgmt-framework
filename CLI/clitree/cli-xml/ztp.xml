@@ -8,7 +8,7 @@
 ]>
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
   <VIEW name="enable-view">
-    <COMMAND name="show ztp-status" help="Show ZTP status">
+    <COMMAND name="show ztp-status" help="Display ZTP status">
       <ACTION builtin="clish_pyobj">sonic_cli_ztp get_openconfig_ztp_ztp_state show_ztp.j2 ${__full_line} </ACTION>
       <xi:include href="include/pipe.xml"/>
       <DOCGEN>

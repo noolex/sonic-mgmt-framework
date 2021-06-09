@@ -24,11 +24,11 @@ limitations under the License.
     >
     <!--=======================================================-->
 <VIEW name="enable-view">
-    <COMMAND name="show route-map" help="Show route map information">
+    <COMMAND name="show route-map" help="Display route map information">
         <PARAM name="rt-map-name" help="Name of route-map" ptype="STRING_63" optional="true"> </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_routemap get_openconfig_routing_policy_routing_policy_policy_definitions_policy_definition show_routemap.j2 ${rt-map-name}</ACTION>
     </COMMAND>
-    <COMMAND name="show running-configuration route-map" help="Show current route map configuration">
+    <COMMAND name="show running-configuration route-map" help="Display current route map configuration">
         <PARAM name="rt-map-name" help="Name of route-map" ptype="STRING_63" optional="true">
             <PARAM name="seq-nu" help="Sequence number" ptype="RANGE_1_65535" optional="true"/>
      </PARAM>
@@ -127,7 +127,7 @@ limitations under the License.
 <VIEW name="configure-route-map-view" prompt="${SYSTEM_NAME}(config-route-map)# "
       depth="2">
   <NAMESPACE ref="configure-view" help="false" completion="false" />
-  <COMMAND name="show configuration" help="Show route-map configuration">
+  <COMMAND name="show configuration" help="Display route-map configuration">
   <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-route-map view_keys="route-map-name=${name},seq-num=${seq_num}" </ACTION>
   </COMMAND>
 

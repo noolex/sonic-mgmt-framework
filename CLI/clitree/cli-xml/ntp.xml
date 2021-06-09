@@ -50,10 +50,10 @@ limitations under the License.
   <VIEW name="enable-view">
 
     <COMMAND name="show ntp" 
-             help="Show NTP information"/>
+             help="Display NTP information"/>
 
     <COMMAND name="show ntp global" 
-             help="Show NTP global configuration" 
+             help="Display NTP global configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <ACTION
@@ -79,7 +79,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="show ntp server" 
-             help="Show NTP server configuration" 
+             help="Display NTP server configuration" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <ACTION
@@ -104,7 +104,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="show ntp associations" 
-             help="Show NTP associations" 
+             help="Display NTP associations" 
              mode="subcommand" 
              ptype="SUBCOMMAND">
       <ACTION

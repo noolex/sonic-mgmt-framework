@@ -33,17 +33,17 @@ limitations under the License.
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
         <!-- show policy-map [NAME] | [type qos|monitoring|forwarding|copp|acl-copp] -->
-        <COMMAND name="show policy-map" help="Show policy-map information">
+        <COMMAND name="show policy-map" help="Display policy-map information">
             <PARAM name="show-fbs-policy-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="show-fbs-policy-name" help="Show policy-map information using name (Max: 63 characters)" ptype="STRING_63"/>
-                <PARAM name="type" help="Show all policy-maps using the policy-map type" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="show-fbs-policy-name" help="Display policy-map information using name (Max: 63 characters)" ptype="STRING_63"/>
+                <PARAM name="type" help="Display all policy-maps using the policy-map type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-policy-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-policy-name}" = "type"'>
-                <PARAM name="qos" help="Show all QoS policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="monitoring" help="Show all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="forwarding" help="Show all forwarding policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="copp" help="Show all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="acl-copp" help="Show all ACL based CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="qos" help="Display all QoS policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="monitoring" help="Display all monitoring policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="forwarding" help="Display all forwarding policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="copp" help="Display all CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="acl-copp" help="Display all ACL based CoPP policy-maps" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_policy ${show-fbs-policy-name} ${show-fbs-policy-type}</ACTION>
             <DOCGEN>
@@ -93,15 +93,15 @@ limitations under the License.
         </COMMAND>
 
         <!-- show class-map [NAME] [type acl|fields] -->
-        <COMMAND name="show class-map" help="Show class-map information">
+        <COMMAND name="show class-map" help="Display class-map information">
             <PARAM name="show-fbs-class-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
                 <PARAM name="show-fbs-class-name" help="Name of the class-map" ptype="STRING_63"/>
-                <PARAM name="match-type" help="Show all class-maps using the match type" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="match-type" help="Display all class-maps using the match type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-class-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-class-name}" = "match-type"'>
-                <PARAM name="acl" help="Show class-maps which use ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
-                <PARAM name="fields" help="Show class-maps which use L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
-                <PARAM name="copp" help="Show class-maps which use CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="acl" help="Display class-maps which use ACL as match criteria" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="fields" help="Display class-maps which use L2-L4 header fields as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="copp" help="Display class-maps which use CoPP as match criteria" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_classifier ${show-fbs-class-name} ${show-fbs-class-type}</ACTION>
             <DOCGEN>
@@ -124,9 +124,9 @@ limitations under the License.
         </COMMAND>
 
         <!-- show service-policy summary [interface NAME] | [type qos|monitoring|forwarding] -->
-        <COMMAND name="show service-policy summary" help="Show summary of all applied polices">
-            <PARAM name="interface-type-options" help="Show policies applied for interface" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                <PARAM name="interface" help="Show policies applied for interface" mode="subcommand" ptype="SUBCOMMAND">
+        <COMMAND name="show service-policy summary" help="Display summary of all applied polices">
+            <PARAM name="interface-type-options" help="Display policies applied for interface" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
+                <PARAM name="interface" help="Display policies applied for interface" mode="subcommand" ptype="SUBCOMMAND">
                     <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
                 </PARAM>
                 <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
@@ -156,10 +156,10 @@ limitations under the License.
         </COMMAND>
 
         <!-- show service-policy policy NAME [interface NAME] -->
-        <COMMAND name="show service-policy policy-map" help="Show details by policy-map name">
+        <COMMAND name="show service-policy policy-map" help="Display details by policy-map name">
             <PARAM name="fbs-policy-name" help="Policy-map name (Max: 63 characters)" ptype="STRING_63"/>
-            <PARAM name="interface-type-options" help="Show policy-maps applied to interface(s)" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
-                <PARAM name="interface" help="Show policy-maps applied to interface" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="interface-type-options" help="Display policy-maps applied to interface(s)" ptype="SUBCOMMAND" mode="switch" optional="true" order="true">
+                <PARAM name="interface" help="Display policy-maps applied to interface" mode="subcommand" ptype="SUBCOMMAND">
                     <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
                 </PARAM>
                 <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
@@ -208,7 +208,7 @@ limitations under the License.
         </COMMAND>
 
         <!-- show service-policy interface NAME [type qos|monitoring|forwarding] -->
-        <COMMAND name="show service-policy interface" help="Show policy-map binding details by interface name">
+        <COMMAND name="show service-policy interface" help="Display policy-map binding details by interface name">
             <MACRO name="SERVICE-POLICY-INTERFACE-OPTIONS" arg="true" />
             <MACRO name="FBS-POLICY-TYPES" arg="true,0" />
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_details_by_interface ${__params}</ACTION>
@@ -266,7 +266,7 @@ limitations under the License.
 
         <!-- show service-policy [Switch|CtrlPlane] [type qos|monitoring|forwarding] -->
         <COMMAND name="show service-policy" help="Switch/Global interface">
-            <PARAM name="interface-type-options" help="Show policies applied for interface" ptype="SUBCOMMAND" mode="switch">
+            <PARAM name="interface-type-options" help="Display policies applied for interface" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="Switch" help="Switch/Global interface" ptype="SUBCOMMAND" mode="subcommand"/>
                 <PARAM name="CtrlPlane" help="Out of band interface" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
@@ -299,7 +299,7 @@ limitations under the License.
         </COMMAND>
 
         <!-- show running-config-configuration class-map -->
-        <COMMAND name="show running-configuration class-map" help="Show current class-map configuration">
+        <COMMAND name="show running-configuration class-map" help="Display current class-map configuration">
             <PARAM name="show-fbs-class-name" help="Name of the class-map" ptype="STRING_63" optional="true"/>
             <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${show-fbs-class-name} </ACTION>
             <DOCGEN>
@@ -317,8 +317,8 @@ limitations under the License.
         </COMMAND>
 
         <!-- show running-config-configuration policy -->
-        <COMMAND name="show running-configuration policy-map" help="Show current policy-map configuration">
-            <PARAM name="show-fbs-policy-name" help="Show policy-map information using name (Max: 63 characters)" ptype="STRING_63" optional="true" />
+        <COMMAND name="show running-configuration policy-map" help="Display current policy-map configuration">
+            <PARAM name="show-fbs-policy-name" help="Display policy-map information using name (Max: 63 characters)" ptype="STRING_63" optional="true" />
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${show-fbs-policy-name}" </ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -404,21 +404,21 @@ limitations under the License.
             </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="show pbf" help="Show policy based forwarding next-hop groups"/>
-        <COMMAND name="show pbf next-hop-group" help="Show group information">
+        <COMMAND name="show pbf" help="Display policy based forwarding next-hop groups"/>
+        <COMMAND name="show pbf next-hop-group" help="Display group information">
             <PARAM name="show-fbs-nh-grp-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="show-fbs-group-name" help="Show next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
-                <PARAM name="type" help="Show all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="show-fbs-group-name" help="Display next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
+                <PARAM name="type" help="Display all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-group-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-group-name}" = "type"'>
-                <PARAM name="ip" help="Show all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
-                <PARAM name="ipv6" help="Show all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ip" help="Display all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ipv6" help="Display all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_pbf_next_hop_group ${__params}</ACTION>
         </COMMAND>
 
-        <COMMAND name="show pbf next-hop-group status" help="Show group information" />
-        <COMMAND name="show pbf next-hop-group status interface" help="Show group status">
+        <COMMAND name="show pbf next-hop-group status" help="Display group information" />
+        <COMMAND name="show pbf next-hop-group status interface" help="Display group status">
             <PARAM name="show-fbs-group-interface" help="" ptype="SUBCOMMAND" mode="switch">
                 <PARAM name="eth-if-id" help="Ethernet interface" ptype="PHY_INTERFACE"/>
                 <PARAM name="po-if-id" help="PortChannel interface" ptype="PO_INTERFACE"/>
@@ -427,31 +427,31 @@ limitations under the License.
                 <PARAM name="po-sub-if-id" help="PortChannel sub-interface" ptype="PO_INTERFACE_SUBIF"/>
             </PARAM>
             <PARAM name="show-fbs-nh-grp-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="show-fbs-group-name" help="Show next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
-                <PARAM name="type" help="Show all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="show-fbs-group-name" help="Display next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
+                <PARAM name="type" help="Display all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-group-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-group-name}" = "type"'>
-                <PARAM name="ip" help="Show all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
-                <PARAM name="ipv6" help="Show all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ip" help="Display all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ipv6" help="Display all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_pbf_next_hop_group_status interface ${__params}</ACTION>
         </COMMAND>
 
-        <COMMAND name="show pbf next-hop-group status Switch" help="Show group status">
+        <COMMAND name="show pbf next-hop-group status Switch" help="Display group status">
             <PARAM name="show-fbs-nh-grp-name-or-type" help="" ptype="SUBCOMMAND" mode="switch" optional="true">
-                <PARAM name="show-fbs-group-name" help="Show next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
-                <PARAM name="type" help="Show all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
+                <PARAM name="show-fbs-group-name" help="Display next-hop group information using name (Max: 63 characters)" ptype="STRING_63" />
+                <PARAM name="type" help="Display all next-hop groups using the group type" ptype="SUBCOMMAND" mode="subcommand" />
             </PARAM>
             <PARAM name="show-fbs-group-type" help="" ptype="SUBCOMMAND" mode="switch" test='"${show-fbs-group-name}" = "type"'>
-                <PARAM name="ip" help="Show all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
-                <PARAM name="ipv6" help="Show all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ip" help="Display all IPv4 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="ipv6" help="Display all IPv6 next-hop groups" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs show_pbf_next_hop_group_status Switch ${__params}</ACTION>
         </COMMAND>
 
-        <COMMAND name="show running-configuration pbf" help="Show current PBF next-hop groups configuration"/>
-        <COMMAND name="show running-configuration pbf next-hop-group" help="Show current PBF next-hop groups configuration">
-            <PARAM name="show-fbs-group-name" help="Show next-hop group information using name (Max: 63 characters)" ptype="STRING_63" optional="true"/>
+        <COMMAND name="show running-configuration pbf" help="Display current PBF next-hop groups configuration"/>
+        <COMMAND name="show running-configuration pbf next-hop-group" help="Display current PBF next-hop groups configuration">
+            <PARAM name="show-fbs-group-name" help="Display next-hop group information using name (Max: 63 characters)" ptype="STRING_63" optional="true"/>
             <ACTION builtin="clish_pyobj">show_config_fbs show_running_next_hop_group_by_name ${show-fbs-group-name}</ACTION>
         </COMMAND>
     </VIEW>
@@ -581,7 +581,7 @@ limitations under the License.
     <VIEW name="configure-policy-view" prompt="${SYSTEM_NAME}(config-policy-map)# " depth="2">
         <NAMESPACE ref="configure-view" help="false" completion="false" />
 
-        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+        <COMMAND name="show configuration" help="Display current policy-map configurations">
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name}"</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -658,7 +658,7 @@ limitations under the License.
     <VIEW name="configure-acl-classifier-view" prompt="${SYSTEM_NAME}(config-class-map)# " depth="2">
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
-        <COMMAND name="show configuration" help="Shows current class-map configuration">
+        <COMMAND name="show configuration" help="Display current class-map configuration">
             <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${fbs-class-name} </ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -720,7 +720,7 @@ limitations under the License.
     <VIEW name="configure-fields-classifier-view" prompt="${SYSTEM_NAME}(config-class-map)# " depth="2">
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
-        <COMMAND name="show configuration" help="Shows current class-map configuration">
+        <COMMAND name="show configuration" help="Display current class-map configuration">
             <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${fbs-class-name} </ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -1059,7 +1059,7 @@ limitations under the License.
     <VIEW name="configure-copp-classifier-view" prompt="${SYSTEM_NAME}(config-class-map)# " depth="2">
         <NAMESPACE ref="configure-view" help="false" completion="false"/>
 
-        <COMMAND name="show configuration" help="Shows current class-map configuration">
+        <COMMAND name="show configuration" help="Display current class-map configuration">
             <ACTION builtin="clish_pyobj">show_config_fbs show_running_class_map ${fbs-class-name} </ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -1098,7 +1098,7 @@ limitations under the License.
     <VIEW name="configure-qos-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
 
-        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+        <COMMAND name="show configuration" help="Display current policy-map configurations">
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name},fbs-class-name=${fbs-class-name}"</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -1221,7 +1221,7 @@ limitations under the License.
     <VIEW name="configure-monitoring-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
 
-        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+        <COMMAND name="show configuration" help="Display current policy-map configurations">
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name},fbs-class-name=${fbs-class-name}"</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -1284,7 +1284,7 @@ limitations under the License.
     <VIEW name="configure-forwarding-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
 
-        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+        <COMMAND name="show configuration" help="Display current policy-map configurations">
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name},fbs-class-name=${fbs-class-name}"</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -1445,7 +1445,7 @@ limitations under the License.
     <VIEW name="configure-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
 
-        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+        <COMMAND name="show configuration" help="Display current policy-map configurations">
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name},fbs-class-name=${fbs-class-name}"</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -1491,7 +1491,7 @@ limitations under the License.
     <VIEW name="configure-acl-copp-flow-view" prompt="${SYSTEM_NAME}(config-policy-map-flow)# " depth="3">
         <NAMESPACE ref="configure-policy-view" help="false" completion="false"/>
 
-        <COMMAND name="show configuration" help="Shows current policy-map configurations">
+        <COMMAND name="show configuration" help="Display current policy-map configurations">
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-policy view_keys="fbs-policy-name=${fbs-policy-name},fbs-class-name=${fbs-class-name}"</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -1590,7 +1590,7 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-pbf-ip-nh-grp-view" prompt="${SYSTEM_NAME}(config-pbf-ip-nh-group)# " depth="2">
 
-        <COMMAND name="show configuration" help="Shows current pbf ip next-hop group configurations">
+        <COMMAND name="show configuration" help="Display current pbf ip next-hop group configurations">
             <ACTION builtin="clish_pyobj">show_config_fbs show_running_next_hop_group_by_name ${fbs-nh-grp-name}</ACTION>
             <DOCGEN>
               <DESCRIPTION>
@@ -1617,7 +1617,7 @@ limitations under the License.
     <!--===================================================================================-->
     <VIEW name="configure-pbf-ipv6-nh-grp-view" prompt="${SYSTEM_NAME}(config-pbf-ipv6-nh-group)# " depth="2">
 
-        <COMMAND name="show configuration" help="Shows current pbf ipv6 next-hop group configurations">
+        <COMMAND name="show configuration" help="Display current pbf ipv6 next-hop group configurations">
             <ACTION builtin="clish_pyobj">show_config_fbs show_running_next_hop_group_by_name ${fbs-nh-grp-name}</ACTION>
             <DOCGEN>
               <DESCRIPTION>

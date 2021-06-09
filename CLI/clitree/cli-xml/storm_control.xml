@@ -2,7 +2,7 @@
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
     <VIEW name="enable-view">
         <!--show storm-control -->
-        <COMMAND name="show storm-control" help="Show storm-control information">
+        <COMMAND name="show storm-control" help="Display storm-control information">
             <ACTION builtin="clish_pyobj"> sonic_cli_storm_control get_list_sonic_storm_control_sonic_storm_control_port_storm_control_port_storm_control_list show_storm_control.j2 ${__full_line__}
             </ACTION>
             <DOCGEN>
@@ -25,7 +25,7 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND name="show storm-control interface" help="Show storm-control interface information">
+        <COMMAND name="show storm-control interface" help="Display storm-control interface information">
             <PARAM name="cfg-if-type" help="Interface type" mode="switch" ptype="SUBCOMMAND">
                 <PARAM name="Ethernet" help="Ethernet interface type" ptype="PHY_INTERFACE" />
             </PARAM>

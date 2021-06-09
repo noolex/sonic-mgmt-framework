@@ -35,10 +35,10 @@ limitations under the License.
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
         <!-- show copp protocols -->
-        <COMMAND name="show copp" help="Show CoPP information">
+        <COMMAND name="show copp" help="Display CoPP information">
             <PARAM name="copp-protocols-or-groups" help="" ptype="SUBCOMMAND" mode="switch" optional="false">
-                <PARAM name="classifiers" help="Show the list of configured CoPP classifiers" ptype="SUBCOMMAND" mode="subcommand"/>
-                <PARAM name="protocols" help="Show the list of supported CoPP protocols" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="classifiers" help="Display the list of configured CoPP classifiers" ptype="SUBCOMMAND" mode="subcommand"/>
+                <PARAM name="protocols" help="Display the list of supported CoPP protocols" ptype="SUBCOMMAND" mode="subcommand"/>
                 <PARAM name="actions" help="Dump the configured CoPP action groups" ptype="SUBCOMMAND" mode="subcommand"/>
                 <PARAM name="policy" help="Dump the configured CoPP policy copp-system-policy" ptype="SUBCOMMAND" mode="subcommand"/>
             </PARAM>

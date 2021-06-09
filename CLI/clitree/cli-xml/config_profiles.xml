@@ -12,7 +12,7 @@
   <VIEW name="enable-view">
     <COMMAND
          name="show switch-profiles"
-         help="Show details about configuration profiles available"
+         help="Display details about configuration profiles available"
          >
         <ACTION
             builtin="clish_pyobj">sonic_cli_cfg_profiles get_sonic_profiles_sonic_profiles show_config_profiles.j2

@@ -73,7 +73,7 @@
 <VIEW name="configure-router-ospf-view" prompt="${SYSTEM_NAME}(config-router-ospf)# " depth="2">
   <NAMESPACE ref="configure-view" help="false" completion="false" />
 
-  <COMMAND name="show configuration" help="Show current OSPFv2 router configuration">
+  <COMMAND name="show configuration" help="Display current OSPFv2 router configuration">
     <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-ospf view_keys="vrf-name=${vrf-name}"</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -1391,7 +1391,7 @@
   </COMMAND>
 
 
-  <COMMAND name="show running-configuration ospf" help="Show all OSPFv2 router configurations">
+  <COMMAND name="show running-configuration ospf" help="Display all OSPFv2 router configurations">
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-router-ospf</ACTION>
   </COMMAND>
 
@@ -1406,7 +1406,7 @@
 -->
 
     <COMMAND name = "show ip ospf" help = "Show OSPFv2 router information" >
-      <PARAM name="vrf" help="Show VRF specific OSPFv2 information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
+      <PARAM name="vrf" help="Display VRF specific OSPFv2 information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name = "vrftype" help = "" ptype = "SUBCOMMAND" mode="switch" >
           <PARAM name="vrf-name" help="VRF name (prefixed by Vrf)" ptype="STRING_15" default="default"/>
           <!--
@@ -1416,10 +1416,10 @@
       </PARAM>
 
       <PARAM name = "cmdtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
-        <PARAM name="border-routers" help="Show all OSPFv2 ABR's and ASBR's" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="border-routers" help="Display all OSPFv2 ABR's and ASBR's" ptype="SUBCOMMAND" mode="subcommand">
         </PARAM>
 
-        <PARAM name="database" help="Show OSPFv2 Database summary" ptype="SUBCOMMAND" mode="subcommand" >
+        <PARAM name="database" help="Display OSPFv2 Database summary" ptype="SUBCOMMAND" mode="subcommand" >
           <PARAM name = "databasetype" help = "" ptype = "SUBCOMMAND" mode="switch"  optional="true" >
             <PARAM name="asbr-summary" help="ASBR summary link states" ptype="SUBCOMMAND" mode="subcommand">
               <PARAM name = "lsid" help = "Link State ID" ptype = "IP_ADDR" optional="true" />
@@ -1519,12 +1519,12 @@
           </PARAM>
         </PARAM>
 
-        <PARAM name="interface" help="Show OSPFv2 interface information" ptype="SUBCOMMAND" mode="subcommand" >
-          <PARAM name="traffic" help="Show OSPFv2 protocol packet counters" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
+        <PARAM name="interface" help="Display OSPFv2 interface information" ptype="SUBCOMMAND" mode="subcommand" >
+          <PARAM name="traffic" help="Display OSPFv2 protocol packet counters" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
           <PARAM name = "interfacename" help = "Interface name" ptype = "PHY_VL_PO_LB_INTERFACE" optional="true"/>
         </PARAM>
 
-        <PARAM name="neighbor" help="Show OSPFv2 neighbour list" ptype="SUBCOMMAND" mode="subcommand">
+        <PARAM name="neighbor" help="Display OSPFv2 neighbour list" ptype="SUBCOMMAND" mode="subcommand">
           <PARAM name = "neighborshowtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
             <PARAM name = "neighip" help = "Neighbour ID" ptype = "IP_ADDR" optional="true" />
             <PARAM name="all" help="All neighbours" ptype="SUBCOMMAND" mode="subcommand" optional="true"/>
@@ -2000,7 +2000,7 @@ VRF Name: default
   </DOCGEN>
      </COMMAND>
 
-     <COMMAND name="show ip ospf route" help="Show OSPFv2 routing table" >
+     <COMMAND name="show ip ospf route" help="Display OSPFv2 routing table" >
         <ACTION builtin="clish_pyobj"> sonic_cli_show_ospfv2 show_ospf_cmds default ${__full_line}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>

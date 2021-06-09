@@ -99,7 +99,7 @@ limitations under the License.
 <VIEW name="enable-view">
     <COMMAND
         name="show spanning-tree"
-        help="Show spanning-tree information"
+        help="Display spanning-tree information"
         >
         <PARAM
             name="vlan"
@@ -278,7 +278,7 @@ limitations under the License.
     </COMMAND>
 	<COMMAND
 		name="show running-configuration spanning-tree"
-		help="Show spanning-tree configuration">
+		help="Display spanning-tree configuration">
 		<ACTION builtin="clish_pyobj">sonic_cli_stp show_running_spanning_tree views=configure-view" </ACTION>
     <DOCGEN>
         <DESCRIPTION>

@@ -39,34 +39,34 @@ limitations under the License.
 
 <!-- show ip arp <ip-addr> commands -->
     <COMMAND
-        help="Show ARP commands"
+        help="Display ARP commands"
         name="show ip arp">
 
         <PARAM
             name="vrf"
-            help="Show ARP entries of the given VRF"
+            help="Display ARP entries of the given VRF"
             mode="subcommand"
             optional="true"
             ptype="SUBCOMMAND">
             <PARAM
               name="vrfname"
-              help="Show ARP entries of the given VRF"
+              help="Display ARP entries of the given VRF"
               mode="switch"
               ptype="SUBCOMMAND">
               <PARAM
                   name="vrfname"
-                  help="Show ARP entries of the given VRF"
+                  help="Display ARP entries of the given VRF"
                   ptype="VRF_NAME">
               </PARAM>
               <PARAM
                   name="mgmt"
-                  help="Show ARP entries of the management VRF"
+                  help="Display ARP entries of the management VRF"
                   mode="subcommand"
                   ptype="SUBCOMMAND">
               </PARAM>
               <PARAM
                   name="all"
-                  help="Show ARP entries from all VRFs"
+                  help="Display ARP entries from all VRFs"
                   mode="subcommand"
                   ptype="SUBCOMMAND">
               </PARAM>

@@ -63,7 +63,7 @@ limitations under the License.
 
   <VIEW name="enable-view">
     <COMMAND name="show aaa"
-             help="Show AAA info">
+             help="Display AAA info">
       <ACTION builtin="clish_pyobj">sonic_cli_aaa get_openconfig_system_system_aaa show_aaa.j2</ACTION>
     </COMMAND>
   </VIEW>
@@ -117,7 +117,7 @@ limitations under the License.
               </PARAM>
               <PARAM name="radius"
                      test='"${tacacs+}"!="tacacs+"'
-                     help="radius authentication"
+                     help="RADIUS authentication"
                      optional="true"
                      ptype="AAA_AUTH_RADIUS">
               </PARAM>
@@ -134,7 +134,7 @@ limitations under the License.
               </PARAM>
           </PARAM>
           <PARAM name="radius"
-                 help="radius authentication"
+                 help="RADIUS authentication"
                  optional="true"
                  mode="subcommand"
                  ptype="SUBCOMMAND">
@@ -152,7 +152,7 @@ limitations under the License.
     <COMMAND name="no aaa authentication"
              help="Unconfigure AAA authentication"/>
     <COMMAND name="no aaa authentication login-method"
-             help="Unconfigure aaa authentication login method"
+             help="Unconfigure AAA authentication login method"
              hidden="true">
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/authentication/config/authentication-method

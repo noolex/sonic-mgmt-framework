@@ -216,8 +216,8 @@
   <!--MODE : show commands view -->
   <VIEW name="enable-view">
     <!--show mclag brief -->
-    <COMMAND name="show mclag" help="Show MCLAG domain"> </COMMAND>
-    <COMMAND name="show mclag brief" help="Show MCLAG domain/interface information"> 
+    <COMMAND name="show mclag" help="Display MCLAG domain"> </COMMAND>
+    <COMMAND name="show mclag brief" help="Display MCLAG domain/interface information"> 
         <ACTION builtin="clish_pyobj">sonic_cli_mclag show_mclag_brief show_mclag_brief.j2  </ACTION>
         <DOCGEN>
           <DESCRIPTION>
@@ -252,7 +252,7 @@
     </COMMAND>
 
     <!--show mclag interface -->
-    <COMMAND name="show mclag interface" help="Show MCLAG interface information">
+    <COMMAND name="show mclag interface" help="Display MCLAG interface information">
       <PARAM name="ifid" help="Interface Portchannel ID without prefix" ptype="LAG_ID"> 
         <PARAM name="domain_id" help="Enter domain ID" ptype="RANGE_1_4095"> </PARAM>
       </PARAM>
@@ -274,7 +274,7 @@
     </COMMAND>
 
     <!--show mclag separate-ip interfaces -->
-    <COMMAND name="show mclag separate-ip-interfaces" help="Show MCLAG separate IP interface information">
+    <COMMAND name="show mclag separate-ip-interfaces" help="Display MCLAG separate IP interface information">
       <ACTION builtin="clish_pyobj">sonic_cli_mclag show_mclag_separate_ip show_mclag_separate_ip.j2  </ACTION>
       <DOCGEN>
           <DESCRIPTION>
@@ -320,7 +320,7 @@
     </COMMAND>
 
     <!-- show running-config-configuration mclag -->
-    <COMMAND name="show running-configuration mclag" help="Show current mclag configuration">
+    <COMMAND name="show running-configuration mclag" help="Display current MCLAG configuration">
      <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mclag </ACTION>
      <DOCGEN>
        <DESCRIPTION>

@@ -48,8 +48,8 @@ limitations under the License.
      help=""/>
   <!-- =================== SHOW COMMANDS ===================  -->
   <VIEW name="enable-view">
-    <COMMAND name="show tam" help="Show telemetry and monitoring information"/>
-    <COMMAND name="show tam switch" help="Show switch-id configuration">
+    <COMMAND name="show tam" help="Display telemetry and monitoring information"/>
+    <COMMAND name="show tam switch" help="Display switch-id configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_switch {"feature":"ANY","method":"GET","template":"show_tam_switch.j2"}</ACTION>
 
       <DOCGEN>
@@ -68,8 +68,8 @@ limitations under the License.
       </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
-    <COMMAND name="show tam collectors" help="Show collector configuration">
-      <PARAM name="name" help="Show specific collector configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
+    <COMMAND name="show tam collectors" help="Display collector configuration">
+      <PARAM name="name" help="Display specific collector configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_collectors {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_collector"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -93,8 +93,8 @@ limitations under the License.
       </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
-    <COMMAND name="show tam samplers" help="Show sampler configuration">
-      <PARAM name="name" help="Show specific sampler configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
+    <COMMAND name="show tam samplers" help="Display sampler configuration">
+      <PARAM name="name" help="Display specific sampler configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_samplers {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_sampler"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -117,7 +117,7 @@ limitations under the License.
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
     <!-- =================== SHOW IFA ===================  -->
-    <COMMAND name="show tam ifa" help="Show IFA configuration">
+    <COMMAND name="show tam ifa" help="Display IFA configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_ifa {"feature":"ANY","method":"GET","template":"show_tam_feature.j2"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -135,8 +135,8 @@ limitations under the License.
       </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
-    <COMMAND name="show tam ifa sessions" help="Show IFA session configuration">
-      <PARAM name="name" help="Show specific IFA session configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
+    <COMMAND name="show tam ifa sessions" help="Display IFA session configuration">
+      <PARAM name="name" help="Display specific IFA session configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_ifa_sessions {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_ifa_session"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -170,7 +170,7 @@ limitations under the License.
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
     <!-- =================== SHOW TAIL TIMESTAMP ===================  -->
-    <COMMAND name="show tam tail-stamping" help="Show tail-stamping configuration">
+    <COMMAND name="show tam tail-stamping" help="Display tail-stamping configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_tailstamping {"feature":"ANY","method":"GET","template":"show_tam_feature.j2"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -186,8 +186,8 @@ limitations under the License.
       </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
-    <COMMAND name="show tam tail-stamping sessions" help="Show tail-stamping session configuration">
-      <PARAM name="name" help="Show specific tail-stamping session configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
+    <COMMAND name="show tam tail-stamping sessions" help="Display tail-stamping session configuration">
+      <PARAM name="name" help="Display specific tail-stamping session configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_tailstamping_sessions {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_ts_session"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -218,7 +218,7 @@ limitations under the License.
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
     <!-- =================== SHOW DROP MONITORING ===================  -->
-    <COMMAND name="show tam drop-monitor" help="Show drop-monitor configuration">
+    <COMMAND name="show tam drop-monitor" help="Display drop-monitor configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_dropmonitor {"feature":"ANY","method":"GET","template":"show_tam_feature.j2"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -235,8 +235,8 @@ limitations under the License.
       </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
-    <COMMAND name="show tam drop-monitor sessions" help="Show drop-monitor session configuration">
-      <PARAM name="name" help="Show specific drop-monitor session configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
+    <COMMAND name="show tam drop-monitor sessions" help="Display drop-monitor session configuration">
+      <PARAM name="name" help="Display specific drop-monitor session configuration (up to 32 characters string)" optional="true" default="all" ptype="STRING_32"/>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_dropmonitor_sessions {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_mod_session"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -270,11 +270,11 @@ limitations under the License.
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
     <!-- =================== SHOW TAM FEATURES ===================  -->
-    <COMMAND name="show tam features" help="Show current status of TAM features">
-      <PARAM name="feature" help="Show current status of specific TAM feature" optional="true" mode="switch" default="all" ptype="SUBCOMMAND">
-        <PARAM name="ifa" help="Show current status of IFA feature" ptype="SUBCOMMAND" mode="subcommand"/>
-        <PARAM name="drop-monitor" help="Show current status of drop-monitor feature" ptype="SUBCOMMAND" mode="subcommand"/>
-        <PARAM name="tail-stamping" help="Show current status of tail-stamping feature" ptype="SUBCOMMAND" mode="subcommand"/>
+    <COMMAND name="show tam features" help="Display current status of TAM features">
+      <PARAM name="feature" help="Display current status of specific TAM feature" optional="true" mode="switch" default="all" ptype="SUBCOMMAND">
+        <PARAM name="ifa" help="Display current status of IFA feature" ptype="SUBCOMMAND" mode="subcommand"/>
+        <PARAM name="drop-monitor" help="Display current status of drop-monitor feature" ptype="SUBCOMMAND" mode="subcommand"/>
+        <PARAM name="tail-stamping" help="Display current status of tail-stamping feature" ptype="SUBCOMMAND" mode="subcommand"/>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_features {"name":"${feature}","feature":"ANY","method":"GET","template":"show_tam_global_feature"}</ACTION>
       <DOCGEN>
@@ -299,8 +299,8 @@ limitations under the License.
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
     <!-- =================== SHOW FLOWGROUPS ===================  -->
-    <COMMAND name="show tam flowgroups" help="Show flow group configuration">
-      <PARAM name="name" help="Show specific flow group configuration (up to 32 characters)" optional="true" default="all" ptype="STRING_32"/>
+    <COMMAND name="show tam flowgroups" help="Display flow group configuration">
+      <PARAM name="name" help="Display specific flow group configuration (up to 32 characters)" optional="true" default="all" ptype="STRING_32"/>
       <ACTION builtin="clish_pyobj">sonic_cli_telemetry show_flowgroups {"name":"${name}","feature":"ANY","method":"GET","template":"show_tam_flowgroup"}</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -362,7 +362,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
     <!-- =================== SHOW RUNNING CONFIGURATION TAM ===================  -->
-    <COMMAND name="show running-configuration tam" help="Show all TAM configurations">
+    <COMMAND name="show running-configuration tam" help="Display all TAM configurations">
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-tam</ACTION>
       <DOCGEN>
         <DESCRIPTION>

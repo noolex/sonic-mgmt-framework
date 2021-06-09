@@ -95,7 +95,7 @@ limitations under the License.
         completion="false"
         />
 
-     <COMMAND name="show configuration" help="Show tc-queue-map configuration">
+     <COMMAND name="show configuration" help="Display tc-queue-map configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-tc-queue-map view_keys="name=${map_name}"</ACTION>
      </COMMAND>
 
@@ -150,7 +150,7 @@ limitations under the License.
   <VIEW name="enable-view">
 
     <!--show forwarding-group-queue-map -->
-    <COMMAND name="show qos map tc-queue" help="Show configured traffic-class-queue-map">
+    <COMMAND name="show qos map tc-queue" help="Display configured traffic-class-queue-map">
       <PARAM name="name" help="Name of the traffic-class-queue-map" ptype="STRING_32" optional="true"> </PARAM>
       <ACTION>
           if test "${name}" = "" ; then&#xA;

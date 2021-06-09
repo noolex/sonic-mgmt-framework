@@ -87,7 +87,7 @@ limitations under the License.
    <!-- show running-configuration interface -->
      <COMMAND
          name="show running-configuration interface"
-         help="Show interface info"
+         help="Display interface info"
          >
          <PARAM
              name="if-subcommands"
@@ -142,7 +142,7 @@ limitations under the License.
 
       <COMMAND
            name="show running-configuration interface Vlan"
-           help="Show interface VLAN info">
+           help="Display interface VLAN info">
             <PARAM
                name="vlan-id"
                help="VLAN Interface"
@@ -153,7 +153,7 @@ limitations under the License.
       </COMMAND>
       <COMMAND
            name="show running-configuration interface PortChannel"
-           help="Show interface PortChannel  info">
+           help="Display interface PortChannel info">
             <PARAM
                name="po-id"
                help="PortChannel Interface"
@@ -164,7 +164,7 @@ limitations under the License.
       </COMMAND>
       <COMMAND
            name="show running-configuration interface Management"
-           help="Show interface management  info">
+           help="Display interface management info">
             <PARAM
                name="mgmt-if-id"
                help="Management Interface"
@@ -175,7 +175,7 @@ limitations under the License.
       </COMMAND>
       <COMMAND
            name="show running-configuration interface Loopback"
-           help="Show interface loopback  info">
+           help="Display interface loopback info">
             <PARAM
                name="lo-id"
                help="Loopback Interface"
@@ -187,7 +187,7 @@ limitations under the License.
     <!--show interface -->
     <COMMAND
          name="show interface"
-         help="Show interface info"
+         help="Display interface info"
          >
          <PARAM
              name="if-subcommands"
@@ -351,13 +351,13 @@ limitations under the License.
                         >
                             <PARAM
                                 name="capability"
-                                help="Show transceiver diagnostics capability"
+                                help="Display transceiver diagnostics capability"
                                 mode="subcommand"
                                 ptype="SUBCOMMAND"
                                 />
                             <PARAM
                                 name="status"
-                                help="Show transceiver diagnostics status"
+                                help="Display transceiver diagnostics status"
                                 mode="subcommand"
                                 ptype="SUBCOMMAND"
                                 />
@@ -439,7 +439,7 @@ limitations under the License.
 
    <COMMAND
        name="show Vlan"
-       help="Show VLAN commands"
+       help="Display VLAN commands"
        ptype="SUBCOMMAND"
        mode="subcommand"
        >
@@ -454,7 +454,7 @@ limitations under the License.
    </COMMAND>
    <COMMAND
        name="show neighbor-suppress-status"
-       help="Show arp and nd suppression status"
+       help="Display ARP and ND suppression status"
        ptype="SUBCOMMAND"
        mode="subcommand"
        >

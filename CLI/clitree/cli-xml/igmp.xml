@@ -18,7 +18,7 @@
 <VIEW name="enable-view">
     <COMMAND
         name="show ip igmp groups"
-        help="Show IGMP groups information">
+        help="Display IGMP groups information">
         <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_groups show_ip_igmp_groups.j2 ${vrf-name} </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -38,7 +38,7 @@
     </COMMAND>
     <COMMAND
         name="show ip igmp join"
-        help="Show IGMP joins information">
+        help="Display IGMP joins information">
         <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_joins show_ip_igmp_joins.j2 ${vrf-name} </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -58,7 +58,7 @@
     </COMMAND>
     <COMMAND
         name="show ip igmp interface"
-        help="Show IGMP interface information">
+        help="Display IGMP interface information">
         <PARAM name = "interfacename" help = "Interface name" ptype = "STRING" optional="false">
 
           <PARAM
@@ -119,7 +119,7 @@
     </COMMAND>
     <COMMAND
         name="show ip igmp sources"
-        help="Show IGMP sources information">
+        help="Display IGMP sources information">
         <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_sources show_ip_igmp_sources.j2 ${vrf-name} </ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -139,7 +139,7 @@
     </COMMAND>
     <COMMAND
         name="show ip igmp statistics"
-        help="Show IGMP statistics information">
+        help="Display IGMP statistics information">
         <PARAM name = "interface" help="IGMP interface information" ptype="SUBCOMMAND" mode="subcommand" optional="true">
         <PARAM name ="interfacename" help = "Interface name" ptype = "STRING"/></PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_igmp show_ip_igmp_statistics show_ip_igmp_statistics.j2 ${vrf-name} ${interfacename} </ACTION>
@@ -169,7 +169,7 @@
             </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="show ip igmp vrf" help="Show IGMP VRF information">
+    <COMMAND name="show ip igmp vrf" help="Display IGMP VRF information">
 
       <PARAM name = "vrftype" help = "" ptype = "SUBCOMMAND" mode="switch" >
           <PARAM name="vrf-name" help="Name of VRF" ptype="STRING_15" default="default"/>

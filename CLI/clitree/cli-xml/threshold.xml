@@ -10,10 +10,10 @@
    <VIEW name="enable-view">
    <COMMAND
         name="show threshold"
-        help="Show threshold commands"/>
+        help="Display threshold commands"/>
    <COMMAND
 	name="show threshold breaches"
-	help="Show threshold breach entries"
+	help="Display threshold breach entries"
 	ptype="SUBCOMMAND"
 	mode="subcommand">
 	<ACTION builtin="clish_pyobj">sonic_cli_threshold get_threshold_breach_event_reports ${__full_line}&#xA; </ACTION>
@@ -34,17 +34,17 @@
 	   </EXAMPLE>
 	</DOCGEN>
     </COMMAND>
-    <COMMAND name="show threshold buffer-pool" help="Show buffer-pool configuration" ptype="SUBCOMMAND" mode="subcommand">
+    <COMMAND name="show threshold buffer-pool" help="Display buffer-pool configuration" ptype="SUBCOMMAND" mode="subcommand">
       <ACTION builtin="clish_pyobj">sonic_cli_threshold get_list_sonic_threshold_sonic_threshold_threshold_bufferpool_table_threshold_bufferpool_table_list ${__full_line}</ACTION>
     </COMMAND>
-    <COMMAND name="show threshold priority-group" help="Show priority-group threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
+    <COMMAND name="show threshold priority-group" help="Display priority-group threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
       <PARAM name="threshold_buffer_type" help="Choose from shared, headroom." mode="switch" ptype="SUBCOMMAND">
         <PARAM name="headroom" help="Choose headroom as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
         <PARAM name="shared" help="Choose shared as threshold buffer type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_threshold get_list_sonic_threshold_sonic_threshold_threshold_table_threshold_table_list ${__full_line}</ACTION>
     </COMMAND>
-    <COMMAND name="show threshold queue" help="Show queue threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
+    <COMMAND name="show threshold queue" help="Display queue threshold configuration" ptype="SUBCOMMAND" mode="subcommand">
       <PARAM name="queue_buffer_type" help="Choose from unicast/multicast as queue buffer type" mode="switch" ptype="SUBCOMMAND">
         <PARAM name="CPU" help="Choose threshold cpu queue" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
         <PARAM name="multicast" help="Choose multicast as queue_buffer_type" ptype="SUBCOMMAND" mode="subcommand"> </PARAM>
@@ -119,26 +119,26 @@
 
     <COMMAND
         name="show buffer_pool"
-        help="Show buffer pool watermark commands"
+        help="Display buffer pool watermark commands"
 	>
 	<PARAM name="watermark_type"
 		help="Choose from watermark, persistent-watermark."
 		mode="switch"
 		ptype="SUBCOMMAND">
 	<PARAM name="watermark"
-		help="Show user watermark counters"
+		help="Display user watermark counters"
 		ptype="SUBCOMMAND"
 		mode="subcommand">
 	</PARAM>
 	<PARAM name="persistent-watermark"
-		help="Show persistent-watermark counters"
+		help="Display persistent-watermark counters"
 		ptype="SUBCOMMAND"
 		mode="subcommand">
 	</PARAM>
 	</PARAM>
 	<PARAM
 		name="percentage"
-		help="Show watermark couters in percentage"
+		help="Display watermark couters in percentage"
 		ptype="SUBCOMMAND"
 		mode="subcommand"
 		optional="true"

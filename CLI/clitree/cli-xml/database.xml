@@ -13,11 +13,11 @@
     <VIEW name="enable-view">
         <COMMAND
             name="show database"
-            help="Show Redis database information">
+            help="Display Redis database information">
         </COMMAND>
         <COMMAND
             name="show database map"
-            help="Show Redis database mapping currently in use">
+            help="Display Redis database mapping currently in use">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_database map show_database_map.j2
             </ACTION>

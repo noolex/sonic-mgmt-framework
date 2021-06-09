@@ -61,7 +61,7 @@ limitations under the License.
             />
 
         <!-- show configuration -->
-        <COMMAND name="show configuration" help="Show current nat configuration">
+        <COMMAND name="show configuration" help="Display current NAT configuration">
           <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-nat</ACTION>
           <DOCGEN>
             <DESCRIPTION>
@@ -521,7 +521,7 @@ limitations under the License.
     <!--show nat -->
     <COMMAND
          name="show nat"
-         help="Show NAT info"
+         help="Display NAT info"
          >
          <PARAM
              name="nat-subcommands"

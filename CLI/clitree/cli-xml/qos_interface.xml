@@ -625,7 +625,7 @@ limitations under the License.
   </VIEW>
 
   <VIEW name="enable-view">
-    <COMMAND name="show qos" help="Show QoS information">
+    <COMMAND name="show qos" help="Display QoS information">
         <PARAM 
             name="interface"
             help="Display QoS information per interface"

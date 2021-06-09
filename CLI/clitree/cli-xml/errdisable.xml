@@ -21,11 +21,11 @@
     />
     <VIEW name="enable-view">
         <COMMAND name = "show errdisable"
-            help = "Show error disable recovery information">
+            help = "Display error disable recovery information">
         </COMMAND>
         <!-- show errdisable recovery -->
         <COMMAND name = "show errdisable recovery"
-            help = "Show error disable recovery information">
+            help = "Display error disable recovery information">
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable show_errdisable_recovery show_errdisable.j2</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -48,7 +48,7 @@
         </COMMAND>
         <!-- show errdisable link-flap -->
         <COMMAND name = "show errdisable link-flap"
-            help = "Show error disable information incase of exessive link flaps.">
+            help = "Display error disable information incase of exessive link flaps.">
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable show_errdisable_link_flap show_errdisable_link_flap.j2</ACTION>
             <DOCGEN>
                 <DESCRIPTION>

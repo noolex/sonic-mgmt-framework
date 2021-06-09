@@ -25,18 +25,18 @@ limitations under the License.
         <!-- show ip mroute -->
         <COMMAND
             name="show ip mroute"
-            help="Show IP multicast routes"
+            help="Display IP multicast routes"
             ptype="SUBCOMMAND"
             mode="subcommand">
             <PARAM
                 name="vrf"
-                help="Show IP multicast routes of the given VRF"
+                help="Display IP multicast routes of the given VRF"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
                 <PARAM
                   name="vrf-name"
-                  help="Show IP multicast routes of the given VRF"
+                  help="Display IP multicast routes of the given VRF"
                   mode="switch"
                   ptype="SUBCOMMAND">
                   <PARAM
@@ -73,7 +73,7 @@ limitations under the License.
                 </PARAM>
                 <PARAM
                     name="summary"
-                    help="Show IP multicast routes summary"
+                    help="Display IP multicast routes summary"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">

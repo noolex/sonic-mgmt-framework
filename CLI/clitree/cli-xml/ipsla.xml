@@ -53,7 +53,7 @@ limitations under the License.
 <VIEW name="enable-view">
 <!--show ipsla [id] [history] -->
     <COMMAND name = "show ip sla"
-        help = "Show IP SLA instance information"
+        help = "Display IP SLA instance information"
         >
         <PARAM
             name="id"
@@ -231,7 +231,7 @@ limitations under the License.
                 completion="false"/>
 
      <!-- show configuration -->
-     <COMMAND name="show configuration" help="Show current IP SLA configuration">
+     <COMMAND name="show configuration" help="Display current IP SLA configuration">
        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipsla view_keys="sla-id=${sla-id}"</ACTION>
        <DOCGEN>
          <DESCRIPTION>
@@ -519,7 +519,7 @@ limitations under the License.
                 completion="false"/>
 
      <!-- show configuration -->
-     <COMMAND name="show configuration" help="Show current IP SLA configuration">
+     <COMMAND name="show configuration" help="Display current IP SLA configuration">
        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipsla view_keys="sla-id=${sla-id}"</ACTION>
        <DOCGEN>
          <DESCRIPTION>
@@ -853,7 +853,7 @@ limitations under the License.
                 completion="false"/>
 
      <!-- show configuration -->
-     <COMMAND name="show configuration" help="Show current IP SLA configuration">
+     <COMMAND name="show configuration" help="Display current IP SLA configuration">
        <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-ipsla view_keys="sla-id=${sla-id}"</ACTION>
        <DOCGEN>
          <DESCRIPTION>

@@ -16,16 +16,16 @@
 <VIEW name="enable-view">
     <COMMAND
         name="show ip igmp"
-        help="Show Internet Group Management Protocol (IGMP)">
+        help="Display Internet Group Management Protocol (IGMP)">
         <PARAM
             name="snooping"
-            help="Show IGMP snooping configurations"
+            help="Display IGMP snooping configurations"
             ptype="SUBCOMMAND"
             mode="subcommand"
         >        
             <PARAM
             name="vlan"
-            help="Show IGMP snooping configurations for VLAN"
+            help="Display IGMP snooping configurations for VLAN"
             ptype="SUBCOMMAND"
             mode="subcommand"
 						optional="true"
@@ -39,14 +39,14 @@
 					 
 	        <PARAM
 	            name="groups"
-	            help="Show IGMP snooping multicast table"
+	            help="Display IGMP snooping multicast table"
 	            ptype="SUBCOMMAND"
 	            mode="subcommand"
 	            optional="true"
 	         >
 	            <PARAM
 	            name="vlan"
-	            help="Show IGMP snooping multicast table for VLAN"
+	            help="Display IGMP snooping multicast table for VLAN"
 	            ptype="SUBCOMMAND"
 	            mode="subcommand"
 							optional="true"

@@ -33,34 +33,34 @@ limitations under the License.
 
 <!-- show ipv6 neighbors <ip-addr> commands -->
     <COMMAND
-        help="Show NDP commands"
+        help="Display NDP commands"
         name="show ipv6 neighbors">
 
         <PARAM
             name="vrf"
-            help="Show NDP entries of the given VRF"
+            help="Display NDP entries of the given VRF"
             mode="subcommand"
             optional="true"
             ptype="SUBCOMMAND">
             <PARAM
               name="vrfname"
-              help="Show NDP entries of the given VRF"
+              help="Display NDP entries of the given VRF"
               mode="switch"
               ptype="SUBCOMMAND">
               <PARAM
                   name="vrfname"
-                  help="Show NDP entries of the given VRF"
+                  help="Display NDP entries of the given VRF"
                   ptype="VRF_NAME">
               </PARAM>
               <PARAM
                   name="mgmt"
-                  help="Show NDP entries of the management VRF"
+                  help="Display NDP entries of the management VRF"
                   mode="subcommand"
                   ptype="SUBCOMMAND">
               </PARAM>
               <PARAM
                   name="all"
-                  help="Show ARP entries from all VRFs"
+                  help="Display ARP entries from all VRFs"
                   mode="subcommand"
                   ptype="SUBCOMMAND">
               </PARAM>

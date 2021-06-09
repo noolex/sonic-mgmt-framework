@@ -26,8 +26,8 @@ limitations under the License.
 <VIEW name="enable-view">
 <COMMAND
         name="show watermark"
-        help="Show watermark commands"/>
-	<COMMAND name="show watermark interval" help="Show watermark snapshot interval" ptype="SUBCOMMAND" mode="subcommand">
+        help="Display watermark commands"/>
+	<COMMAND name="show watermark interval" help="Display watermark snapshot interval" ptype="SUBCOMMAND" mode="subcommand">
 	<ACTION builtin="clish_pyobj">sonic_cli_watermark get_list_sonic_watermark_sonic_watermark_snapshot_table_snapshot_table_list ${__full_line}</ACTION>
         <DOCGEN>
         <DESCRIPTION>
@@ -43,7 +43,7 @@ limitations under the License.
         </EXAMPLE>
         </DOCGEN>
 	</COMMAND>
-	<COMMAND name="show watermark telemetry" help="Show watermark telemetry interval" ptype="SUBCOMMAND" mode="subcommand">
+	<COMMAND name="show watermark telemetry" help="Display watermark telemetry interval" ptype="SUBCOMMAND" mode="subcommand">
 		<PARAM name="interval" help="watermark telemetry interval" ptype="SUBCOMMAND" mode="subcommand"></PARAM>
 	<ACTION builtin="clish_pyobj">sonic_cli_watermark get_list_sonic_watermark_sonic_watermark_watermark_table_watermark_table_list ${__full_line}</ACTION>
 	<DOCGEN>

@@ -44,10 +44,10 @@ limitations under the License.
 
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
-        <COMMAND name="show running-configuration hardware" help="Show current hardware configuration">
+        <COMMAND name="show running-configuration hardware" help="Display current hardware configuration">
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-hardware</ACTION>
         </COMMAND>
-        <COMMAND name="show running-configuration hardware access-list" help="Show current hardware ACL configuration">
+        <COMMAND name="show running-configuration hardware access-list" help="Display current hardware ACL configuration">
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-hardware-acl</ACTION>
         </COMMAND>
     </VIEW>

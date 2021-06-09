@@ -6,7 +6,7 @@
   <PTYPE name="BOOL_SELECT" method="select" pattern="yes(yes) no(no)" help="" />
 
   <VIEW name="enable-view">
-    <COMMAND help="Show components registered in DB for loglevel severity" name="show swsslog-configuration">
+    <COMMAND help="Display components registered in DB for loglevel severity" name="show swsslog-configuration">
         <ACTION builtin="clish_pyobj">sonic_cli_swsslog get_openconfig_loglevel_from_db tpcm.j2</ACTION>
     </COMMAND>
   </VIEW>

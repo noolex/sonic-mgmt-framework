@@ -26,7 +26,7 @@ limitations under the License.
     <COMMAND help="Clear logging" name="clear logging">
         <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_clear_logging infra_reboot.j2</ACTION>
     </COMMAND>
-    <COMMAND help="Show logging information" name="show logging">
+    <COMMAND help="Display logging information" name="show logging">
         <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging tpcm.j2</ACTION>
     </COMMAND>
     <COMMAND help="Output of last NUM lines" name="show logging lines">
@@ -36,7 +36,7 @@ limitations under the License.
     <COMMAND help="Total number of logging" name="show logging count">
         <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging_count infra_reboot.j2</ACTION>
     </COMMAND>
-    <COMMAND name="show logging servers" help="Show logging server information">
+    <COMMAND name="show logging servers" help="Display logging server information">
       <ACTION builtin="clish_pyobj">sonic_cli_logging get_openconfig_system_logging_servers </ACTION>
       <DOCGEN>
         <DESCRIPTION>Shows list of remote syslog servers are configured</DESCRIPTION>

@@ -27,11 +27,11 @@ limitations under the License.
     <VIEW name="enable-view">
         <COMMAND
             name="show subinterfaces"
-            help="Displays sub-interfaces information"
+            help="Display subinterfaces information"
             />
         <COMMAND
             name="show subinterfaces status"
-            help="Displays sub-interfaces status information"
+            help="Display subinterfaces status information"
             >
             <ACTION builtin="clish_pyobj">sonic_cli_show_subinterface status_sonic</ACTION>
             <DOCGEN>
@@ -55,7 +55,7 @@ limitations under the License.
         </COMMAND>
         <COMMAND
            name="show running-configuration subinterface"
-           help="Displays subinterface configuration">
+           help="Display subinterface configuration">
            <PARAM
              name="if-subcommands"
              help="Subinterface subcommands"
