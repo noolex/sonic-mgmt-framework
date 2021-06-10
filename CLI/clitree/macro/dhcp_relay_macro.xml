@@ -434,16 +434,16 @@ limitations under the License.
     </MACRODEF>
 
     <MACRODEF name="DHCP-RELAY-SHOW-OPTIONS">
-       <PARAM   help="Show IP DHCP relay information" name="relay-cmd"  mode="switch"  ptype="SUBCOMMAND"  optional="false">
-           <PARAM help="Show IP DHCP relay information in brief" name="brief" optional="true" mode="subcommand" ptype="SUBCOMMAND"/>
-           <PARAM help="Show IP DHCP relay information in detail" name="detailed" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+       <PARAM   help="Display IP DHCP relay information" name="relay-cmd"  mode="switch"  ptype="SUBCOMMAND"  optional="false">
+           <PARAM help="Display IP DHCP relay information in brief" name="brief" optional="true" mode="subcommand" ptype="SUBCOMMAND"/>
+           <PARAM help="Display IP DHCP relay information in detail" name="detailed" optional="true" mode="subcommand" ptype="SUBCOMMAND">
                <PARAM help="Interface subcommands" name="if-subcommands" mode="switch" ptype="SUBCOMMAND" optional="false">
                    <PARAM help="Physical Interface/Subinterface" name="intfName1" ptype="PHY_INTERFACE_SUBIF" optional="false"/>
                    <PARAM help="PortChannel Interface/Subinterface" name="pchName1" ptype="PO_INTERFACE_SUBIF" optional="false"/>
                    <PARAM help="VLAN Interface" name="vlanName1" ptype="VLAN_INTERFACE" optional="false"/>
                </PARAM>
            </PARAM>
-           <PARAM help="Show IP DHCP relay statistics" name="statistics" optional="true" mode="subcommand" ptype="SUBCOMMAND">
+           <PARAM help="Display IP DHCP relay statistics" name="statistics" optional="true" mode="subcommand" ptype="SUBCOMMAND">
                <PARAM help="Interface subcommands" name="if-subcommands" mode="switch" ptype="SUBCOMMAND" optional="false">
                    <PARAM help="Physical Interface/Subinterface" name="intfName" ptype="PHY_INTERFACE_SUBIF" optional="false"/>
                    <PARAM help="PortChannel Interface/Subinterface" name="pchName" ptype="PO_INTERFACE_SUBIF" optional="false"/>
