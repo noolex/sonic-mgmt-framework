@@ -25,10 +25,10 @@ limitations under the License.
     <!-- locator-led  -->
     <COMMAND
          name="show locator-led"
-         help="Show Locator LED State"
+         help="Display Locator LED State"
          >
         <PARAM name="chassis"
-               help="Show Locator Chassis LED State"  
+               help="Display Locator Chassis LED State"  
                mode="subcommand"
                ptype="SUBCOMMAND">
          </PARAM>

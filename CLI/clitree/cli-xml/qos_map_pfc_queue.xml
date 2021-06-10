@@ -150,7 +150,7 @@ limitations under the License.
   <VIEW name="enable-view">
 
     <!--show pfc-priority-queue-map -->
-    <COMMAND name="show qos map pfc-priority-queue" help="Show configured pfc-priority-queue-map">
+    <COMMAND name="show qos map pfc-priority-queue" help="Display configured pfc-priority-queue-map">
       <PARAM name="name" help="Name of the pfc-priority-queue-map" ptype="STRING_32" optional="true"> </PARAM>
       <ACTION>
           if test "${name}" = "" ; then&#xA;

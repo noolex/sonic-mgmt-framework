@@ -19,13 +19,13 @@ limitations under the License.
 <MACRODEF name="STP-INTF-CMDS">
     <COMMAND
         name="no spanning-tree"
-        help = "Spanning tree configuration"
+        help = "Spanning-tree configuration"
         >
     </COMMAND>
 
     <COMMAND
       name="no spanning-tree bpdufilter"
-      help="Disables BPDU filter on this interface and apply global bpdufilter"
+      help="Disable BPDU filter on this interface and apply global bpdufilter"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -47,7 +47,7 @@ limitations under the License.
 
     <COMMAND
       name="no spanning-tree bpduguard"
-      help="Disables bpduguard feature"
+      help="Disable BPDU guard feature"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -91,7 +91,7 @@ limitations under the License.
 
     <COMMAND
       name="no spanning-tree enable"
-      help="Disables spanning-tree"
+      help="Disable spanning-tree"
       ptype="SUBCOMMAND"
       command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
       dbpath="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/enabled=false"
@@ -115,7 +115,7 @@ limitations under the License.
 
     <COMMAND
       name="no spanning-tree link-type"
-      help="Resets link type to default"
+      help="Reset link type to default"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -137,7 +137,7 @@ limitations under the License.
 
     <COMMAND
       name="no spanning-tree portfast"
-      help="Disables portfast feature"
+      help="Disable portfast feature"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -159,7 +159,7 @@ limitations under the License.
 
     <COMMAND
       name="no spanning-tree port-priority"
-      help="Resets the port priority"
+      help="Reset the port priority"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -181,7 +181,7 @@ limitations under the License.
 
     <COMMAND
       name="no spanning-tree uplinkfast"
-      help="Disables uplinkfast feature"
+      help="Disable uplinkfast feature"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -208,7 +208,7 @@ limitations under the License.
       mode="subcommand">
       <PARAM
         name="type"
-        help="Resets port type to default"
+        help="Reset port type to default"
         ptype="SUBCOMMAND"
         mode="subcommand"
         optional="true">
@@ -270,7 +270,7 @@ limitations under the License.
             >
             <PARAM
                 name="cost"
-                help="Resets the pathcost to default"
+                help="Reset the pathcost to default"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -278,7 +278,7 @@ limitations under the License.
 
             <PARAM
                 name="port-priority"
-                help="Resets the port priority to default"
+                help="Reset the port priority to default"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -304,7 +304,7 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree"
-        help = "Spanning tree configuration"
+        help = "Spanning-tree configuration"
         command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
         render_command_cb="spanning_tree_intf"
         >
@@ -312,12 +312,12 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree bpduguard"
-        help="Enables bpduguard feature"
+        help="Enable BPDU guard feature"
         ptype="SUBCOMMAND"
         mode="subcommand">
       <PARAM
         name="port-shutdown"
-        help="Enables port shutdown on bpdu guard violation"
+        help="Enable port shutdown on bpdu guard violation"
         ptype="SUBCOMMAND"
         mode="subcommand"
         optional="true">
@@ -341,7 +341,7 @@ limitations under the License.
 
     <COMMAND
       name="spanning-tree cost"
-      help="Configures pathcost"
+      help="Configure pathcost"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <PARAM
@@ -369,7 +369,7 @@ limitations under the License.
 
     <COMMAND
       name="spanning-tree enable"
-      help="Enables spanning tree"
+      help="Enable spanning-tree"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -391,7 +391,7 @@ limitations under the License.
 
     <COMMAND
       name="spanning-tree link-type"
-      help="Configures link type of the interface"
+      help="Configure link type of the interface"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <PARAM
@@ -431,7 +431,7 @@ limitations under the License.
 
     <COMMAND
       name="spanning-tree portfast"
-      help="Enables portfast feature"
+      help="Enable portfast feature"
       ptype="SUBCOMMAND"
       mode="subcommand"
       command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
@@ -456,7 +456,7 @@ limitations under the License.
 
     <COMMAND
       name="spanning-tree port-priority"
-      help="Configures port priority"
+      help="Configure port priority"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <PARAM
@@ -488,7 +488,7 @@ limitations under the License.
       mode="subcommand">
       <PARAM
         name="type"
-        help="Configures port type"
+        help="Configure port type"
         ptype="SUBCOMMAND"
         mode="subcommand">
         <PARAM
@@ -517,7 +517,7 @@ limitations under the License.
 
     <COMMAND
       name="spanning-tree uplinkfast"
-      help="Enables uplinkfast feature"
+      help="Enable uplinkfast feature"
       ptype="SUBCOMMAND"
       mode="subcommand">
       <ACTION builtin="clish_pyobj">
@@ -554,14 +554,14 @@ limitations under the License.
             >
             <PARAM
                 name="enable"
-                help="Enables BPDU filter on this interface"
+                help="Enable BPDU filter on this interface"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
             </PARAM>
             <PARAM
                 name="disable"
-                help="Disables BPDU filter on this interface"
+                help="Disable BPDU filter on this interface"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -587,13 +587,13 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree guard"
-        help = "Configure spanning tree guard on port-channel interface"
+        help = "Configure spanning-tree guard on port-channel interface"
         command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_PORT/STP_PORT_LIST/ifname={name}"
         render_command_cb="spanning_tree_intf_guard"
     >
         <PARAM
             name="guard"
-            help="Configure spanning tree guard mode on port-channel interface"
+            help="Configure spanning-tree guard mode on port-channel interface"
             ptype="STP_GUARD_TYPE"
         >
         </PARAM>
@@ -651,7 +651,7 @@ limitations under the License.
 
                 <PARAM
                     name="port-priority"
-                    help="Configures priority"
+                    help="Configure priority"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >

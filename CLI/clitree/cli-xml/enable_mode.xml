@@ -61,7 +61,7 @@ limitations under the License.
         <!-- Show commands -->
         <COMMAND
             name="show"
-            help="Show running system information"
+            help="Display running system information"
         />
         <COMMAND name="show running-configuration" help="Current operating configuration">
           <ACTION builtin="clish_pyobj">sonic_cli_show_config dummy </ACTION>

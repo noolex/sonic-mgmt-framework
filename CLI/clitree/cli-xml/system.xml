@@ -9,28 +9,28 @@
 ]>
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
   <VIEW name="enable-view">
-    <COMMAND name="show system" help="Show system information">
+    <COMMAND name="show system" help="Display system information">
       <ACTION builtin="clish_pyobj"> sonic-cli-sys get_openconfig_system_system_state system_show.j2 ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="show system memory" help="Show system memory information">
+    <COMMAND name="show system memory" help="Display system memory information">
       <ACTION builtin="clish_pyobj"> sonic-cli-sys get_openconfig_system_system_memory system_show.j2 ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="show system cpu" help="Show system cpu information">
+    <COMMAND name="show system cpu" help="Display system cpu information">
       <ACTION builtin="clish_pyobj"> sonic-cli-sys get_openconfig_system_system_cpus system_cpu_show.j2 ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="show system processes" help="Show system processes">
+    <COMMAND name="show system processes" help="Display system processes">
       <ACTION builtin="clish_pyobj"> sonic-cli-sys get_openconfig_system_system_processes system_processes_show.j2 default ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="show system processes cpu" help="Show system processes sorted by CPU usage">
+    <COMMAND name="show system processes cpu" help="Display system processes sorted by CPU usage">
       <ACTION builtin="clish_pyobj"> sonic-cli-sys get_openconfig_system_system_processes system_processes_show.j2 cpu ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="show system processes mem-util" help="Show system processes sorted by memory utilization">
+    <COMMAND name="show system processes mem-util" help="Display system processes sorted by memory utilization">
       <ACTION builtin="clish_pyobj"> sonic-cli-sys get_openconfig_system_system_processes system_processes_show.j2 mem-util ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="show system processes mem-usage" help="Show system processes sorted by memory usage">
+    <COMMAND name="show system processes mem-usage" help="Display system processes sorted by memory usage">
       <ACTION builtin="clish_pyobj"> sonic-cli-sys get_openconfig_system_system_processes system_processes_show.j2 mem-usage ${__full_line} </ACTION>
     </COMMAND>
-    <COMMAND name="show system processes pid" help="Show system process information of a particular PID">
+    <COMMAND name="show system processes pid" help="Display system process information of a particular PID">
       <PARAM name="pid-no" help="PID number" ptype="PID"> </PARAM>
       <ACTION builtin="clish_pyobj"> sonic-cli-sys get_openconfig_system_system_processes system_show.j2 pid ${pid-no} ${__full_line} </ACTION>
     </COMMAND>

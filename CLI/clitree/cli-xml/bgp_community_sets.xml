@@ -102,15 +102,15 @@ limitations under the License.
         </EXAMPLE>
       </DOCGEN>
     </COMMAND>
-    <COMMAND name="show running-configuration bgp community-list" help="Show current BGP community-list configuration">
+    <COMMAND name="show running-configuration bgp community-list" help="Display current BGP community-list configuration">
       <PARAM name="community-list-name" help="Name of community-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=renderCfg_bgp_com_list view_keys="community-list-name=${community-list-name}"</ACTION>
     </COMMAND>
-    <COMMAND name="show running-configuration bgp extcommunity-list" help="Show current BGP extended community-list configuration">
+    <COMMAND name="show running-configuration bgp extcommunity-list" help="Display current BGP extended community-list configuration">
       <PARAM name="extcommunity-list-name" help="Name of extended community-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=renderCfg_bgp_extcom_list view_keys="extcommunity-list-name=${extcommunity-list-name}"</ACTION>
     </COMMAND>
-    <COMMAND name="show running-configuration bgp as-path-acess-list" help="Show current BGP AS path acess list configuration">
+    <COMMAND name="show running-configuration bgp as-path-acess-list" help="Display current BGP AS path acess list configuration">
       <PARAM name="aspath-list-name" help="Name of as-path-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=renderCfg_bgp_aspath_list view_keys="aspath-list-name=${aspath-list-name}"</ACTION>
     </COMMAND>

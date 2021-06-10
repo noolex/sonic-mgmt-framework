@@ -25,16 +25,16 @@ limitations under the License.
         <!-- show ip pim -->
         <COMMAND
             name="show ip pim"
-            help="Show PIM commands">
+            help="Display PIM commands">
             <PARAM
                 name="vrf"
-                help="Show PIM information of the given VRF"
+                help="Display PIM information of the given VRF"
                 mode="subcommand"
                 optional="true"
                 ptype="SUBCOMMAND">
                 <PARAM
                   name="vrf-name"
-                  help="Show PIM information of the given VRF"
+                  help="Display PIM information of the given VRF"
                   mode="switch"
                   ptype="SUBCOMMAND">
                   <PARAM
@@ -58,7 +58,7 @@ limitations under the License.
                 ptype="SUBCOMMAND">
                 <PARAM
                     name="interface"
-                    help="Show interface details"
+                    help="Display interface details"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
@@ -72,7 +72,7 @@ limitations under the License.
                 <PARAM
                     value="neighbor"
                     name="nbr"
-                    help="Show PIM neighbor details"
+                    help="Display PIM neighbor details"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
@@ -85,21 +85,21 @@ limitations under the License.
                 </PARAM>
                 <PARAM
                     name="rpf"
-                    help="Show RPF details"
+                    help="Display RPF details"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
                 </PARAM>
                 <PARAM
                     name="ssm"
-                    help="Show SSM details"
+                    help="Display SSM details"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">
                 </PARAM>
                 <PARAM
                     name="topology"
-                    help="Show topology information"
+                    help="Display topology information"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true">

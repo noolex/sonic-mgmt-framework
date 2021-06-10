@@ -57,7 +57,7 @@ limitations under the License.
    </VIEW>
 
   <VIEW name="enable-view">
-    <COMMAND name="show interface-naming" help="Show interface naming mode">
+    <COMMAND name="show interface-naming" help="Display interface naming mode">
       <ACTION> python $SONIC_CLI_ROOT/sonic-cli-alias.py get_sonic_device_metadata_sonic_device_metadata_device_metadata_device_metadata_list_intf_naming_mode alias.j2 ${__full_line} </ACTION>
     </COMMAND>
   </VIEW>

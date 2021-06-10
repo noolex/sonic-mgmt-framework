@@ -27,7 +27,7 @@ limitations under the License.
 <VIEW name="configure-router-bgp-ipv6-view" prompt="${SYSTEM_NAME}(config-router-bgp-af)# " depth="3">
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
-   <COMMAND name="show configuration" help="show bgp configuration">
+   <COMMAND name="show configuration" help="Display BGP configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-ipv6 view_keys="vrf-name=${vrf-name},afi_safi=ipv6_unicast" </ACTION>
     </COMMAND>
 
@@ -160,7 +160,7 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-nbr-view" help="false" completion="false" />
-   <COMMAND name="show configuration" help="show bgp neighbor IPv6 configuration">
+   <COMMAND name="show configuration" help="Display BGP neighbor IPv6 configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-nbr-ipv6 view_keys="vrf-name=${vrf-name},nbr=${nbr-addr},afi-safi=ipv6_unicast" </ACTION>
     </COMMAND>
   <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-neighbor:sonic-bgp-neighbor/BGP_NEIGHBOR_AF/BGP_NEIGHBOR_AF_LIST/admin_status=true">
@@ -401,7 +401,7 @@ limitations under the License.
   <NAMESPACE ref="configure-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-view" help="false" completion="false" />
   <NAMESPACE ref="configure-router-bgp-template-view" help="false" completion="false" />
-   <COMMAND name="show configuration" help="show bgp peer group IPv6 configuration">
+   <COMMAND name="show configuration" help="Display BGP peer group IPv6 configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-router-bgp-template-ipv6 view_keys="vrf-name=${vrf-name},pg=${template-name},afi-safi=ipv6_unicast" </ACTION>
     </COMMAND>
   <COMMAND name="activate" help="Enable the Address Family for this Neighbor" dbpath="sonic-bgp-peergroup:sonic-bgp-peergroup/BGP_PEER_GROUP_AF/BGP_PEER_GROUP_AF_LIST/admin_status=true">

@@ -116,7 +116,7 @@ limitations under the License.
         completion="false"
         />
 
-     <COMMAND name="show configuration" help="show dscp-tc-map configuration">
+     <COMMAND name="show configuration" help="Display dscp-tc-map configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-dscp-tc-map view_keys="name=${map_name}"</ACTION>
      </COMMAND>
 
@@ -171,8 +171,8 @@ limitations under the License.
   <VIEW name="enable-view">
 
     <!--show dscp-map -->
-    <COMMAND name="show qos map" help="Show configured qos maps">  </COMMAND>
-    <COMMAND name="show qos map dscp-tc" help="Show configured dscp-tc-map">
+    <COMMAND name="show qos map" help="Display configured qos maps">  </COMMAND>
+    <COMMAND name="show qos map dscp-tc" help="Display configured dscp-tc-map">
       <PARAM name="name" help="Name of the dscp-tc-map" ptype="STRING_32" optional="true"> </PARAM>
       <ACTION>
           if test "${name}" = "" ; then&#xA;

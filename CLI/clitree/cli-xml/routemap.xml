@@ -127,15 +127,15 @@ limitations under the License.
 <VIEW name="configure-route-map-view" prompt="${SYSTEM_NAME}(config-route-map)# "
       depth="2">
   <NAMESPACE ref="configure-view" help="false" completion="false" />
-  <COMMAND name="show configuration" help="show route-map configuration">
+  <COMMAND name="show configuration" help="Display route-map configuration">
   <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-route-map view_keys="route-map-name=${name},seq-num=${seq_num}" </ACTION>
   </COMMAND>
 
   <COMMAND name="set" help="Set values in destination routing protocol"/>
   <COMMAND name="set as-path" help="Transform BGP AS-path attribute">
-    <PARAM name="as-opt" mode="switch" ptype="SUBCOMMAND" help="Set as-path options">
+    <PARAM name="as-opt" mode="switch" ptype="SUBCOMMAND" help="Set AS-path options">
       <PARAM name="prepend" mode="subcommand" ptype="SUBCOMMAND" help="Prepend to the as-path">
-        <PARAM name="prepend-opt" mode="switch" ptype="SUBCOMMAND" help="Set as-path prepend options">
+        <PARAM name="prepend-opt" mode="switch" ptype="SUBCOMMAND" help="Set AS-path prepend options">
           <PARAM name="as-number_list" help="(,) separated individual AS number list in range 1 to 4294967295; for example, 2000,3000" ptype="STR_ASN_LST" dbpath="sonic-route-map:sonic-route-map/ROUTE_MAP/ROUTE_MAP_LIST/set_asn_list"/>
         </PARAM>
       </PARAM>
@@ -224,7 +224,7 @@ limitations under the License.
   </COMMAND>-->
   <COMMAND name="no set" help="Set values in destination routing protocol"/>
   <COMMAND name="no set as-path" help="Transform BGP AS-path attribute">
-    <PARAM name="as-opt" mode="switch" ptype="SUBCOMMAND" help="Set as-path options">
+    <PARAM name="as-opt" mode="switch" ptype="SUBCOMMAND" help="Set AS-path options">
       <PARAM name="prepend" mode="subcommand" ptype="SUBCOMMAND" help="Prepend to the as-path"/>
     </PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_routemap delete_openconfig_routing_policy_ext_routing_policy_policy_definitions_policy_definition_statements_statement_actions_bgp_actions_set_as_path_prepend_config_asn_list ${name} ${seq_num}</ACTION>
