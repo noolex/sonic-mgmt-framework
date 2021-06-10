@@ -34,8 +34,8 @@ MAC_DAMPENING_DEFAULT_INTERVAL  = 5
 
 def mac_fill_count(mac_entries):
     static = dynamic = 0
-    static = mac_entries['openconfig-network-instance-ext:static-count']
-    dynamic = mac_entries['openconfig-network-instance-ext:dynamic-count']
+    static = mac_entries['static-count']
+    dynamic = mac_entries['dynamic-count']
     mac_entry_table = {'vlan-mac': (static + dynamic),
                        'static-mac': static,
                        'dynamic-mac': dynamic,

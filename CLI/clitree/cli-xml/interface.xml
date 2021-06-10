@@ -905,6 +905,35 @@ limitations under the License.
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/config/port-speed</ACTION>
         </COMMAND>
         <COMMAND
+            name="link-error-disable"
+            help="Configure link error disable">
+            <PARAM name="flap-threshold" help="Set link flap threshold for error disable" ptype="SUBCOMMAND" mode="subcommand">
+                <PARAM name="flaps" help="Link flap threshold for error disable criteria" 
+                    dbpath="sonic-errdisable:sonic-errdisable/ERRDISABLE_PORT/ERRDISABLE_PORT_LIST/flap-threshold"
+                    ptype="RANGE_1_50">
+            		<PARAM name="sampling-interval" help="Set sampling interval for counting link flaps" ptype="SUBCOMMAND" mode="subcommand">
+                        <PARAM name="window" help="Sampling interval in seconds." 
+                              dbpath="sonic-errdisable:sonic-errdisable/ERRDISABLE_PORT/ERRDISABLE_PORT_LIST/sampling-interval"
+                              ptype="RANGE_1_65535">
+                                  <PARAM name="recovery-interval"
+                                     help="Set link flap error disable recovery interval in seconds. 0 for disabling auto recovery."
+									 ptype="SUBCOMMAND" mode="subcommand">
+                                     <PARAM name="interval" help="Recovery interval in seconds"
+                                        dbpath="sonic-errdisable:sonic-errdisable/ERRDISABLE_PORT/ERRDISABLE_PORT_LIST/recovery-interval"
+                                        ptype="RANGE_0_65534"/>
+                                  </PARAM>
+                            </PARAM>
+                       </PARAM>
+                 </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_errdisable patch_openconfig_errdisable_port ${iface} ${flaps} ${window} ${interval} </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no link-error-disable"
+            help="Turn-off link-error-disable on this interface">
+        <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_port ${iface} disable</ACTION>
+        </COMMAND>
+        <COMMAND
             name="fec"
             help="Configure FEC (forward error correction)">
             <PARAM
