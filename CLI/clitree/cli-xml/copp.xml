@@ -218,7 +218,7 @@ limitations under the License.
             </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="no police" help="Clear or resets rate limiting parameters">
+        <COMMAND name="no police" help="Clear or reset rate limiting parameters">
             <PARAM name="cir" help="Clear committed information rate" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
             <PARAM name="cbs" help="Clear committed burst size" ptype="SUBCOMMAND" mode="subcommand" optional="true" order="true"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs clear_copp_policer_action ${copp-action-name} ${__params}</ACTION>

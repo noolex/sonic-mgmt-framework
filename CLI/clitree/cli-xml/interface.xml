@@ -87,7 +87,7 @@ limitations under the License.
    <!-- show running-configuration interface -->
      <COMMAND
          name="show running-configuration interface"
-         help="Display interface info"
+         help="Display interface information"
          >
          <PARAM
              name="if-subcommands"
@@ -142,7 +142,7 @@ limitations under the License.
 
       <COMMAND
            name="show running-configuration interface Vlan"
-           help="Display interface VLAN info">
+           help="Display interface VLAN information">
             <PARAM
                name="vlan-id"
                help="VLAN Interface"
@@ -153,7 +153,7 @@ limitations under the License.
       </COMMAND>
       <COMMAND
            name="show running-configuration interface PortChannel"
-           help="Display interface PortChannel info">
+           help="Display interface PortChannel information">
             <PARAM
                name="po-id"
                help="PortChannel Interface"
@@ -164,7 +164,7 @@ limitations under the License.
       </COMMAND>
       <COMMAND
            name="show running-configuration interface Management"
-           help="Display interface management info">
+           help="Display interface management information">
             <PARAM
                name="mgmt-if-id"
                help="Management Interface"
@@ -175,7 +175,7 @@ limitations under the License.
       </COMMAND>
       <COMMAND
            name="show running-configuration interface Loopback"
-           help="Display interface loopback info">
+           help="Display interface loopback information">
             <PARAM
                name="lo-id"
                help="Loopback Interface"
@@ -187,7 +187,7 @@ limitations under the License.
     <!--show interface -->
     <COMMAND
          name="show interface"
-         help="Display interface info"
+         help="Display interface information"
          >
          <PARAM
              name="if-subcommands"
@@ -317,7 +317,7 @@ limitations under the License.
           <!-- show interface transceiver-->
           <PARAM
                 name="transceiver"
-                help="Transceiver info"
+                help="Transceiver information"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -330,7 +330,7 @@ limitations under the License.
                 </PARAM>
                 <PARAM
                     name="summary"
-                    help="Summary of transceiver info"
+                    help="Summary of transceiver information"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -338,7 +338,7 @@ limitations under the License.
                 </PARAM>
                 <PARAM
                     name="diagnostics"
-                    help="Transceiver diagnostics info"
+                    help="Transceiver diagnostics information"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"

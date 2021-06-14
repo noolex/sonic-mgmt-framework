@@ -29,7 +29,7 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   </COMMAND>
 
-  <COMMAND name="show evpn vni detail" help="Dsiplay detailed information on each VNI">
+  <COMMAND name="show evpn vni detail" help="Display detailed information on each VNI">
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   </COMMAND>
   <COMMAND name="show evpn vni" help="Display VxLAN Network Identifier">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ROOT>
     <MACRODEF name="SERVICE-POLICY-INTERFACE-OPTIONS">
-        <PARAM name="interface-options" help="Show policies applied for interface" ptype="SUBCOMMAND" mode="switch">
+        <PARAM name="interface-options" help="Display policies applied for interface" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="eth-if-id" help="Ethernet interface" ptype="PHY_INTERFACE" />
             <PARAM name="po-if-id" help="PortChannel interface" ptype="PO_INTERFACE" />
             <PARAM name="vlan-if-id" help="VLAN interface" ptype="VLAN_INTERFACE" />
