@@ -54,11 +54,11 @@ def get_keypath(func,args):
             path = "/restconf/operations/sonic-ipmroute-show:show-ipmroute"
             body = {"sonic-ipmroute-show:input": {"vrf-name":vrf, "address-family":"IPV4_UNICAST", "query-type":"SUMMARY", "summary":True}}
         elif (inputDict.get('srcAddr') is not None):
-            path = path_prefix + vrf + "/afts/openconfig-aft-ipv4-ext:ipv4-multicast/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr') + "/state/src-entries/src-entry=" + inputDict.get('srcAddr')
+            path = path_prefix + vrf + "/afts/ipv4-multicast/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr') + "/src-entries/src-entry=" + inputDict.get('srcAddr')
         elif (inputDict.get('grpAddr') is not None):
-            path = path_prefix + vrf + "/afts/openconfig-aft-ipv4-ext:ipv4-multicast/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr')
+            path = path_prefix + vrf + "/afts/ipv4-multicast/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr')
         else:
-            path = path_prefix + vrf + "/afts/openconfig-aft-ipv4-ext:ipv4-multicast/ipv4-entries"
+            path = path_prefix + vrf + "/afts/ipv4-multicast/ipv4-entries"
 
     ##############################################################
     #clear config
@@ -102,7 +102,7 @@ def show_mroute_src_info(response):
 
     grpAddr = inputDict.get('grpAddr')
     try:
-        srcList = response.get('openconfig-aft-ipv4-ext:src-entry')
+        srcList = response.get('openconfig-network-instance:src-entry')
         if srcList is None:
             return
 
@@ -125,7 +125,7 @@ def show_mroute_src_info(response):
         else:
             installed = "*"
 
-        oilContainer = srcState.get('oil-info-entries')
+        oilContainer = srcList[0].get('oil-info-entries')
         if oilContainer is None:
             oilEntry = {'outIntf': "-", 'oilUpTime': "--:--:--"}
             oilList2.append(oilEntry)
@@ -186,9 +186,9 @@ def show_mroute_info(response):
 
     try:
         if inputDict.get('grpAddr') is not None:
-            ipList = response.get('openconfig-aft-ipv4-ext:ipv4-entry')
+            ipList = response.get('openconfig-network-instance:ipv4-entry')
         else:
-            tmpContainer = response.get('openconfig-aft-ipv4-ext:ipv4-entries')
+            tmpContainer = response.get('openconfig-network-instance:ipv4-entries')
             if tmpContainer is None:
                 return
             ipList = tmpContainer.get('ipv4-entry')
@@ -207,7 +207,7 @@ def show_mroute_info(response):
             if state is None:
                 continue
 
-            srcEntries = state.get('src-entries')
+            srcEntries = ip.get('src-entries')
             if srcEntries is None:
                 continue
 
@@ -235,7 +235,7 @@ def show_mroute_info(response):
                 else:
                     installed = "*"
 
-                oilContainer = srcState.get('oil-info-entries')
+                oilContainer = src.get('oil-info-entries')
                 if oilContainer is None:
                     oilEntry = {'outIntf': "-", 'oilUpTime': "--:--:--"}
                     oilList2.append(oilEntry)
