@@ -225,7 +225,12 @@ def run(func, args):
                 return 1
             show_cli_output(args[0], api_response)
     else:
-        print response.error_message()
+        error_msg = response.error_message()
+        if (error_msg.find("does not match regular expression pattern")):
+                print "%Error: Invalid input string"
+        else:
+                print error_msg
+
         return 1
 
 if __name__ == '__main__':
