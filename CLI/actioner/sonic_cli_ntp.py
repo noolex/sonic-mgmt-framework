@@ -89,13 +89,13 @@ def invoke_api(func, args=[]):
 
     elif func == 'set_ntp_source':
 
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface')
-        body = { "openconfig-system-ext:ntp-source-interface" : [args[0] if args[0] != 'Management0' else 'eth0'] }
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/ntp-source-interface')
+        body = { "ntp-source-interface" : [args[0] if args[0] != 'Management0' else 'eth0'] }
         return api.patch(keypath, body)
 
     elif func == 'delete_ntp_source':
 
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:ntp-source-interface={source}',
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/ntp-source-interface={source}',
                           source=args[0] if args[0] != 'Management0' else 'eth0')
         return api.delete(keypath)
 
@@ -107,10 +107,10 @@ def invoke_api(func, args=[]):
 
         config_body = {"address": args[0]}
         if key_id:
-            config_body["openconfig-system-ext:key-id"] = int(key_id)
+            config_body["key-id"] = int(key_id)
         if min_poll:
-            config_body["openconfig-system-ext:minpoll"] = int(min_poll)
-            config_body["openconfig-system-ext:maxpoll"] = int(max_poll)
+            config_body["minpoll"] = int(min_poll)
+            config_body["maxpoll"] = int(max_poll)
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/servers')
         body = { "openconfig-system:servers": { "server" : [{"config" : config_body,
@@ -137,12 +137,12 @@ def invoke_api(func, args=[]):
     elif func == 'set_ntp_vrf':
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
-        body = {"openconfig-system:config":{"openconfig-system-ext:vrf":args[0]}}
+        body = {"openconfig-system:config":{"vrf":args[0]}}
         return api.patch(keypath, body)
 
     elif func == 'delete_ntp_vrf':
 
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:vrf')
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/vrf')
         return api.delete(keypath)
  
     elif func == 'set_ntp_authentication':
@@ -154,12 +154,12 @@ def invoke_api(func, args=[]):
     elif func == 'set_ntp_trusted_key':
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
-        body = {"openconfig-system:config":{"openconfig-system-ext:trusted-key":[int(args[0])]}}
+        body = {"openconfig-system:config":{"trusted-key":[int(args[0])]}}
         return api.patch(keypath, body)
 
     elif func == 'delete_ntp_trusted_key':
 
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/openconfig-system-ext:trusted-key={trustkey}',
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/trusted-key={trustkey}',
                           trustkey=args[0])
         return api.delete(keypath)
 
@@ -169,7 +169,7 @@ def invoke_api(func, args=[]):
         body = { "openconfig-system:ntp-keys": { "ntp-key" : [{"config" : {"key-id": int(args[0]),
                                                                            "key-type" : auth_type_dict[args[1]],
                                                                            "key-value" : args[2],
-                           "openconfig-system-ext:encrypted" : False if len(args) < 4 else True},
+                           "encrypted" : False if len(args) < 4 else True},
                                                                "key-id" : int(args[0])}]}}
         return api.patch(keypath, body)
 

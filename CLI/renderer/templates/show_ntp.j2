@@ -16,8 +16,8 @@
 {% if json_output %}
     {% if "global" in json_output %}
         {% set global_info = json_output['global'] %}
-        {% if vars.update({'sources':global_info["openconfig-system-ext:ntp-source-interface"]}) %}{% endif %}
-        {% if vars.update({'vrf':global_info["openconfig-system-ext:vrf"]}) %}{% endif %}
+        {% if vars.update({'sources':global_info["ntp-source-interface"]}) %}{% endif %}
+        {% if vars.update({'vrf':global_info["vrf"]}) %}{% endif %}
         {% if vars.update({'auth':global_info["enable-ntp-auth"]}) %}{% endif %}
         {% if vars.sources or vars.vrf or vars.auth %}
             {{-"----------------------------------------------"}}
@@ -53,9 +53,9 @@
         {% for server in server_list %}
             {% if vars.update({'address':server["address"]}) %}{% endif %}
             {% if "config" in server %}
-                {% if vars.update({'key_id':server["config"]['openconfig-system-ext:key-id']}) %}{% endif %}
-                {% if vars.update({'min_poll':server["config"]['openconfig-system-ext:minpoll']}) %}{% endif %}
-                {% if vars.update({'max_poll':server["config"]['openconfig-system-ext:maxpoll']}) %}{% endif %}
+                {% if vars.update({'key_id':server["config"]['key-id']}) %}{% endif %}
+                {% if vars.update({'min_poll':server["config"]['minpoll']}) %}{% endif %}
+                {% if vars.update({'max_poll':server["config"]['maxpoll']}) %}{% endif %}
             {% else %}
                 {% if vars.update({'key_id':""}) %}{% endif %}
                 {% if vars.update({'min_poll':""}) %}{% endif %}
@@ -70,20 +70,20 @@
         {% for server in server_list %}
             {% if "state" in server %} 
                 {% set assoc_info = server["state"] %}
-                {% if "openconfig-system-ext:refid" not in assoc_info %}
+                {% if "refid" not in assoc_info %}
                     {% continue %}
                 {% endif %}
-                {% if vars.update({'selmode':assoc_info["openconfig-system-ext:selmode"]}) %}{% endif %}
+                {% if vars.update({'selmode':assoc_info["selmode"]}) %}{% endif %}
                 {% if vars.update({'remote':assoc_info["address"]}) %}{% endif %}
-                {% if vars.update({'refid':assoc_info["openconfig-system-ext:refid"]}) %}{% endif %}
+                {% if vars.update({'refid':assoc_info["refid"]}) %}{% endif %}
                 {% if "stratum" in assoc_info %}
                     {% if vars.update({'st':'%d'|format(assoc_info["stratum"])}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'st':""}) %}{% endif %}
                 {% endif %}
-                {% if vars.update({'t':assoc_info["openconfig-system-ext:peertype"]}) %}{% endif %}
-                {% if "openconfig-system-ext:now" in assoc_info %}
-                    {% if vars.update({'when':'%d'|format(assoc_info["openconfig-system-ext:now"])}) %}{% endif %}
+                {% if vars.update({'t':assoc_info["peertype"]}) %}{% endif %}
+                {% if "now" in assoc_info %}
+                    {% if vars.update({'when':'%d'|format(assoc_info["now"])}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'when':""}) %}{% endif %}
                 {% endif %}
@@ -92,25 +92,25 @@
                 {% else %}
                     {% if vars.update({'poll':""}) %}{% endif %}
                 {% endif %}
-                {% if "openconfig-system-ext:reach" in assoc_info %}
-                    {% if vars.update({'reach':assoc_info["openconfig-system-ext:reach"]}) %}{% endif %}
+                {% if "reach" in assoc_info %}
+                    {% if vars.update({'reach':assoc_info["reach"]}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'reach':""}) %}{% endif %}
                 {% endif %}
-                {% if "openconfig-system-ext:peerdelay" in assoc_info %}
-                    {% set pdy = assoc_info["openconfig-system-ext:peerdelay"] %}
+                {% if "peerdelay" in assoc_info %}
+                    {% set pdy = assoc_info["peerdelay"] %}
                     {% if vars.update({'delay':'%0.3f'|format((pdy|float)/1000)}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'delay':""}) %}{% endif %}
                 {% endif %}
-                {% if "openconfig-system-ext:peeroffset" in assoc_info %}
-                    {% set pos = assoc_info["openconfig-system-ext:peeroffset"] %}
+                {% if "peeroffset" in assoc_info %}
+                    {% set pos = assoc_info["peeroffset"] %}
                     {% if vars.update({'offset':'%0.3f'|format((pos|float)/1000)}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'offset':""}) %}{% endif %}
                 {% endif %}
-                {% if "openconfig-system-ext:peerjitter" in assoc_info %}
-                    {% set pjt = assoc_info["openconfig-system-ext:peerjitter"] %}
+                {% if "peerjitter" in assoc_info %}
+                    {% set pjt = assoc_info["peerjitter"] %}
                     {% if vars.update({'jitter':'%0.3f'|format((pjt|float)/1000)}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'jitter':""}) %}{% endif %}
