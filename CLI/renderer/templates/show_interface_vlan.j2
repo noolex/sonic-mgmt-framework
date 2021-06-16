@@ -68,7 +68,7 @@
     {% endfor %}
 {% if vars.name %}
 {{ vars.name }} is {{ vars.admin_state|lower() }}, line protocol is {{vars.oper_state|lower() }}
-Hardware is ‘Vlan or EthSVI’, address is {{vars.mac_address}}
+Hardware is 'Vlan or EthSVI', address is {{vars.mac_address}}
 {% if vars.description %}
 Description: {{vars.description}}
 {% endif %}
