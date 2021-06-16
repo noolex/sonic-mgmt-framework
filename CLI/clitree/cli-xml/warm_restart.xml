@@ -18,7 +18,7 @@ limitations under the License.
 
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
   <VIEW name="enable-view">
-    <COMMAND name="show warm-restart" help="Show warm restart state information">
+    <COMMAND name="show warm-restart" help="Display warm restart state information">
       <ACTION builtin="clish_pyobj">
           sonic_cli_warm_restart get_openconfig_warm_restart_warm_restart_status_submodules show_warm_restart.j2 ${__full_line} 
       </ACTION>

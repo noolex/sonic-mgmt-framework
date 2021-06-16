@@ -25,22 +25,22 @@ limitations under the License.
     <!--=======================================================-->
 
 <VIEW name="enable-view">
-  <COMMAND name="show evpn" help="Displays EVPN information summary">
+  <COMMAND name="show evpn" help="Display EVPN information summary">
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   </COMMAND>
 
-  <COMMAND name="show evpn vni detail" help="Detailed information on each VNI">
+  <COMMAND name="show evpn vni detail" help="Display detailed information on each VNI">
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   </COMMAND>
-  <COMMAND name="show evpn vni" help="show VxLAN Network Identifier">
+  <COMMAND name="show evpn vni" help="Display VxLAN Network Identifier">
   	<PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE"></PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   </COMMAND>
 
-  <COMMAND name="show evpn arp-cache" help="ARP and ND cache"/>
-  <COMMAND name="show evpn arp-cache vni all" help="All VNIs">
+  <COMMAND name="show evpn arp-cache" help="Display ARP and ND cache"/>
+  <COMMAND name="show evpn arp-cache vni all" help="Display all VNIs">
   	<PARAM name="showevpnarpsubcommands" help="false" ptype="SUBCOMMAND" mode="switch" optional="true">
-  		<PARAM name="detail" help="Neighbor details for all vnis in detail" mode="subcommand" ptype="SUBCOMMAND" />
+  		<PARAM name="detail" help="Neighbor details for all VNIs in detail" mode="subcommand" ptype="SUBCOMMAND" />
 	  	<PARAM name="duplicate" help="Duplicate address list" mode="subcommand" ptype="SUBCOMMAND" />
   	</PARAM>
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
@@ -60,8 +60,8 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   </COMMAND>
 
-  <COMMAND name="show evpn mac" help="MAC addresses"/>
-  <COMMAND name="show evpn mac vni all" help="All VNIs">
+  <COMMAND name="show evpn mac" help="Display MAC addresses"/>
+  <COMMAND name="show evpn mac vni all" help="Display all VNIs">
   	<PARAM name="showevpnmacsubcommands" help="false" ptype="SUBCOMMAND" mode="switch" optional="true">
   		<PARAM name="detail" help="Detailed information on each VNI MAC" mode="subcommand" ptype="SUBCOMMAND" />
 	  	<PARAM name="duplicate" help="Duplicate address list" mode="subcommand" ptype="SUBCOMMAND" />
@@ -86,8 +86,8 @@ limitations under the License.
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   </COMMAND>
 
-  <COMMAND name="show evpn next-hops" help="Remote Vteps"/>
-  <COMMAND name="show evpn next-hops vni all" help="All VNIs">
+  <COMMAND name="show evpn next-hops" help="Display remote VTEPs"/>
+  <COMMAND name="show evpn next-hops vni all" help="Display all VNIs">
     <ACTION builtin="clish_pyobj">sonic_cli_show_evpn get_evpn</ACTION>
   </COMMAND>
   <COMMAND name="show evpn next-hops vni" help="VxLAN Network Identifier">

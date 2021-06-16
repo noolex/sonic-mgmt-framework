@@ -11,7 +11,7 @@
   <VIEW name="enable-view">
     <COMMAND
          name="show image"
-         help="Show image information"
+         help="Display image information"
          >
         <PARAM name="list"
                help="List images"

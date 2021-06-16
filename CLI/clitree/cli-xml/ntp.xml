@@ -144,7 +144,7 @@ limitations under the License.
 
     <!-- NTP authenticate configuration commands -->
     <COMMAND name="ntp authenticate"
-             help="Enables NTP authentication"
+             help="Enable NTP authentication"
              mode="subcommand"
              command_keys="global_key=global"
              command_tables="sonic-system-ntp:sonic-system-ntp/NTP/NTP_LIST/global_key={global_key}"
@@ -409,7 +409,7 @@ limitations under the License.
                mode="subcommand">
         </PARAM>
         <PARAM name="Vlan"
-               help="Vlan interface"
+               help="VLAN interface"
                ptype="VLAN_INTERFACE"
                mode="subcommand">
         </PARAM>
@@ -473,7 +473,7 @@ limitations under the License.
                mode="subcommand">
         </PARAM>
         <PARAM name="Vlan"
-               help="Vlan interface"
+               help="VLAN interface"
                ptype="VLAN_INTERFACE"
                mode="subcommand">
         </PARAM>

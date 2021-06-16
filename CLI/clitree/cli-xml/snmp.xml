@@ -30,8 +30,8 @@ Copyright 2020 Broadcom, Inc.
     </DOCGEN>  
   </COMMAND>
 <!-- show snmp counters -->
-  <COMMAND name="show snmp" help="Show SNMP"></COMMAND>
-  <COMMAND name="show snmp counters" help="Show SNMP counters">
+  <COMMAND name="show snmp" help="Display SNMP"></COMMAND>
+  <COMMAND name="show snmp counters" help="Display SNMP counters">
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_show_counters</ACTION>
     <DOCGEN>
       <DESCRIPTION>
@@ -64,7 +64,7 @@ Copyright 2020 Broadcom, Inc.
     </DOCGEN>  
   </COMMAND>
   <!-- show snmp-server -->
-  <COMMAND name="show snmp-server" help="Show SNMP server information">
+  <COMMAND name="show snmp-server" help="Display SNMP server information">
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_get show_snmp.j2</ACTION>
     <xi:include href="include/pipe.xml"/>
     <xi:include href="include/pipe.xml"/>
@@ -98,7 +98,7 @@ Copyright 2020 Broadcom, Inc.
   </COMMAND>
 
 <!-- show snmp-server community -->
-  <COMMAND name="show snmp-server community" help="Show SNMP community configuration">
+  <COMMAND name="show snmp-server community" help="Display SNMP community configuration">
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_community_get show_snmp_community.j2</ACTION>
     <xi:include href="include/pipe.xml"/>
     <xi:include href="include/pipe.xml"/>
@@ -122,7 +122,7 @@ Copyright 2020 Broadcom, Inc.
    </COMMAND>
 
 <!-- show snmp-server group -->
-  <COMMAND name="show snmp-server group" help="Show SNMP group configuration">
+  <COMMAND name="show snmp-server group" help="Display SNMP group configuration">
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_group_access_get show_snmp_group.j2</ACTION>
     <xi:include href="include/pipe.xml"/>
     <xi:include href="include/pipe.xml"/>
@@ -148,7 +148,7 @@ Copyright 2020 Broadcom, Inc.
   </COMMAND>
 
 <!-- show snmp-server user -->
-  <COMMAND name="show snmp-server user" help="Show SNMP user configuration">
+  <COMMAND name="show snmp-server user" help="Display SNMP user configuration">
     <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_user_get show_snmp_user.j2</ACTION>
     <xi:include href="include/pipe.xml"/>
     <xi:include href="include/pipe.xml"/>
@@ -173,7 +173,7 @@ Copyright 2020 Broadcom, Inc.
   </COMMAND>
 
 <!-- show snmp-server view -->
-<COMMAND name="show snmp-server view" help="Show SNMP view configuration">
+<COMMAND name="show snmp-server view" help="Display SNMP view configuration">
   <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_view_get show_snmp_view.j2</ACTION>
   <xi:include href="include/pipe.xml"/>
   <xi:include href="include/pipe.xml"/>
@@ -197,7 +197,7 @@ Copyright 2020 Broadcom, Inc.
 </COMMAND>
 
 <!-- show snmp-server host -->
-<COMMAND name="show snmp-server host" help="Show SNMP trap and notification configuration">
+<COMMAND name="show snmp-server host" help="Display SNMP trap and notification configuration">
   <ACTION builtin="clish_pyobj">sonic_cli_snmp snmp_host_get show_snmp_host.j2</ACTION>
   <xi:include href="include/pipe.xml"/>
   <xi:include href="include/pipe.xml"/>

@@ -32,7 +32,7 @@ limitations under the License.
             >
            <PARAM
                name="qid"
-               help="Queue id"
+               help="Queue ID"
                ptype="RANGE_0_7"
                >
               <PARAM 
@@ -255,7 +255,7 @@ limitations under the License.
         <COMMAND name="no queue" help="Negate Queue configuration">
            <PARAM
                name="qid"
-               help="Queue id"
+               help="Queue ID"
                ptype="RANGE_0_7"
                >
               <PARAM 
@@ -625,7 +625,7 @@ limitations under the License.
   </VIEW>
 
   <VIEW name="enable-view">
-    <COMMAND name="show qos" help="Show QoS information">
+    <COMMAND name="show qos" help="Display QoS information">
         <PARAM 
             name="interface"
             help="Display QoS information per interface"
@@ -652,14 +652,14 @@ limitations under the License.
                     >
                     <PARAM
                         name="queue"
-                        help="Queue Id"
+                        help="Queue ID"
                         ptype="SUBCOMMAND"
                         mode="subcommand"
                         optional="true"
                         >
                         <PARAM
                             name="queue-id"
-                            help="Queue id"
+                            help="Queue ID"
                             ptype="RANGE_0_7"
                             >
                         </PARAM>
@@ -678,13 +678,13 @@ limitations under the License.
                  </PARAM>
                  <PARAM
                      name="vlan-intf-name"
-                     help="Vlan Interface"
+                     help="VLAN Interface"
                      ptype="VLAN_INTERFACE"
                      >
                  </PARAM>
                  <PARAM
                      name="phy-sub-if-name"
-                     help="Sub interface"
+                     help="Subinterface"
                      ptype="PHY_PO_SUB_INTERFACE"
                      >
                  </PARAM>

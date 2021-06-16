@@ -21,11 +21,11 @@
     />
     <VIEW name="enable-view">
         <COMMAND name = "show errdisable"
-            help = "Show error disable recovery information">
+            help = "Display error disable recovery information">
         </COMMAND>
         <!-- show errdisable recovery -->
         <COMMAND name = "show errdisable recovery"
-            help = "Show error disable recovery information">
+            help = "Display error disable recovery information">
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable show_errdisable_recovery show_errdisable.j2</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -48,7 +48,7 @@
         </COMMAND>
         <!-- show errdisable link-flap -->
         <COMMAND name = "show errdisable link-flap"
-            help = "Show error disable information incase of exessive link flaps.">
+            help = "Display error disable information incase of exessive link flaps.">
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable show_errdisable_link_flap show_errdisable_link_flap.j2</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -89,7 +89,7 @@
                 >
                 <PARAM
                     name="udld"
-                    help="Enables error disable for UDLD"
+                    help="Enable error disable for UDLD"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -97,7 +97,7 @@
                 </PARAM>
                 <PARAM
                     name="bpduguard"
-                    help="Enables error disable for STP bpduguard"
+                    help="Enable error disable for STP bpduguard"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -138,7 +138,7 @@
                 >
                 <PARAM
                     name="udld"
-                    help="Disables error disable for UDLD"
+                    help="Disable error disable for UDLD"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -146,7 +146,7 @@
                 </PARAM>
                 <PARAM
                     name="bpduguard"
-                    help="Disables error disable for STP bpduguard"
+                    help="Disable error disable for STP bpduguard"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -178,7 +178,7 @@
         </COMMAND>
 
         <COMMAND name = "errdisable recovery interval"
-            help = "Configures error disable recovery interval"
+            help = "Configure error disable recovery interval"
             command_tables="sonic-errdisable:sonic-errdisable/ERRDISABLE/ERRDISABLE_LIST/id">
             <PARAM
                 name="interval"
@@ -203,7 +203,7 @@
         </COMMAND>
 
         <COMMAND name = "no errdisable recovery interval"
-            help = "Resets error disable recovery interval to default value">
+            help = "Reset error disable recovery interval to default value">
             <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_interval 300</ACTION>
             <DOCGEN>
                 <DESCRIPTION>

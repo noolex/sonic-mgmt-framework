@@ -61,7 +61,7 @@ limitations under the License.
             />
 
         <!-- show configuration -->
-        <COMMAND name="show configuration" help="Displays current nat configuration">
+        <COMMAND name="show configuration" help="Display current NAT configuration">
           <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-nat</ACTION>
           <DOCGEN>
             <DESCRIPTION>
@@ -80,7 +80,7 @@ limitations under the License.
         />
         <COMMAND
             name="enable"
-            help="Enables NAT feature"
+            help="Enable NAT feature"
             dbpath="sonic-nat:sonic-nat/NAT_GLOBAL/NAT_GLOBAL_LIST/admin_mode=enabled"
         >
         <ACTION builtin="clish_pyobj">sonic_cli_nat patch_openconfig_nat_nat_instances_instance_config_enable True</ACTION>
@@ -88,14 +88,14 @@ limitations under the License.
 
         <COMMAND
             name="no enable"
-            help="Disables NAT feature"
+            help="Disable NAT feature"
             >
         <ACTION builtin="clish_pyobj">sonic_cli_nat patch_openconfig_nat_nat_instances_instance_config_enable False</ACTION>
        </COMMAND>
 
        <COMMAND
          name="timeout"
-         help="Configures NAT entry aging timeout in seconds"
+         help="Configure NAT entry aging timeout in seconds"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -119,7 +119,7 @@ limitations under the License.
 
      <COMMAND
          name="tcp-timeout"
-         help="Configures TCP NAT entry aging timeout in seconds"
+         help="Configure TCP NAT entry aging timeout in seconds"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -142,7 +142,7 @@ limitations under the License.
 
       <COMMAND
          name="udp-timeout"
-         help="Configures UDP NAT entry aging timeout in seconds"
+         help="Configure UDP NAT entry aging timeout in seconds"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -199,7 +199,7 @@ limitations under the License.
 
      <COMMAND
          name="no pool"
-         help="Removes NAT pool"
+         help="Remove NAT pool"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -214,7 +214,7 @@ limitations under the License.
 
      <COMMAND
          name="no pools"
-         help="Removes all NAT pools"
+         help="Remove all NAT pools"
      >
      <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-pool</ACTION>
      </COMMAND>
@@ -277,7 +277,7 @@ limitations under the License.
 
       <COMMAND
          name="no binding"
-         help="Removes NAT binding"
+         help="Remove NAT binding"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
@@ -292,14 +292,14 @@ limitations under the License.
 
      <COMMAND
          name="no bindings"
-         help="Removes all NAT bindings"
+         help="Remove all NAT bindings"
      >
      <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-nat:nat/instances/instance=0/nat-acl-pool-binding</ACTION>
      </COMMAND>
 
      <COMMAND
          name="static"
-         help="Configures static NAT entry"
+         help="Configure static NAT entry"
          mode="subcommand"
          ptype="SUBCOMMAND"
          command_tables="sonic-nat:sonic-nat/STATIC_NAPT/STATIC_NAPT_LIST/global_ip={global_ip},ip_pro tocol={ip_protocol}, global_l4_port=${global-port};sonic-nat:sonic-nat/STATIC_NAT/STATIC_NAT_LIST/global_ip={global_ip}"
@@ -420,19 +420,19 @@ limitations under the License.
 
      <COMMAND
          name="no static"
-         help="Removes static NAT entry"
+         help="Remove static NAT entry"
          mode="subcommand"
          ptype="SUBCOMMAND"
          >
          <PARAM
              name="no-static-subcommands"
-             help="Removes static NAT subcommands"
+             help="Remove static NAT subcommands"
              mode="switch"
              ptype="SUBCOMMAND"
              >
              <PARAM
                  name="all"
-                 help="Removes all static configurations"
+                 help="Remove all static configurations"
                  ptype="SUBCOMMAND"
                  mode="subcommand"
                  >
@@ -497,14 +497,14 @@ limitations under the License.
             >
             <PARAM
                 name="translations"
-                help="Clearing dynamic NAT translations"
+                help="Clear dynamic NAT translations"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
             </PARAM>
             <PARAM
                 name="statistics"
-                help="Clearing NAT statistics"
+                help="Clear NAT statistics"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -521,7 +521,7 @@ limitations under the License.
     <!--show nat -->
     <COMMAND
          name="show nat"
-         help="Show NAT info"
+         help="Display NAT info"
          >
          <PARAM
              name="nat-subcommands"

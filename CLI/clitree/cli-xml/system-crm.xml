@@ -17,136 +17,136 @@ limitations under the License.
 -->
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema     http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
   <VIEW name="enable-view">
-    <COMMAND name="show crm" help="Show CRM information">
+    <COMMAND name="show crm" help="Display CRM information">
       <PARAM name="crm-subcmd-1st" help="" mode="switch" ptype="SUBCOMMAND">
         <!-- show crm summary -->
-        <PARAM name="summary" help="Show CRM general information" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM name="summary" help="Display CRM general information" mode="subcommand" ptype="SUBCOMMAND">
         </PARAM>
         <!-- show crm resources -->
-        <PARAM name="resources" help="Show CRM resources information" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM name="resources" help="Display CRM resources information" mode="subcommand" ptype="SUBCOMMAND">
           <PARAM name="crm-subcmd-2nd" help="" mode="switch" ptype="SUBCOMMAND">
             <!-- show crm resources acl -->
-            <PARAM name="acl" help="Show CRM information for the ACL resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="acl" help="Display CRM information for the ACL resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="group" help="Show CRM information for the ACL group resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="Display CRM information for the ACL group resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="table" help="Show CRM information for the ACL table resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="table" help="Display CRM information for the ACL table resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm resources all -->
-            <PARAM name="all" help="Show CRM information for all resources" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="all" help="Display CRM information for all resources" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm resources dnat -->
-            <PARAM name="dnat" help="Show CRM information for the DNAT resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="dnat" help="Display CRM information for the DNAT resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm resources fdb -->
-            <PARAM name="fdb" help="Show CRM information for the FDB resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="fdb" help="Display CRM information for the FDB resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm resources ipmc -->
-            <PARAM name="ipmc" help="Show CRM information for the IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipmc" help="Display CRM information for the IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm resources ipv4 -->
-            <PARAM name="ipv4" help="Show CRM information for the IPv4 address family resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv4" help="Display CRM information for the IPv4 address family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="neighbor" help="Show CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="Display CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="Display CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="route" help="Show CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="Display CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm resources ipv6 -->
-            <PARAM name="ipv6" help="Show CRM information for the IPv6 address family resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv6" help="Display CRM information for the IPv6 address family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="neighbor" help="Show CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="Display CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="Display CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="route" help="Show CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="Display CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm resources nexthop group -->
-            <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="nexthop" help="Display CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="group" help="Show CRM information for the nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="Display CRM information for the nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="member" help="Show CRM information for the nexthop group member resource" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="member" help="Display CRM information for the nexthop group member resource" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="object" help="Show CRM information for the nexthop group object resource" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="object" help="Display CRM information for the nexthop group object resource" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm resources snat -->
-            <PARAM name="snat" help="Show CRM information for the SNAT resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="snat" help="Display CRM information for the SNAT resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
           </PARAM>
         </PARAM>
         <!-- show crm thresholds -->
-        <PARAM name="thresholds" help="Show CRM thresholds information" mode="subcommand" ptype="SUBCOMMAND">
+        <PARAM name="thresholds" help="Display CRM thresholds information" mode="subcommand" ptype="SUBCOMMAND">
           <PARAM name="crm-subcmd-2nd" help="" mode="switch" ptype="SUBCOMMAND">
             <!-- show crm thresholds acl -->
-            <PARAM name="acl" help="Show CRM information for the ACL resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="acl" help="Display CRM information for the ACL resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="group" help="Show CRM information for the ACL group resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="Display CRM information for the ACL group resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="table" help="Show CRM information for the ACL table resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="table" help="Display CRM information for the ACL table resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm thresholds all -->
-            <PARAM name="all" help="Show CRM information for all resources" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="all" help="Display CRM information for all resources" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm thresholds dnat -->
-            <PARAM name="dnat" help="Show CRM information for the DNAT resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="dnat" help="Display CRM information for the DNAT resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm thresholds fdb -->
-            <PARAM name="fdb" help="Show CRM information for the FDB resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="fdb" help="Display CRM information for the FDB resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm thresholds ipmc -->
-            <PARAM name="ipmc" help="Show CRM information for the IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipmc" help="Display CRM information for the IPMC resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
             <!-- show crm thresholds ipv4 -->
-            <PARAM name="ipv4" help="Show CRM information for the IPv4 address family resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv4" help="Display CRM information for the IPv4 address family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="neighbor" help="Show CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="Display CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="Display CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="route" help="Show CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="Display CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm thresholds ipv6 -->
-            <PARAM name="ipv6" help="Show CRM information for the IPv6 address family resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="ipv6" help="Display CRM information for the IPv6 address family resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="neighbor" help="Show CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="neighbor" help="Display CRM information for the neighbor resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="nexthop" help="Display CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
-                <PARAM name="route" help="Show CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="route" help="Display CRM information for the route resource" mode="subcommand" ptype="SUBCOMMAND">
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm thresholds nexthop group -->
-            <PARAM name="nexthop" help="Show CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="nexthop" help="Display CRM information for the nexthop resource" mode="subcommand" ptype="SUBCOMMAND">
               <PARAM name="crm-subcmd-3rd" help="" mode="switch" ptype="SUBCOMMAND">
-                <PARAM name="group" help="Show CRM information for the nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
+                <PARAM name="group" help="Display CRM information for the nexthop group resource" mode="subcommand" ptype="SUBCOMMAND">
                   <PARAM name="crm-subcmd-4th" help="" mode="switch" ptype="SUBCOMMAND">
-                    <PARAM name="member" help="Show CRM information for the nexthop group member resource" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="member" help="Display CRM information for the nexthop group member resource" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
-                    <PARAM name="object" help="Show CRM information for the nexthop group object resource" mode="subcommand" ptype="SUBCOMMAND">
+                    <PARAM name="object" help="Display CRM information for the nexthop group object resource" mode="subcommand" ptype="SUBCOMMAND">
                     </PARAM>
                   </PARAM>
                 </PARAM>
               </PARAM>
             </PARAM>
             <!-- show crm thresholds snat -->
-            <PARAM name="snat" help="Show CRM information for the SNAT resource" mode="subcommand" ptype="SUBCOMMAND">
+            <PARAM name="snat" help="Display CRM information for the SNAT resource" mode="subcommand" ptype="SUBCOMMAND">
             </PARAM>
           </PARAM>
         </PARAM>

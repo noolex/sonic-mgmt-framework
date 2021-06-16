@@ -8,7 +8,7 @@
 ]>
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
   <VIEW name="enable-view">
-    <COMMAND name="show port-group" help="Show port-group information">
+    <COMMAND name="show port-group" help="Display port-group information">
       <ACTION builtin="clish_pyobj">sonic_cli_port_group get_openconfig_port_group_port_groups_openconfig_port_group_port_groups_state show_port_group.j2</ACTION>
       <xi:include href="include/pipe.xml"/>
       <DOCGEN>

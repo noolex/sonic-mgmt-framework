@@ -27,8 +27,8 @@ limitations under the License.
     >
 <!--=========================================================================-->
   <VIEW name="enable-view">
-    <COMMAND name="show switch-resource" help="Show Switch Resource stats."/>
-    <COMMAND name="show switch-resource drop-monitor" help="Show Drop-Monitor Switch Resource stats ">
+    <COMMAND name="show switch-resource" help="Display Switch Resource stats."/>
+    <COMMAND name="show switch-resource drop-monitor" help="Display Drop-Monitor Switch Resource stats ">
       <ACTION builtin="clish_pyobj">
 	      sonic_cli_switch_resource get_openconfig_system_ext_system_swresource switch_resource.j2
       </ACTION>
@@ -40,7 +40,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="show switch-resource route-scale" help="Show Route-Scale Switch Resource stats ">
+    <COMMAND name="show switch-resource route-scale" help="Display Route-Scale Switch Resource stats ">
       <ACTION builtin="clish_pyobj">
         sonic_cli_switch_resource get_openconfig_system_ext_system_swresource switch_resource_routes.j2
       </ACTION>

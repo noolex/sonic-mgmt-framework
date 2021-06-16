@@ -139,7 +139,7 @@ limitations under the License.
     </VIEW>
 
     <VIEW name="enable-view">
-      <COMMAND name="show bgp l2vpn evpn vni" help="Show VNI">
+      <COMMAND name="show bgp l2vpn evpn vni" help="Display VNI">
         <PARAM name="vninum" help="VxLAN Network Identifier" ptype="VNI_RANGE">
         </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_show_bgp_evpn get_bgp_evpn_vni show_evpn_vni.j2 default L2VPN_EVPN ${vninum}</ACTION>

@@ -153,7 +153,7 @@ limitations under the License.
   <VIEW name="enable-view">
 
     <!--show dot1p-map -->
-    <COMMAND name="show qos map tc-dot1p" help="Show configured tc-dot1p-map">
+    <COMMAND name="show qos map tc-dot1p" help="Display configured tc-dot1p-map">
       <PARAM name="name" help="Name of the tc-dot1p-map" ptype="STRING_32" optional="true"> </PARAM>
       <ACTION>
           if test "${name}" = "" ; then&#xA;

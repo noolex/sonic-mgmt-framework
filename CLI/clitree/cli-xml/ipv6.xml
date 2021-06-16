@@ -425,7 +425,7 @@ limitations under the License.
 
 <VIEW name="enable-view">
     <COMMAND
-        help="show IP commands"
+        help="Display IP commands"
         name="show ipv6"
         >
     <ACTION builtin="clish_nop"/>
@@ -433,7 +433,7 @@ limitations under the License.
     <!-- show ipv6 interfaces -->
     <COMMAND
         name="show ipv6 interfaces"
-        help="IPv6 Info of Interfaces"
+        help="IPv6 info of interfaces"
         >
     <ACTION>
        python $SONIC_CLI_ROOT/sonic_cli_if.py ip6_interfaces_get show_ip_interfaces_sonic.j2 ${__full_line}
@@ -446,7 +446,7 @@ limitations under the License.
         name="show ipv6 route">
         <PARAM
             name="vrf"
-            help="IP route information per vrf"
+            help="IP route information per VRF"
             optional = "true"
             order = "true"
 	    mode="subcommand"
@@ -531,7 +531,7 @@ limitations under the License.
     </COMMAND>
     <!-- show ipv6 dhcp-relay -->
     <COMMAND
-        help="Show IPV6 DHCP relay information"
+        help="Display IPv6 DHCP relay information"
         name="show ipv6 dhcp-relay">
         <MACRO name="DHCP-RELAY-SHOW-OPTIONS" arg=""/>
         <ACTION> if test -n "${intfName}"; then&#xA;
@@ -554,9 +554,9 @@ limitations under the License.
         </ACTION>
     </COMMAND>
      <!--====================clear <ipv6> dhcp-relay statistics======================-->
-    <COMMAND name="clear ipv6 dhcp-relay" help="Clear ipv6 dhcp-relay statistics">
+    <COMMAND name="clear ipv6 dhcp-relay" help="Clear IPv6 DHCP relay statistics">
       <PARAM name="clear-subcommands" help="Clear subcommands" mode="switch" ptype="SUBCOMMAND">
-      <PARAM help="clear ipv6 dhcp-relay statistics" name="statistics" optional="false" mode="subcommand" ptype="SUBCOMMAND">
+      <PARAM help="Clear IPv6 DHCP relay statistics" name="statistics" optional="false" mode="subcommand" ptype="SUBCOMMAND">
         <PARAM help="Interface name" name="ifName" optional="false" ptype="STRING"/>
       </PARAM>
       </PARAM>

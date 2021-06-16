@@ -10,7 +10,7 @@
 
 <MACRODEF name="BIND-INTF-TO-OSPF">
 
-    <COMMAND name = "ip ospf" help = "Configures OSPFv2 interface mode parameters" command_keys="name=*,address=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_INTERFACE/OSPFV2_INTERFACE_LIST/name={name},address={address}" render_command_cb='interface_ip_ospf'>
+    <COMMAND name = "ip ospf" help = "Configure OSPFv2 interface mode parameters" command_keys="name=*,address=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_INTERFACE/OSPFV2_INTERFACE_LIST/name={name},address={address}" render_command_cb='interface_ip_ospf'>
       <ACTION> </ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -30,10 +30,10 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name = "no ip ospf" help = "Unconfigures OSPFv2 interface mode parameters" >
+    <COMMAND name = "no ip ospf" help = "Unconfigure OSPFv2 interface mode parameters" >
     </COMMAND>
 
-    <COMMAND name = "no ip ospf interface" help = "Unconfigures all OSPFv2 parameters in the interfaces" >
+    <COMMAND name = "no ip ospf interface" help = "Unconfigure all OSPFv2 parameters in the interfaces" >
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_unconfig ${iface} ${vlan_name} ${po_name} ${lo_name} &#xA;</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -51,7 +51,7 @@
     </COMMAND>
 
 
-    <COMMAND name="ip ospf area" help="Configures OSPFv2 area identifier" >
+    <COMMAND name="ip ospf area" help="Configure OSPFv2 area identifier" >
       <PARAM name = "area-id" help = "OSPFv2 area ID" ptype = "AREA_NUM_DOT">
          <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR"  optional="true" />
       </PARAM>
@@ -75,7 +75,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf area" help="Unconfigures OSPFv2 area identifier" >
+    <COMMAND name="no ip ospf area" help="Unconfigure OSPFv2 area identifier" >
          <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR"  optional="true" />
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_area_id ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
       <DOCGEN>
@@ -148,7 +148,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ip ospf authentication-key" help="Configures OSPFv2 plain text authentication type password" escape_chars="">
+    <COMMAND name="ip ospf authentication-key" help="Configure OSPFv2 plain text authentication type password" escape_chars="">
       <PARAM name="authkey" help="Authentication password" ptype="STRING">
         <PARAM name="encrypted"  help = "Password is in encrypted format" ptype="SUBCOMMAND" mode="subcommand" optional="true" hidden="true">
             <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
@@ -174,7 +174,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf authentication-key" help="Unconfigures OSPFv2 plain text authentication type password" >
+    <COMMAND name="no ip ospf authentication-key" help="Unconfigure OSPFv2 plain text authentication type password" >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_authentication_key ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
       <DOCGEN>
@@ -191,7 +191,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ip ospf bfd" help="Configures OSPFv2 interface BFD" >
+    <COMMAND name="ip ospf bfd" help="Configure OSPFv2 interface BFD" >
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_bfd ${iface} ${vlan_name} ${po_name} ${lo_name} &#xA;</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -209,7 +209,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf bfd" help="Unconfigures OSPFv2 interface BFD" >
+    <COMMAND name="no ip ospf bfd" help="Unconfigure OSPFv2 interface BFD" >
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_bfd ${iface} ${vlan_name} ${po_name} ${lo_name} &#xA;</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -225,7 +225,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ip ospf cost" help="Configures OSPFv2 interface cost" >
+    <COMMAND name="ip ospf cost" help="Configure OSPFv2 interface cost" >
       <PARAM name="interface-cost" help="Cost value" ptype="RANGE_1_65535" >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
       </PARAM>
@@ -244,7 +244,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf cost" help="Unconfigures OSPFv2 interface cost" >
+    <COMMAND name="no ip ospf cost" help="Unconfigure OSPFv2 interface cost" >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_cost ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
       <DOCGEN>
@@ -262,7 +262,7 @@
     </COMMAND>
 
 
-    <COMMAND name="ip ospf dead-interval" help="Configures OSPFv2 adjacency dead interval" >
+    <COMMAND name="ip ospf dead-interval" help="Configure OSPFv2 adjacency dead interval" >
       <PARAM name = "deadtype" help = "" ptype = "SUBCOMMAND" mode="switch" >
         <PARAM name="deadinterval" help="Time in seconds" ptype="RANGE_1_65535" optional="true">
           <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
@@ -279,7 +279,7 @@
     </COMMAND>
 
 
-    <COMMAND name="no ip ospf dead-interval" help="Unconfigures OSPFv2 adjacency dead interval" >
+    <COMMAND name="no ip ospf dead-interval" help="Unconfigure OSPFv2 adjacency dead interval" >
       <PARAM name="deadtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional="true">
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
         <PARAM name="minimal" help="Minimal 1s dead-interval with fast sub-second hellos" ptype="SUBCOMMAND" mode="subcommand" optional="true" >
@@ -291,7 +291,7 @@
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_dead_interval ${iface} ${vlan_name} ${po_name} ${lo_name} ${deadtype} ${ip-address} &#xA;</ACTION>
     </COMMAND>
 
-    <COMMAND name="ip ospf hello-interval" help="Configures OSPFv2 neighbour hello interval" >
+    <COMMAND name="ip ospf hello-interval" help="Configure OSPFv2 neighbour hello interval" >
       <PARAM name="hellointerval" help="Time in seconds" ptype="RANGE_1_65535" optional="true">
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
@@ -310,7 +310,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf hello-interval" help="Unconfigures OSPFv2 neighbour hello interval" >
+    <COMMAND name="no ip ospf hello-interval" help="Unconfigure OSPFv2 neighbour hello interval" >
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_hello_interval ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
       <DOCGEN>
@@ -327,7 +327,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ip ospf message-digest-key" help="Configures OSPFv2 message digest key and password" escape_chars="" command_keys="name=*,address=*,authentication-key-id=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_INTERFACE_MD_AUTHENTICATION/OSPFV2_INTERFACE_MD_AUTHENTICATION_LIST/name={name},address={address},authentication-key-id={authentication-key-id}" render_command_cb='interface_ip_ospf_md_auth'>
+    <COMMAND name="ip ospf message-digest-key" help="Configure OSPFv2 message digest key and password" escape_chars="" command_keys="name=*,address=*,authentication-key-id=*" command_tables="sonic-ospfv2:sonic-ospfv2/OSPFV2_INTERFACE_MD_AUTHENTICATION/OSPFV2_INTERFACE_MD_AUTHENTICATION_LIST/name={name},address={address},authentication-key-id={authentication-key-id}" render_command_cb='interface_ip_ospf_md_auth'>
       <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" >
         <PARAM name="md5" help="Uses MD5 algorithm" ptype="SUBCOMMAND" mode="subcommand" >
           <PARAM name = "md5key" help = "Message digest password" ptype = "STRING" >
@@ -358,7 +358,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf message-digest-key" help="Unconfigures OSPFv2 message digest key and password" >
+    <COMMAND name="no ip ospf message-digest-key" help="Unconfigure OSPFv2 message digest key and password" >
       <PARAM name="keyid" help="Key ID" ptype="RANGE_1_255" >
         <PARAM name="md5" help="Uses MD5 algorithm" ptype="SUBCOMMAND" mode="subcommand" >
             <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
@@ -380,7 +380,7 @@
     </COMMAND>
 
 
-    <COMMAND name="ip ospf mtu-ignore" help="Disables OSPFv2 MTU mismatch detection" >
+    <COMMAND name="ip ospf mtu-ignore" help="Disable OSPFv2 MTU mismatch detection" >
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true" />
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 patch_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_mtu_ignore ${iface} ${vlan_name} ${po_name} ${lo_name} ${ip-address}  &#xA;</ACTION>
       <DOCGEN>
@@ -398,7 +398,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf mtu-ignore" help="Enables OSPFv2 MTU mismatch detection" >
+    <COMMAND name="no ip ospf mtu-ignore" help="Enable OSPFv2 MTU mismatch detection" >
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_mtu_ignore ${iface} ${vlan_name} ${po_name} ${lo_name} ${ip-address}  &#xA;</ACTION>
       <DOCGEN>
@@ -415,7 +415,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ip ospf network" help="Configures OSPFv2 interface network type" >
+    <COMMAND name="ip ospf network" help="Configure OSPFv2 interface network type" >
       <PARAM name = "networktype" help = "" ptype = "SUBCOMMAND" mode="switch" >
         <PARAM name = "broadcast" help = "Broadcast multi-access link network" ptype = "SUBCOMMAND" mode="subcommand" />
         <PARAM name = "point-to-point" help = "Point-to-point link network" ptype = "SUBCOMMAND" mode="subcommand" />
@@ -438,7 +438,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf network" help="Unconfigures OSPFv2 interface network type" >
+    <COMMAND name="no ip ospf network" help="Unconfigure OSPFv2 interface network type" >
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_network_type ${iface} ${vlan_name} ${po_name} ${lo_name} ${networktype}  &#xA;</ACTION>
       <DOCGEN>
         <DESCRIPTION>
@@ -455,7 +455,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ip ospf priority" help="Configures OSPFv2 adjacency router priority">
+    <COMMAND name="ip ospf priority" help="Configure OSPFv2 adjacency router priority">
       <PARAM name = "priorityval" help = "Priority value" ptype = "RANGE_0_255" >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
@@ -474,7 +474,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf priority" help="Unconfigures OSPFv2 adjacency router priority">
+    <COMMAND name="no ip ospf priority" help="Unconfigure OSPFv2 adjacency router priority">
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_priority ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
       <DOCGEN>
@@ -491,7 +491,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ip ospf retransmit-interval" help="Configures OSPFv2 LSA retransmit interval" >
+    <COMMAND name="ip ospf retransmit-interval" help="Configure OSPFv2 LSA retransmit interval" >
       <PARAM name = "retransmitinterval" help = "Time value in seconds" ptype = "RANGE_2_65535"  >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       </PARAM>
@@ -510,7 +510,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf retransmit-interval" help="Unconfigures OSPFv2 LSA retransmit interval" >
+    <COMMAND name="no ip ospf retransmit-interval" help="Unconfigure OSPFv2 LSA retransmit interval" >
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR" optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_retransmit_interval ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
       <DOCGEN>
@@ -527,7 +527,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="ip ospf transmit-delay" help="Configures OSPFv2 LSA transmit delay interval" >
+    <COMMAND name="ip ospf transmit-delay" help="Configure OSPFv2 LSA transmit delay interval" >
       <PARAM name = "transmitdelay" help = "Time in seconds" ptype = "RANGE_1_65535" >
         <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR"  optional="true"/>
       </PARAM>
@@ -546,7 +546,7 @@
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="no ip ospf transmit-delay" help="Unconfigures OSPFv2 LSA transmit delay interval" >
+    <COMMAND name="no ip ospf transmit-delay" help="Unconfigure OSPFv2 LSA transmit delay interval" >
       <PARAM name = "ip-address" help = "Interface IPv4 address" ptype = "IP_ADDR"  optional="true"/>
       <ACTION builtin="clish_pyobj"> sonic_cli_ospfv2 delete_openconfig_interfaces_interface_subinterfaces_subinterface_ip_ospf_config_transmit_delay ${iface} ${vlan_name} ${po_name} ${lo_name} 0 ${ip-address} &#xA;</ACTION>
       <DOCGEN>

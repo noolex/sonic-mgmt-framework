@@ -99,7 +99,7 @@ limitations under the License.
 <VIEW name="enable-view">
     <COMMAND
         name="show spanning-tree"
-        help="Show spanning tree information"
+        help="Display spanning-tree information"
         >
         <PARAM
             name="vlan"
@@ -278,7 +278,7 @@ limitations under the License.
     </COMMAND>
 	<COMMAND
 		name="show running-configuration spanning-tree"
-		help="Show spanning-tree configuration">
+		help="Display spanning-tree configuration">
 		<ACTION builtin="clish_pyobj">sonic_cli_stp show_running_spanning_tree views=configure-view" </ACTION>
     <DOCGEN>
         <DESCRIPTION>
@@ -344,14 +344,14 @@ limitations under the License.
                 >
                 <PARAM
                     name="forward-time"
-                    help="Resets forward delay time to default value"
+                    help="Reset forward delay time to default value"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >
                 </PARAM>
                 <PARAM
                     name="hello-time"
-                    help="Resets hello time to default value"
+                    help="Reset hello time to default value"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >
@@ -359,7 +359,7 @@ limitations under the License.
 
                 <PARAM
                     name="max-age"
-                    help="Resets max-age to default value"
+                    help="Reset max-age to default value"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     >
@@ -401,7 +401,7 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree mode"
-        help="Configures spanning tree mode"
+        help="Configure spanning tree mode"
         command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
         command_keys="keyleaf_val=GLOBAL"
         >
@@ -413,7 +413,7 @@ limitations under the License.
             >
             <PARAM
                 name="pvst"
-                help="Enables PVST+ (based on IEEE 802.1D)"
+                help="Enable PVST+ (based on IEEE 802.1D)"
                 ptype="SUBCOMMAND"
                 dbpath="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/mode=pvst"
                 mode="subcommand"
@@ -422,7 +422,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="rapid-pvst"
-                help="Enables rapid PVST+ (based on IEEE 802.1w)"
+                help="Enable rapid PVST+ (based on IEEE 802.1w)"
                 ptype="SUBCOMMAND"
                 dbpath="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/mode=rpvst"
                 mode="subcommand"
@@ -460,7 +460,7 @@ limitations under the License.
             >
             <PARAM
                 name="default"
-                help="Enables bpdufilter on edge-ports"
+                help="Enable bpdufilter on edge-ports"
                 dbpath="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/bpdu_filter=true"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
@@ -485,7 +485,7 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree forward-time"
-        help="Configures forward delay time"
+        help="Configure forward delay time"
         command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
         command_keys="keyleaf_val=GLOBAL"
         render_command_cb="spanning_tree_global_fwd_delay"
@@ -528,7 +528,7 @@ limitations under the License.
             >
             <PARAM
                 name="timeout"
-                help="Configures root guard timeout"
+                help="Configure root guard timeout"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -558,7 +558,7 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree hello-time"
-        help="Configures hello time"
+        help="Configure hello time"
         command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
         command_keys="keyleaf_val=GLOBAL"
         render_command_cb="spanning_tree_global_hello_time"
@@ -588,7 +588,7 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree max-age"
-        help="Configures max-age time"
+        help="Configure max-age time"
         command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
         command_keys="keyleaf_val=GLOBAL"
         ptype="SUBCOMMAND"
@@ -618,7 +618,7 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree priority"
-        help="Configures bridge priority"
+        help="Configure bridge priority"
         command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
         command_keys="keyleaf_val=GLOBAL"
         ptype="SUBCOMMAND"
@@ -677,7 +677,7 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree portfast"
-        help="Enable spanning tree portfast"
+        help="Enable spanning-tree portfast"
         ptype="SUBCOMMAND" mode="subcommand"
         command_tables="sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
         command_keys="keyleaf_val=GLOBAL"
@@ -708,7 +708,7 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree"
-        help="Spanning tree configuration"
+        help="Spanning-tree configuration"
         >
     </COMMAND>
 
@@ -724,7 +724,7 @@ limitations under the License.
             >
             <PARAM
                 name="default"
-                help="Disables bpdufilter on all edge ports"
+                help="Disable BPDU filter on all edge ports"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
             >
@@ -736,7 +736,7 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree mode"
-        help="Disables spanning tree"
+        help="Disable spanning-tree"
         >
     <ACTION builtin="clish_pyobj">
         sonic_cli_stp del_stp_global_mode
@@ -756,7 +756,7 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree forward-time"
-        help="Resets forward time to default value"
+        help="Reset forward time to default value"
         ptype="SUBCOMMAND"
         mode="subcommand"
         >
@@ -787,7 +787,7 @@ limitations under the License.
             >
             <PARAM
                 name="timeout"
-                help="Resets root guard timeout to default value"
+                help="Reset root guard timeout to default value"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -810,7 +810,7 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree hello-time"
-        help="Resets hello time to default value"
+        help="Reset hello time to default value"
         ptype="SUBCOMMAND"
         mode="subcommand"
         >
@@ -831,7 +831,7 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree max-age"
-        help="Resets max-age to default value"
+        help="Reset max-age to default value"
         ptype="SUBCOMMAND"
         mode="subcommand"
         >
@@ -852,7 +852,7 @@ limitations under the License.
 
     <COMMAND
         name="no spanning-tree priority"
-        help="Resets bridge priority to default value"
+        help="Reset bridge priority to default value"
         ptype="SUBCOMMAND"
         mode="subcommand"
         >
@@ -925,7 +925,7 @@ limitations under the License.
 
     <COMMAND
         name="spanning-tree vlan"
-        help="Enables spanning-tree on a specific VLAN"
+        help="Enable spanning-tree on a specific VLAN"
         command_tables="sonic-spanning-tree:sonic-spanning-tree/STP_VLAN/STP_VLAN_LIST/name={vlan_name};sonic-spanning-tree:sonic-spanning-tree/STP/STP_LIST/keyleaf={keyleaf_val}"
         command_keys="keyleaf_val=GLOBAL;vlan_name=*"
         render_command_cb="spanning_tree_vlan"
@@ -946,7 +946,7 @@ limitations under the License.
             >
             <PARAM
                 name="forward-time"
-                help="Configures forward delay time"
+                help="Configure forward delay time"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -960,7 +960,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="hello-time"
-                help="Configures hello time"
+                help="Configure hello time"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -975,7 +975,7 @@ limitations under the License.
 
             <PARAM
                 name="max-age"
-                help="Configures max-age time"
+                help="Configure max-age time"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -989,7 +989,7 @@ limitations under the License.
             </PARAM>
             <PARAM
                 name="priority"
-                help="Configures bridge priority"
+                help="Configure bridge priority"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >

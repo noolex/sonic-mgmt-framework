@@ -29,7 +29,7 @@ limitations under the License.
 
   <VIEW name="enable-view">
     <COMMAND
-        help="Show IP helper global configuration"
+        help="Display IP helper global configuration"
         name="show ip forward-protocol"
         >
       <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper global_config show_ip_helper_global.j2</ACTION>
@@ -55,7 +55,7 @@ limitations under the License.
       </DOCGEN> 
     </COMMAND>
 
-    <COMMAND help="Show IP helper server addresses on interfaces" name="show ip helper-address">
+    <COMMAND help="Display IP helper server addresses on interfaces" name="show ip helper-address">
       <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
       <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper iface_config show_ip_helper_interface_config.j2 ${iface}</ACTION>
       <DOCGEN>
@@ -92,7 +92,7 @@ limitations under the License.
       </DOCGEN>
     </COMMAND>
 
-    <COMMAND help="Show IP helper statistics on interfaces" name="show ip helper-address statistics">
+    <COMMAND help="Display IP helper statistics on interfaces" name="show ip helper-address statistics">
       <PARAM name="iface" help="Interface" ptype="PHY_VL_PO_INTERFACE" optional="true" />  
       <ACTION builtin="clish_pyobj">sonic_cli_show_ip_helper iface_stats show_ip_helper_interface_statistics.j2 ${iface}</ACTION>
       <DOCGEN>

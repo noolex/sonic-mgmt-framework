@@ -19,8 +19,8 @@ Copyright 2020 Broadcom, Inc.
 <!--=========================================================================-->
   <VIEW name="enable-view">
     <!-- show priority-flow-control watchdog -->
-    <COMMAND name="show priority-flow-control" help="Show PFC summary">
-      <PARAM name="watchdog" help="Show PFC watchdog" ptype="SUBCOMMAND" mode="subcommand"/>
+    <COMMAND name="show priority-flow-control" help="Display PFC summary">
+      <PARAM name="watchdog" help="Display PFC watchdog" ptype="SUBCOMMAND" mode="subcommand"/>
       <ACTION builtin="clish_pyobj">sonic_cli_qos_pfc  show_pfc_watchdog  show_qos_pfc_watchdog.j2</ACTION>
       <xi:include href="include/pipe.xml"/>
       <xi:include href="include/pipe.xml"/>

@@ -63,7 +63,7 @@ limitations under the License.
 
   <VIEW name="enable-view">
     <COMMAND name="show aaa"
-             help="Show aaa info">
+             help="Display AAA info">
       <ACTION builtin="clish_pyobj">sonic_cli_aaa get_openconfig_system_system_aaa show_aaa.j2</ACTION>
     </COMMAND>
   </VIEW>
@@ -76,10 +76,10 @@ limitations under the License.
 
     <!-- config sub view for aaa authentication -->
     <COMMAND name="aaa authentication"
-             help="Configures AAA authentication"/>
+             help="Configure AAA authentication"/>
 
     <COMMAND name="aaa authentication failthrough"
-             help="Configures AAA authentication failthrough status"
+             help="Configure AAA authentication failthrough status"
              mode="subcommand"
              ptype="SUBCOMMAND">
       <PARAM name="enable"
@@ -101,45 +101,45 @@ limitations under the License.
              hidden="true"
              ptype="SUBCOMMAND">
       <PARAM name="login"
-             help="login methods"
+             help="Login methods"
              mode="switch"
              ptype="SUBCOMMAND">
           <PARAM name="local"
-                 help="local authentication"
+                 help="Local authentication"
                  optional="true"
                  mode="subcommand"
                  ptype="SUBCOMMAND">
               <PARAM name="tacacs+"
                      test='"${radius}"!="radius"'
-                     help="tacacs+ authentication"
+                     help="TACACS+ authentication"
                      optional="true"
                      ptype="AAA_AUTH_TACPLUS">
               </PARAM>
               <PARAM name="radius"
                      test='"${tacacs+}"!="tacacs+"'
-                     help="radius authentication"
+                     help="RADIUS authentication"
                      optional="true"
                      ptype="AAA_AUTH_RADIUS">
               </PARAM>
           </PARAM>
           <PARAM name="tacacs+"
-                 help="tacacs+ authentication"
+                 help="TACACS+ authentication"
                  optional="true"
                  mode="subcommand"
                  ptype="SUBCOMMAND">
               <PARAM name="local"
-                     help="local authentication"
+                     help="Local authentication"
                      optional="true"
                      ptype="AAA_AUTH_LOCAL">
               </PARAM>
           </PARAM>
           <PARAM name="radius"
-                 help="radius authentication"
+                 help="RADIUS authentication"
                  optional="true"
                  mode="subcommand"
                  ptype="SUBCOMMAND">
               <PARAM name="local"
-                     help="local authentication"
+                     help="Local authentication"
                      optional="true"
                      ptype="AAA_AUTH_LOCAL">
               </PARAM>
@@ -148,11 +148,11 @@ limitations under the License.
       <ACTION builtin="clish_pyobj">sonic_cli_aaa patch_openconfig_system_system_aaa_authentication_config_authentication_method ${login} ${local} ${tacacs+} ${radius} </ACTION>
     </COMMAND>
     <COMMAND name="no aaa"
-             help="Unconfigures AAA"/>
+             help="Unconfigure AAA"/>
     <COMMAND name="no aaa authentication"
-             help="Unconfigures AAA authentication"/>
+             help="Unconfigure AAA authentication"/>
     <COMMAND name="no aaa authentication login-method"
-             help="Unconfigure aaa authentication login method"
+             help="Unconfigure AAA authentication login method"
              hidden="true">
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/authentication/config/authentication-method
@@ -160,46 +160,46 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="aaa authentication login"
-             help="Configures AAA login authentication"/>
+             help="Configure AAA login authentication"/>
 
     <COMMAND name="aaa authentication login default"
-             help="Configures AAA login authentication default list"
+             help="Configure AAA login authentication default list"
              mode="subcommand"
              ptype="SUBCOMMAND">
       <PARAM name="login"
-             help="Selects authentication method"
+             help="Select authentication method"
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="group"
-               help="Selects group"
+               help="Select group"
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
             <PARAM name="remote"
-                     help="Selects remote method group"
+                     help="Select remote method group"
                      mode="switch"
                      ptype="SUBCOMMAND">
             <PARAM name="ldap"
                    test='"${tacacs+}"!="tacacs+" -a "${radius}"!="radius"'
-                   help="Selects group of all LDAP servers"
+                   help="Select group of all LDAP servers"
                    optional="true"
                    mode="subcommand"
                    ptype="SUBCOMMAND">
                 <PARAM name="local"
-                       help="Selects local authentication"
+                       help="Select local authentication"
                        optional="true"
                        mode="subcommand"
                        ptype="SUBCOMMAND">
                 </PARAM>
             </PARAM>
             <PARAM name="radius"
-                   help="Selects group of all RADIUS servers"
+                   help="Select group of all RADIUS servers"
                    test='"${tacacs+}"!="tacacs+" -a "${ldap}"!="ldap"'
                    optional="true"
                    mode="subcommand"
                    ptype="SUBCOMMAND">
                 <PARAM name="local"
-                       help="Selects local authentication"
+                       help="Select local authentication"
                        optional="true"
                        mode="subcommand"
                        ptype="SUBCOMMAND">
@@ -207,12 +207,12 @@ limitations under the License.
             </PARAM>
             <PARAM name="tacacs+"
                    test='"${radius}"!="radius" -a "${ldap}"!="ldap"'
-                   help="Selects group of all TACACS+ servers"
+                   help="Select group of all TACACS+ servers"
                    optional="true"
                    mode="subcommand"
                    ptype="SUBCOMMAND">
                 <PARAM name="local"
-                       help="Selects local authentication"
+                       help="Select local authentication"
                        optional="true"
                        mode="subcommand"
                        ptype="SUBCOMMAND">
@@ -221,29 +221,29 @@ limitations under the License.
             </PARAM>
         </PARAM>
         <PARAM name="local"
-               help="Selects local authentication"
+               help="Select local authentication"
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
             <PARAM name="group"
-                   help="Selects group"
+                   help="Select group"
                    optional="true"
                    mode="subcommand"
                    ptype="SUBCOMMAND">
               <PARAM name="remote"
-                     help="Selects remote method group"
+                     help="Select remote method group"
                      mode="switch"
                      ptype="SUBCOMMAND">
                 <PARAM name="ldap"
                        test='"${tacacs+}"!="tacacs+" -a "${radius}"!="radius"'
-                       help="Selects group of all LDAP servers"
+                       help="Select group of all LDAP servers"
                        optional="true"
                        mode="subcommand"
                        ptype="SUBCOMMAND">
                 </PARAM>
                 <PARAM name="radius"
                        test='"${tacacs+}"!="tacacs+" -a "${ldap}"!="ldap"'
-                       help="Selects group of all RADIUS servers"
+                       help="Select group of all RADIUS servers"
                        optional="true"
                        mode="subcommand"
                        ptype="SUBCOMMAND">
@@ -270,33 +270,33 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="aaa authorization"
-             help="Configures AAA authorization"/>
+             help="Configure AAA authorization"/>
 
     <COMMAND name="aaa authorization login"
-             help="Configures AAA login authorization"/>
+             help="Configure AAA login authorization"/>
 
     <COMMAND name="aaa authorization login default"
-             help="Configures AAA login authorization default list"
+             help="Configure AAA login authorization default list"
              mode="subcommand"
              ptype="SUBCOMMAND">
       <PARAM name="login"
-             help="Selects authorization method"
+             help="Select authorization method"
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="group"
-               help="Selects group"
+               help="Select group"
                test='"${local}"!="local"'
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
             <PARAM name="ldap"
-                   help="Selects group of all LDAP servers"
+                   help="Select group of all LDAP servers"
                    mode="subcommand"
                    ptype="SUBCOMMAND">
             </PARAM>
         </PARAM>
         <PARAM name="local"
-               help="Selects local authorization"
+               help="Select local authorization"
                test='"${ldap}"!="ldap"'
                optional="true"
                mode="subcommand"
@@ -316,10 +316,10 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="aaa name-service"
-             help="Configures AAA name service"/>
+             help="Configure AAA name service"/>
 
     <COMMAND name="aaa name-service group"
-             help="Configures AAA group name-service"
+             help="Configure AAA group name-service"
              mode="switch"
              ptype="SUBCOMMAND">
       <PARAM name="method"
@@ -327,26 +327,26 @@ limitations under the License.
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="group"
-               help="Selects group"
+               help="Select group"
                test='"${login}"!="login" -a "${local}"!="local"'
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
             <PARAM name="ldap"
-                   help="Selects group of all LDAP servers"
+                   help="Select group of all LDAP servers"
                    mode="subcommand"
                    ptype="SUBCOMMAND">
             </PARAM>
         </PARAM>
         <PARAM name="local"
-               help="Selects local name-service"
+               help="Select local name-service"
                test='"${login}"!="login" -a "${ldap}"!="ldap"'
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
         </PARAM>
         <PARAM name="login"
-               help="Selects login name-service"
+               help="Select login name-service"
                test='"${local}"!="local" -a "${ldap}"!="ldap"'
                optional="true"
                mode="subcommand"
@@ -366,34 +366,34 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="aaa name-service passwd"
-             help="Configures AAA passwd name-service"
+             help="Configure AAA passwd name-service"
              mode="switch"
              ptype="SUBCOMMAND">
       <PARAM name="method"
-             help="Selects name-service method"
+             help="Select name-service method"
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="group"
-               help="Selects group"
+               help="Select group"
                test='"${login}"!="login" -a "${local}"!="local"'
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
             <PARAM name="ldap"
-                   help="Selects group of all LDAP servers"
+                   help="Select group of all LDAP servers"
                    mode="subcommand"
                    ptype="SUBCOMMAND">
             </PARAM>
         </PARAM>
         <PARAM name="local"
-               help="Selects local name-service"
+               help="Select local name-service"
                test='"${login}"!="login" -a "${ldap}"!="ldap"'
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
         </PARAM>
         <PARAM name="login"
-               help="Selects login name-service"
+               help="Select login name-service"
                test='"${local}"!="local" -a "${ldap}"!="ldap"'
                optional="true"
                mode="subcommand"
@@ -413,27 +413,27 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="aaa name-service netgroup"
-             help="Configures AAA netgroup name-service"
+             help="Configure AAA netgroup name-service"
              mode="switch"
              ptype="SUBCOMMAND">
       <PARAM name="method"
-             help="Selects name-service method"
+             help="Select name-service method"
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="group"
-               help="Selects group"
+               help="Select group"
                test='"${login}"!="login" -a "${local}"!="local"'
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
             <PARAM name="ldap"
-                   help="Selects group of all LDAP servers"
+                   help="Select group of all LDAP servers"
                    mode="subcommand"
                    ptype="SUBCOMMAND">
             </PARAM>
         </PARAM>
         <PARAM name="local"
-               help="Selects local name-service"
+               help="Select local name-service"
                test='"${login}"!="login" -a "${ldap}"!="ldap"'
                optional="true"
                mode="subcommand"
@@ -453,34 +453,34 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="aaa name-service shadow"
-             help="Configures AAA shadow name-service"
+             help="Configure AAA shadow name-service"
              mode="switch"
              ptype="SUBCOMMAND">
       <PARAM name="method"
-             help="Selects name-service method"
+             help="Select name-service method"
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="group"
-               help="Selects group"
+               help="Select group"
                test='"${login}"!="login" -a "${local}"!="local"'
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
             <PARAM name="ldap"
-                   help="Selects group of all LDAP servers"
+                   help="Select group of all LDAP servers"
                    mode="subcommand"
                    ptype="SUBCOMMAND">
             </PARAM>
         </PARAM>
         <PARAM name="local"
-               help="Selects local name-service"
+               help="Select local name-service"
                test='"${login}"!="login" -a "${ldap}"!="ldap"'
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
         </PARAM>
         <PARAM name="login"
-               help="Selects login name-service"
+               help="Select login name-service"
                test='"${local}"!="local" -a "${ldap}"!="ldap"'
                optional="true"
                mode="subcommand"
@@ -500,27 +500,27 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="aaa name-service sudoers"
-             help="Configures AAA sudoers name-service"
+             help="Configure AAA sudoers name-service"
              mode="switch"
              ptype="SUBCOMMAND">
       <PARAM name="method"
-             help="Selects name-service method"
+             help="Select name-service method"
              mode="switch"
              ptype="SUBCOMMAND">
         <PARAM name="group"
-               help="Selects group"
+               help="Select group"
                test='"${login}"!="login" -a "${local}"!="local"'
                optional="true"
                mode="subcommand"
                ptype="SUBCOMMAND">
             <PARAM name="ldap"
-                   help="Selects group of all LDAP servers"
+                   help="Select group of all LDAP servers"
                    mode="subcommand"
                    ptype="SUBCOMMAND">
             </PARAM>
         </PARAM>
         <PARAM name="local"
-               help="Selects local name-service"
+               help="Select local name-service"
                test='"${login}"!="login" -a "${ldap}"!="ldap"'
                optional="true"
                mode="subcommand"
@@ -540,10 +540,10 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no aaa authentication login"
-             help="Unconfigures AAA login authentication"/>
+             help="Unconfigure AAA login authentication"/>
 
     <COMMAND name="no aaa authentication login default"
-             help="Unconfigures AAA login authentication default list">
+             help="Unconfigure AAA login authentication default list">
 
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/authentication/config/authentication-method
@@ -551,13 +551,13 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no aaa authorization"
-             help="Unconfigures AAA authorization"/>
+             help="Unconfigure AAA authorization"/>
 
     <COMMAND name="no aaa authorization login"
-             help="Unconfigures AAA login authorization"/>
+             help="Unconfigure AAA login authorization"/>
 
     <COMMAND name="no aaa authorization login default"
-             help="Unconfigures AAA login authorization default list">
+             help="Unconfigure AAA login authorization default list">
 
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/authorization/openconfig-aaa-ext:login/config/authorization-method
@@ -571,10 +571,10 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no aaa name-service"
-             help="Unconfigures AAA name-service"/>
+             help="Unconfigure AAA name-service"/>
 
     <COMMAND name="no aaa name-service group"
-             help="Unconfigures AAA group name-service">
+             help="Unconfigure AAA group name-service">
 
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/group-method
@@ -588,7 +588,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no aaa name-service passwd"
-             help="Unconfigures AAA passwd name-service">
+             help="Unconfigure AAA passwd name-service">
 
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/passwd-method
@@ -602,7 +602,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no aaa name-service netgroup"
-             help="Unconfigures AAA netgroup name-service">
+             help="Unconfigure AAA netgroup name-service">
 
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/netgroup-method
@@ -616,7 +616,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no aaa name-service shadow"
-             help="Unconfigures AAA shadow name-service">
+             help="Unconfigure AAA shadow name-service">
 
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/shadow-method
@@ -630,7 +630,7 @@ limitations under the License.
     </COMMAND>
 
     <COMMAND name="no aaa name-service sudoers"
-             help="Unconfigures AAA sudoers name-service">
+             help="Unconfigure AAA sudoers name-service">
 
       <ACTION
           builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-system:system/aaa/openconfig-aaa-ext:name-service/config/sudoers-method

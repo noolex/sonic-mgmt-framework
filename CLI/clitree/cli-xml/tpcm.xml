@@ -27,7 +27,7 @@
   <VIEW name="enable-view">
     <COMMAND
          name="show tpcm"
-         help="Show TPC image information"
+         help="Display TPC image information"
          >
         <PARAM name="list"
                help=" List the docker image"

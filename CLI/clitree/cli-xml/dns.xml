@@ -26,7 +26,7 @@ limitations under the License.
     >
 
   <VIEW name="enable-view">
-    <COMMAND name="show hosts" help="IP name servers">
+    <COMMAND name="show hosts" help="Display IP name servers">
       <ACTION builtin="clish_pyobj">sonic_cli_dns get_sonic_dns_hosts</ACTION>
     </COMMAND>
   </VIEW>

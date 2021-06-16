@@ -14,16 +14,16 @@
         <!--show vxlan interface -->
         <COMMAND 
             name="show vxlan" 
-            help="show vxlan commands"> 
+            help="Display vxlan commands"> 
         </COMMAND>
         <COMMAND
              name="show running-configuration interface vxlan"
-             help="show VXLAN configuration">
+             help="Display VXLAN configuration">
           <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-vxlan view_keys="name=${iface}" </ACTION>
         </COMMAND>
         <COMMAND 
             name="show vxlan interface" 
-            help="show vxlan global params">
+            help="Display VXLAN global params">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_interface show_vxlan_interface.j2</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -109,7 +109,7 @@
         <!--show vxlan tunnel -->
         <COMMAND 
             name="show vxlan tunnel" 
-            help="show vxlan tunnel information per remote VTEP">
+            help="Display VXLAN tunnel information per remote VTEP">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_tunnel show_vxlan_tunnel.j2 show</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -135,21 +135,21 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan tunnel count" 
-            help="shows number of remote VTEPs">
+            help="Display number of remote VTEPs">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan show_vxlan_tunnel show_vxlan_tunnel.j2 count</ACTION>
         </COMMAND>
 
         <!--show vxlan evpn remote vni-->
         <COMMAND 
             name="show vxlan remote" 
-            help="show vxlan remote commands"> 
+            help="Display VXLAN remote commands"> 
         </COMMAND>
         <COMMAND 
             name="show vxlan remote vni" 
-            help="shows the VNI of the VLANs extended to remote VTEPs.">
+            help="Display the VNI of the VLANs extended to remote VTEPs.">
             <PARAM
                 name="remote_ip_addr"
-                help="remote vtep ip"
+                help="Remote VTEP IP"
                 ptype="IPV4_ADDR_ABC"
                 optional="true"
                 >
@@ -188,10 +188,10 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan remote vni count" 
-            help="shows the number of VLANs extended to remote VTEPs.">
+            help="Display the number of VLANs extended to remote VTEPs.">
             <PARAM
                 name="remote_ip_addr"
-                help="remote vtep ip"
+                help="Remote VTEP IP"
                 ptype="IPV4_ADDR_ABC"
                 optional="true"
                 >
@@ -200,10 +200,10 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan remote mac" 
-            help="shows the MACs learnt from remote VTEPs.">
+            help="Display the MACs learnt from remote VTEPs.">
             <PARAM
                 name="remote_ip_addr"
-                help="remote vtep ip"
+                help="Remote VTEP IP"
                 ptype="IPV4_ADDR_ABC"
                 optional="true"
                 >
@@ -250,10 +250,10 @@
         </COMMAND>
         <COMMAND 
             name="show vxlan remote mac count" 
-            help="shows number of remote MACs">
+            help="Display number of remote MACs">
             <PARAM
                 name="remote_ip_addr"
-                help="remote vtep ip"
+                help="Remote VTEP IP"
                 ptype="IPV4_ADDR_ABC"
                 optional="true"
                 >
@@ -334,7 +334,7 @@
             />
       <COMMAND
             name="show configuration"
-            help = "show vxlan configuration">
+            help = "Show VXLAN configuration">
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-vxlan view_keys="name=${iface}" </ACTION>   
       </COMMAND>    
         <COMMAND
@@ -344,7 +344,7 @@
         </COMMAND>
         <COMMAND
             name="no source-ip"
-            help="unset the source IPv4 address">
+            help="Unset the source IPv4 address">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_src_ip ${iface}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -361,7 +361,7 @@
         </COMMAND>
         <COMMAND
             name="no primary-ip"
-            help="unset the primary IPv4 address">
+            help="Unset the primary IPv4 address">
             <ACTION builtin="clish_pyobj">sonic_cli_vxlan delete_sonic_vxlan_sonic_vxlan_vxlan_tunnel_vxlan_tunnel_list_primary_ip ${iface}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>

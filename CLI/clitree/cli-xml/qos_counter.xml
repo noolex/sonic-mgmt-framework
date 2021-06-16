@@ -24,7 +24,7 @@ limitations under the License.
     http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
   <VIEW name="enable-view">
-    <COMMAND name="show queue" help="Show Queue information">
+    <COMMAND name="show queue" help="Display queue information">
          <PARAM
              name="queue-subcommands"
              help="queue subcommands"
@@ -269,7 +269,7 @@ limitations under the License.
       </DOCGEN>
       <xi:include href="include/pipe.xml"/>
     </COMMAND>
-    <COMMAND name="show priority-group" help="Show priority group information">
+    <COMMAND name="show priority-group" help="Display priority group information">
         <PARAM
             name="priority-group-subcommands"
             help="priority-group subcommands"

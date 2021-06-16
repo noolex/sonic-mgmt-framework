@@ -87,7 +87,7 @@ limitations under the License.
    <!-- show running-configuration interface -->
      <COMMAND
          name="show running-configuration interface"
-         help="Show interface info"
+         help="Display interface information"
          >
          <PARAM
              name="if-subcommands"
@@ -142,10 +142,10 @@ limitations under the License.
 
       <COMMAND
            name="show running-configuration interface Vlan"
-           help="Show interface Vlan info">
+           help="Display interface VLAN information">
             <PARAM
                name="vlan-id"
-               help="Vlan Interface"
+               help="VLAN Interface"
                ptype="VLAN_ID"
                optional="true">
             </PARAM>
@@ -153,7 +153,7 @@ limitations under the License.
       </COMMAND>
       <COMMAND
            name="show running-configuration interface PortChannel"
-           help="Show interface PortChannel  info">
+           help="Display interface PortChannel information">
             <PARAM
                name="po-id"
                help="PortChannel Interface"
@@ -164,7 +164,7 @@ limitations under the License.
       </COMMAND>
       <COMMAND
            name="show running-configuration interface Management"
-           help="Show interface management  info">
+           help="Display interface management information">
             <PARAM
                name="mgmt-if-id"
                help="Management Interface"
@@ -175,7 +175,7 @@ limitations under the License.
       </COMMAND>
       <COMMAND
            name="show running-configuration interface Loopback"
-           help="Show interface loopback  info">
+           help="Display interface loopback information">
             <PARAM
                name="lo-id"
                help="Loopback Interface"
@@ -187,7 +187,7 @@ limitations under the License.
     <!--show interface -->
     <COMMAND
          name="show interface"
-         help="Show interface info"
+         help="Display interface information"
          >
          <PARAM
              name="if-subcommands"
@@ -317,7 +317,7 @@ limitations under the License.
           <!-- show interface transceiver-->
           <PARAM
                 name="transceiver"
-                help="Transceiver info"
+                help="Transceiver information"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -330,7 +330,7 @@ limitations under the License.
                 </PARAM>
                 <PARAM
                     name="summary"
-                    help="Summary of transceiver info"
+                    help="Summary of transceiver information"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -338,7 +338,7 @@ limitations under the License.
                 </PARAM>
                 <PARAM
                     name="diagnostics"
-                    help="Transceiver diagnostics info"
+                    help="Transceiver diagnostics information"
                     ptype="SUBCOMMAND"
                     mode="subcommand"
                     optional="true"
@@ -351,13 +351,13 @@ limitations under the License.
                         >
                             <PARAM
                                 name="capability"
-                                help="Show transceiver diagnostics capability"
+                                help="Display transceiver diagnostics capability"
                                 mode="subcommand"
                                 ptype="SUBCOMMAND"
                                 />
                             <PARAM
                                 name="status"
-                                help="Show transceiver diagnostics status"
+                                help="Display transceiver diagnostics status"
                                 mode="subcommand"
                                 ptype="SUBCOMMAND"
                                 />
@@ -439,7 +439,7 @@ limitations under the License.
 
    <COMMAND
        name="show Vlan"
-       help="Show VLAN commands"
+       help="Display VLAN commands"
        ptype="SUBCOMMAND"
        mode="subcommand"
        >
@@ -454,7 +454,7 @@ limitations under the License.
    </COMMAND>
    <COMMAND
        name="show neighbor-suppress-status"
-       help="Show arp and nd suppression status"
+       help="Display ARP and ND suppression status"
        ptype="SUBCOMMAND"
        mode="subcommand"
        >
@@ -1340,7 +1340,7 @@ limitations under the License.
 
     <COMMAND
            name="mclag-separate-ip"
-           help="Configure separate IP on Vlan interface for L3 protocol support over MCLAG"
+           help="Configure separate IP on VLAN interface for L3 protocol support over MCLAG"
            command_tables="sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST/if_name={name}"
            dbpath="sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST/unique_ip=enable" >
            <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_seperate_ip_list ${vlan_name} </ACTION>
@@ -1359,7 +1359,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
            name="no mclag-separate-ip"
-           help="Unconfigure separate IP on Vlan interface for L3 protocol support over MCLAG" >
+           help="Unconfigure separate IP on VLAN interface for L3 protocol support over MCLAG" >
            <ACTION builtin="clish_pyobj">sonic_cli_mclag delete_sonic_mclag_seperate_ip_list ${vlan_name} </ACTION>
            <DOCGEN>
                <DESCRIPTION>
