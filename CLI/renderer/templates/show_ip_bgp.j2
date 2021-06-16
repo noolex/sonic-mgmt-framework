@@ -34,10 +34,10 @@ AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Li
     {% if vars.update({'pathId':route["state"]["path-id"]}) %}{% endif %}
   {% endif %}
   {% if "openconfig-bgp-deviation:attr-sets" in key %}
-    {% if vars.update({'origin':route["openconfig-bgp-deviation:attr-sets"]["origin"]}) %}{% endif %}
-    {% if vars.update({'nxtHop':route["openconfig-bgp-deviation:attr-sets"]["next-hop"]}) %}{% endif %}
-    {% if vars.update({'med':route["openconfig-bgp-deviation:attr-sets"]["med"]}) %}{% endif %}
-    {% if vars.update({'locPref':route["openconfig-bgp-deviation:attr-sets"]["local-pref"]}) %}{% endif %}
+    {% if vars.update({'origin':route["openconfig-bgp-deviation:attr-sets"]["state"]["origin"]}) %}{% endif %}
+    {% if vars.update({'nxtHop':route["openconfig-bgp-deviation:attr-sets"]["state"]["next-hop"]}) %}{% endif %}
+    {% if vars.update({'med':route["openconfig-bgp-deviation:attr-sets"]["state"]["med"]}) %}{% endif %}
+    {% if vars.update({'locPref':route["openconfig-bgp-deviation:attr-sets"]["state"]["local-pref"]}) %}{% endif %}
   {% endif %}
   {% if vars.origin == 'IGP' %}
     {% if vars.update({'origin':"i"}) %}{% endif %}
