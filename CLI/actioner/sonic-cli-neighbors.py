@@ -416,9 +416,12 @@ def show_neighbors(func):
 
         if apiResponse.ok():
             response = apiResponse.content
-        else:
+        elif '%Error: operation failed' not in api_response.error_message():
             print "% Error: Internal error"
             return
+        else:
+            return
+
         if response:
             outputList = process_nbrs(response, rcvdIntf, outputList)
     else:
