@@ -760,7 +760,7 @@ v3      snmp-server host "host-addr" user "username" {[traps  {auth | noauth | p
 <!--=========================================================================
       no snmp-server community  "community name"
 ========================================================================= -->
-  <COMMAND name="no snmp-server community" help="Remove SNMP community" ptype="SUBCOMMAND" mode="subcommand">
+  <COMMAND name="no snmp-server community" help="Remove SNMP community" ptype="SUBCOMMAND" escape_chars="" mode="subcommand">
     <PARAM name="community-name" help="SNMP community to remove" ptype="SNMP_COMMUNITY_TYPE"/>
     <ACTION builtin="clish_pyobj">sonic_cli_snmp  snmp_community_delete  ${community-name}</ACTION>
     <DOCGEN>
