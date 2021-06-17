@@ -37,6 +37,19 @@ limitations under the License.
     </COMMAND>
 </MACRODEF>
 
+<MACRODEF name="VLAN_AUTOSTATE">
+    <COMMAND
+        help="Configure autostate setting"
+        name="autostate">
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range_autostate iflist=arg1 True</ACTION>
+    </COMMAND>
+    <COMMAND
+        help="Unconfigure autostate setting"
+        name="no autostate">
+        <ACTION builtin="clish_pyobj">sonic_cli_if_range config_if_range_autostate iflist=arg1 False</ACTION>
+    </COMMAND>
+</MACRODEF>
+
 <MACRODEF name="INTF_RANGE_SHUT_DESCR">
     <COMMAND
         name="shutdown"
