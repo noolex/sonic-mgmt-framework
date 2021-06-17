@@ -89,13 +89,13 @@ def invoke_api(func, args=[]):
 
     elif func == 'set_ntp_source':
 
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/ntp-source-interface')
-        body = { "ntp-source-interface" : [args[0] if args[0] != 'Management0' else 'eth0'] }
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/source-interface')
+        body = { "source-interface" : [args[0] if args[0] != 'Management0' else 'eth0'] }
         return api.patch(keypath, body)
 
     elif func == 'delete_ntp_source':
 
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/ntp-source-interface={source}',
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/source-interface={source}',
                           source=args[0] if args[0] != 'Management0' else 'eth0')
         return api.delete(keypath)
 
@@ -137,12 +137,12 @@ def invoke_api(func, args=[]):
     elif func == 'set_ntp_vrf':
 
         keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config')
-        body = {"openconfig-system:config":{"vrf":args[0]}}
+        body = {"openconfig-system:config":{"network-instance":args[0]}}
         return api.patch(keypath, body)
 
     elif func == 'delete_ntp_vrf':
 
-        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/vrf')
+        keypath = cc.Path('/restconf/data/openconfig-system:system/ntp/config/network-instance')
         return api.delete(keypath)
  
     elif func == 'set_ntp_authentication':

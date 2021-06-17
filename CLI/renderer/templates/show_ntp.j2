@@ -16,8 +16,8 @@
 {% if json_output %}
     {% if "global" in json_output %}
         {% set global_info = json_output['global'] %}
-        {% if vars.update({'sources':global_info["ntp-source-interface"]}) %}{% endif %}
-        {% if vars.update({'vrf':global_info["vrf"]}) %}{% endif %}
+        {% if vars.update({'sources':global_info["source-interface"]}) %}{% endif %}
+        {% if vars.update({'vrf':global_info["network-instance"]}) %}{% endif %}
         {% if vars.update({'auth':global_info["enable-ntp-auth"]}) %}{% endif %}
         {% if vars.sources or vars.vrf or vars.auth %}
             {{-"----------------------------------------------"}}
@@ -73,7 +73,7 @@
                 {% if "refid" not in assoc_info %}
                     {% continue %}
                 {% endif %}
-                {% if vars.update({'selmode':assoc_info["selmode"]}) %}{% endif %}
+                {% if vars.update({'selmode':assoc_info["sel-mode"]}) %}{% endif %}
                 {% if vars.update({'remote':assoc_info["address"]}) %}{% endif %}
                 {% if vars.update({'refid':assoc_info["refid"]}) %}{% endif %}
                 {% if "stratum" in assoc_info %}
@@ -81,7 +81,7 @@
                 {% else %}
                     {% if vars.update({'st':""}) %}{% endif %}
                 {% endif %}
-                {% if vars.update({'t':assoc_info["peertype"]}) %}{% endif %}
+                {% if vars.update({'t':assoc_info["peer-type"]}) %}{% endif %}
                 {% if "now" in assoc_info %}
                     {% if vars.update({'when':'%d'|format(assoc_info["now"])}) %}{% endif %}
                 {% else %}
@@ -97,20 +97,20 @@
                 {% else %}
                     {% if vars.update({'reach':""}) %}{% endif %}
                 {% endif %}
-                {% if "peerdelay" in assoc_info %}
-                    {% set pdy = assoc_info["peerdelay"] %}
+                {% if "peer-delay" in assoc_info %}
+                    {% set pdy = assoc_info["peer-delay"] %}
                     {% if vars.update({'delay':'%0.3f'|format((pdy|float)/1000)}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'delay':""}) %}{% endif %}
                 {% endif %}
-                {% if "peeroffset" in assoc_info %}
-                    {% set pos = assoc_info["peeroffset"] %}
+                {% if "peer-offset" in assoc_info %}
+                    {% set pos = assoc_info["peer-offset"] %}
                     {% if vars.update({'offset':'%0.3f'|format((pos|float)/1000)}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'offset':""}) %}{% endif %}
                 {% endif %}
-                {% if "peerjitter" in assoc_info %}
-                    {% set pjt = assoc_info["peerjitter"] %}
+                {% if "peer-jitter" in assoc_info %}
+                    {% set pjt = assoc_info["peer-jitter"] %}
                     {% if vars.update({'jitter':'%0.3f'|format((pjt|float)/1000)}) %}{% endif %}
                 {% else %}
                     {% if vars.update({'jitter':""}) %}{% endif %}
