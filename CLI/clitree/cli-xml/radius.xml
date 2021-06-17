@@ -203,6 +203,7 @@ limitations under the License.
         help="Configures global shared secret for RADIUS"
         command_keys="type=global"
         command_tables="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/global_key={type}"
+        render_command_cb="radius_global_key_config"
         escape_chars=""
         >
         <PARAM
@@ -211,8 +212,16 @@ limitations under the License.
             ptype="RADIUS_KEY"
             dbpath="sonic-system-radius:sonic-system-radius/RADIUS/RADIUS_LIST/passkey"
             >
+          <PARAM name="encrypted"
+                 help = "Key is in encrypted format"
+                 ptype="SUBCOMMAND"
+                 mode="subcommand"
+                 optional="true"
+                 hidden="true"
+            >
+          </PARAM>
         </PARAM>
-        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_key ${#key}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_key ${#key} ${encrypted}</ACTION>
         <DOCGEN>
           <DESCRIPTION>Configures global shared secret for RADIUS.</DESCRIPTION>
           <EXAMPLE>
@@ -299,6 +308,15 @@ limitations under the License.
             help="shared secret (ASCII printable except SPACE, #, and COMMA, Max Len: 65)(default: global setting)"
                 ptype="RADIUS_KEY"
             >
+             <PARAM
+                name="encrypted"
+                help="Key is in encrypted format"
+                ptype="SUBCOMMAND"
+                mode="subcommand"
+                optional="true"
+                hidden="true"
+             >
+             </PARAM>
             </PARAM>
         </PARAM>
 
@@ -386,7 +404,7 @@ limitations under the License.
             </PARAM>
         </PARAM>
 
-        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_host ${host} auth_port=${vauth_port} timeout=${vtimeout} retransmit=${vretransmit} key=${#vkey} auth_type=${vauth_type} priority=${vpriority} vrf=${mgmt}${vrf-name} source_interface=${iftype} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan} ${SubInterface}</ACTION>
+        <ACTION builtin="clish_pyobj">sonic_cli_radius patch_openconfig_radius_global_config_host ${host} auth_port=${vauth_port} timeout=${vtimeout} retransmit=${vretransmit} key=${#vkey} auth_type=${vauth_type} priority=${vpriority} vrf=${mgmt}${vrf-name} source_interface=${iftype} ${Ethernet} ${Loopback} ${Management} ${PortChannel} ${Vlan} ${SubInterface} ${encrypted}</ACTION>
         <DOCGEN>
           <DESCRIPTION>Configures a server for RADIUS.</DESCRIPTION>
           <EXAMPLE>

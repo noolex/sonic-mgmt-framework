@@ -11,13 +11,15 @@
 {{'source-interface  : '}}{{srcintf}}
 {% endif %}
 {% if timeout -%}
-{{'timeout    : '}}{{timeout}}
+{{'timeout           : '}}{{timeout}}
 {% endif %}
 {% if authtype -%}
-{{'auth-type  : '}}{{authtype}}
+{{'auth-type         : '}}{{authtype}}
 {% endif %}
 {% if key -%}
-{{'key        : '}}{{key}}
+{{'key configured    : '}}{{'Yes'}}
+{% else %}
+{{'key configured    : '}}{{'No'}}
 {% endif %}
 {% endif %}
 

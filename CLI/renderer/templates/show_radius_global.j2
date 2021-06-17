@@ -15,25 +15,27 @@
 {% endif %}
 
 {% if srcip -%}
-{{'source-ip  : '}}{{srcip}}
+{{'source-ip      : '}}{{srcip}}
 {% endif %}
 {% if nasip -%}
-{{'nas-ip-addr: '}}{{nasip}}
+{{'nas-ip-addr    : '}}{{nasip}}
 {% endif %}
 {% if statistics -%}
-{{'statistics : '}}{{statistics}}
+{{'statistics     : '}}{{statistics}}
 {% endif %}
 {% if timeout -%}
-{{'timeout    : '}}{{timeout}}
+{{'timeout        : '}}{{timeout}}
 {% endif %}
 {% if authtype -%}
-{{'auth-type  : '}}{{authtype}}
+{{'auth-type      : '}}{{authtype}}
 {% endif %}
 {% if key -%}
-{{'key        : '}}{{key}}
+{{'key configured : '}}{{'Yes'}}
+{% else%}
+{{'key configured : '}}{{'No'}}
 {% endif %}
 {% if retransmit -%}
-{{'retransmit : '}}{{retransmit}}
+{{'retransmit     : '}}{{retransmit}}
 {% endif %}
 {% endif %}
 
