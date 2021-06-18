@@ -27,14 +27,39 @@ from scripts.render_cli import show_cli_output
 import urllib3
 urllib3.disable_warnings()
 
+SYSTEM = '/restconf/data/openconfig-system:system/'
+AAA = SYSTEM + 'aaa/'
+SERVER_GROUPS = AAA + 'server-groups/'
+TACACS_SERVER_GROUP = SERVER_GROUPS + 'server-group=TACACS/'
+TACACS_SERVER_GROUP_CONFIG = TACACS_SERVER_GROUP + 'config/'
+TACACS_CONFIG = TACACS_SERVER_GROUP + 'openconfig-aaa-tacacs-ext:tacacs/config/'
+
 def invoke_api(func, args):
     body = None
     api = cc.ApiClient()
+
+    if func == 'patch_openconfig_tacacs_global_config_key':
+        keypath = cc.Path(SERVER_GROUPS)
+        body = \
+        { "openconfig-system:server-groups": {\
+            "openconfig-system:server-group": [{\
+              "openconfig-system:name": "TACACS",\
+              "openconfig-system:config": {\
+                "openconfig-system:name": "TACACS",\
+                "openconfig-system-ext:secret-key": (args[0]).replace("\\\\", "\\"),\
+                "openconfig-system-ext:encrypted": False if len(args) < 2 else True \
+              }\
+            }]\
+          }\
+        }
+        return api.patch(keypath, body)
 
     # Set/Get tacacs configuration
     if func == 'patch_tacacs_server':
        indata = {}
        body = {}
+       isEncrypted = False
+
        # get server data
        api_response = get_sonic_tacacs_server_api(args)
        if api_response:
@@ -45,14 +70,20 @@ def invoke_api(func, args):
            indata['timeout'] = 5
            indata['authtype'] = 'pap'
            indata['priority'] = 1
+           indata['encrypted'] = isEncrypted
 
        # fetch parameter values
        for i in range(len(args)):
            val = (args[i].split(":", 1))[-1]
            val_name = (args[i].split(":", 1))[0]
-
-           if val:
-               indata[val_name] = val
+           if val_name == 'encrypted':
+               if not val:
+                   isEncrypted = False
+               else:
+                   isEncrypted = True
+           else:
+               if val:
+                   indata[val_name] = val
 
        if "port" in indata:
          tconfig_body = {
@@ -70,7 +101,8 @@ def invoke_api(func, args):
                "secret-key": indata['key']
              }
            }
-
+         tconfig_body["openconfig-system:config"]["openconfig-aaa-tacacs-ext:encrypted"] = isEncrypted
+         
        config_body = {
              "timeout": int(indata['timeout']),
              "openconfig-system:address": args[0],
@@ -126,7 +158,7 @@ def get_sonic_tacacs_server_api(args):
                             if 'port' in tac_cfg:
                                 api_response_data['port'] = tac_cfg['port']
                             if "secret-key" in tac_cfg:
-                                api_response_data['key'] = tac_cfg['secret-key']
+                                api_response_data['key'] = tac_cfg['secret-key'] + " encrypted" 
                     api_response.append(api_response_data)
     return api_response
 
