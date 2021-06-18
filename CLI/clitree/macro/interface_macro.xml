@@ -97,7 +97,34 @@ limitations under the License.
         <ACTION builtin="clish_pyobj">sonic_cli_if_range delete_if_range iflist=arg1 delete_port_speed</ACTION>
     </COMMAND>
 </MACRODEF>
-
+<MACRODEF name="INTF_ERR_DISABLE">
+    <COMMAND
+         name="link-error-disable"
+         help="Configure link error disable">
+         <PARAM name="flap-threshold" help="Set link flap threshold for error disable" ptype="SUBCOMMAND" mode="subcommand">
+            <PARAM name="flaps" help="Link flap threshold for error disable criteria"
+                ptype="RANGE_1_50">
+                <PARAM name="sampling-interval" help="Set sampling interval for counting link flaps" ptype="SUBCOMMAND" mode="subcommand">
+                    <PARAM name="window" help="Sampling interval in seconds."
+                          ptype="RANGE_1_65535">
+                              <PARAM name="recovery-interval"
+                                 help="Set link flap error disable recovery interval in seconds. 0 for disabling auto recovery."
+                                 ptype="SUBCOMMAND" mode="subcommand">
+                                 <PARAM name="interval" help="Recovery interval in seconds"
+                                    ptype="RANGE_0_65534"/>
+                              </PARAM>
+                        </PARAM>
+                   </PARAM>
+             </PARAM>
+         </PARAM>
+         <ACTION builtin="clish_pyobj">sonic_cli_errdisable patch_openconfig_errdisable_port_range iflist=arg1 ${flaps} ${window} ${interval} </ACTION>
+    </COMMAND>
+    <COMMAND
+        name="no link-error-disable"
+        help="Disable link error disable ">
+        <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_port_range iflist=arg1 </ACTION>
+    </COMMAND>
+</MACRODEF>
 <MACRODEF name="NO_INTF_RANGE_IPv4">
       <COMMAND
          name="no ip address"

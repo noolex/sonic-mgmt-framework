@@ -909,17 +909,17 @@ limitations under the License.
             help="Configure link error disable">
             <PARAM name="flap-threshold" help="Set link flap threshold for error disable" ptype="SUBCOMMAND" mode="subcommand">
                 <PARAM name="flaps" help="Link flap threshold for error disable criteria" 
-                    dbpath="sonic-errdisable:sonic-errdisable/ERRDISABLE_PORT/ERRDISABLE_PORT_LIST/flap-threshold"
+                    dbpath="sonic-port:sonic-port/PORT/PORT_LIST/flap-threshold"
                     ptype="RANGE_1_50">
             		<PARAM name="sampling-interval" help="Set sampling interval for counting link flaps" ptype="SUBCOMMAND" mode="subcommand">
                         <PARAM name="window" help="Sampling interval in seconds." 
-                              dbpath="sonic-errdisable:sonic-errdisable/ERRDISABLE_PORT/ERRDISABLE_PORT_LIST/sampling-interval"
+                              dbpath="sonic-port:sonic-port/PORT/PORT_LIST/sampling-interval"
                               ptype="RANGE_1_65535">
                                   <PARAM name="recovery-interval"
                                      help="Set link flap error disable recovery interval in seconds. 0 for disabling auto recovery."
 									 ptype="SUBCOMMAND" mode="subcommand">
                                      <PARAM name="interval" help="Recovery interval in seconds"
-                                        dbpath="sonic-errdisable:sonic-errdisable/ERRDISABLE_PORT/ERRDISABLE_PORT_LIST/recovery-interval"
+                                        dbpath="sonic-port:sonic-port/PORT/PORT_LIST/recovery-interval"
                                         ptype="RANGE_0_65534"/>
                                   </PARAM>
                             </PARAM>
@@ -1879,6 +1879,7 @@ limitations under the License.
         <MACRO name="INTF_RANGE_SHUT_DESCR" arg="${iflist}"></MACRO>
 	<MACRO name="INTF_RNG_SWITCHPORT" arg="${iflist}"></MACRO>
         <MACRO name="INTF_SPEED" arg="${iflist}"></MACRO>
+        <MACRO name="INTF_ERR_DISABLE" arg="${iflist}"></MACRO>
         <MACRO name="INTF_FEC" arg="${iflist}"></MACRO>
     </VIEW>
 
