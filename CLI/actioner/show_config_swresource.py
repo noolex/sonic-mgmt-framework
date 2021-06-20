@@ -26,6 +26,8 @@ def show_switch_resource_flow_scale_entry(render_tables):
             cmd = cmd + "none"
         elif entries['flows'] == 'MIN' :
             cmd = cmd + "min"
+        elif entries['flows'] == 'UNSUPPORTED' :
+            cmd = cmd + "unsupported"
 
 	if entries['routes'] == 'MAX':
             cmd = cmd + "max"	
