@@ -6,6 +6,7 @@
 {% set vars = {'ipv6_status': ""} %}
 {% set vars = {'description': ""} %}
 {% set vars = {'ip_prim':""} %}
+{% set vars = {'mac_address': ""} %}
 {% set ip_sec_list = [] %}
 {% if json_output -%}
 {% for interfaces in json_output %}
@@ -15,6 +16,7 @@
       {% if "state" in key %}
         {% if vars.update({'name':interface[key]["name"]}) %}{% endif %}
         {% if vars.update({'description':interface[key]["description"]}) %}{% endif %}
+	{% if vars.update({'mac_address':interface[key]["mac-address"]}) %}{% endif %}
       {% endif %}
       {% if "subinterfaces" in key  %}
         {% for subinterface in interface[key] %}
@@ -74,6 +76,7 @@
     {% endfor %}
 {% if vars.name %}
 {{ vars.name }} is up 
+Hardware is Loopback, address is {{vars.mac_address}}
 {% if vars.description -%}
 Description: {{vars.description}}
 {% endif %}

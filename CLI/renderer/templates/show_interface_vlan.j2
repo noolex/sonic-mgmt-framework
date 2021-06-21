@@ -1,5 +1,5 @@
 {% set vars = {'ipv4': "", 'ipv6': "", 'name': "", 'admin_state': "up", 'oper_state': "", 'mtu': "",
-                'ipv4_src_pfx': "", 'ipv6_src_pfx': "", 'ipv6_status': "", 'description': "", 'ip_prim':""} %}
+                'ipv4_src_pfx': "", 'ipv6_src_pfx': "", 'ipv6_status': "", 'description': "", 'ip_prim':"", 'mac_address':""} %}
 {% set ip_sec_list = [] %}
 {% if json_output -%}
 {% for interfaces in json_output %}
@@ -15,6 +15,7 @@
         {% if vars.update({'oper_state':interface[key]["oper-status"]}) %}{% endif %}
         {% if vars.update({'mtu':interface[key]["mtu"]}) %}{% endif %}
         {% if vars.update({'description':interface[key]["description"]}) %}{% endif %}
+	{% if vars.update({'mac_address':interface[key]["mac-address"]}) %}{% endif %}
       {% endif %}
       {% if "routed-vlan" in key  %}
         {% set routed_vlan = interface[key] %}
@@ -67,6 +68,7 @@
     {% endfor %}
 {% if vars.name %}
 {{ vars.name }} is {{ vars.admin_state|lower() }}, line protocol is {{vars.oper_state|lower() }}
+Hardware is Vlan, address is {{vars.mac_address}}
 {% if vars.description %}
 Description: {{vars.description}}
 {% endif %}
