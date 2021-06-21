@@ -460,9 +460,34 @@ def invoke_api(func, args=[]):
         subfunc = args[1]
         for intf in iflist:
             intfargs = [intf]+ args[2:]
-            time.sleep(.1)
             body["openconfig-interfaces:interfaces"]["interface"].append(generate_body(subfunc, intfargs))
         path = cc.Path('/restconf/data/openconfig-interfaces:interfaces')
+        return api.patch(path, body)
+
+    elif func == 'config_if_range_autostate':
+        """
+            - Configure number, range, or comma-delimited list of numbers and range of Vlan interfaces
+            param:
+                - List of available interfaces to be configured
+                - autostate enable/disable
+        """
+        maplist = []
+        iflistStr = args[0].split("=")[1]
+        iflist = iflistStr.rstrip().split(',') 
+        for intf in iflist:
+            listobj = {
+                "name": intf,
+                "vlanid": int(intf[4:]),
+                "autostate": "enable" if args[1] == "True" else "disable"
+            }
+            maplist.append(listobj)
+        path = cc.Path('/restconf/data/sonic-vlan:sonic-vlan/VLAN')
+        body1 = {
+               "VLAN_LIST": maplist
+        }
+        body = {
+                "sonic-vlan:VLAN": body1
+        }
         return api.patch(path, body)
 
     return api.cli_not_implemented(func)

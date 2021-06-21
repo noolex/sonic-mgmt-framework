@@ -160,8 +160,8 @@ def run(func, args):
                 fanInfo[fanName] = response.content['openconfig-platform:component'][0]
             show_cli_output(template, fanInfo)
         elif func == 'get_openconfig_platform_components_component_transceiver_status':
-            if_name = sys.argv[2]
-            template = sys.argv[3]
+            if_name = args[0]
+            template = args[1]
             xcvrInfo = OrderedDict()
             summary = False
             if_list = []
@@ -182,7 +182,10 @@ def run(func, args):
                         return 1
             elif if_name == 'Ethernet_X_SUMMARY':
                 summary = True
-                if_name = sys.argv[7]
+                if args[2] == 'do':
+                    if_name = args[6]
+                else:
+                    if_name = args[5]
                 if_list.append(if_name)
             else:
                 # Singleton

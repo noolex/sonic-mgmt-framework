@@ -105,6 +105,21 @@ def find_ranges(vlan_lst):
            vlan_list_str = vlan_list_str + str(range[0]) + "-" + str(range[1])
     return vlan_list_str
 
+def vlanRangeStr(vlanList):
+    rangeList = []
+    for vid in vlanList:
+        if '-' in vid:
+            vidList = vid.split('-')
+            lower = int(vidList[0])
+            upper = int(vidList[1])
+            for i in range(lower,upper+1):
+                rangeList.append(int(i))
+        else:
+            rangeList.append(int(vid))
+
+    rangeStr = find_ranges(rangeList)
+    return rangeStr
+
 def show_if_switchport_trunk(render_tables):
     cmd_str = ''
     vlan_lst = []
@@ -134,7 +149,7 @@ def show_if_switchport_trunk(render_tables):
                                vlan_lst.append(vlan_id)
 
     if vlan_lst:
-       vstr = ','.join(vlan_lst)
+       vstr = vlanRangeStr(vlan_lst)	
        if vstr:
           cmd_str = 'switchport trunk allowed Vlan ' + vstr
 
