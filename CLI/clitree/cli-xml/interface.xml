@@ -1394,6 +1394,25 @@ limitations under the License.
            </DOCGEN>
     </COMMAND>
     <COMMAND
+           name="autostate"
+           help="Configure autostate setting" >
+           <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST=${vlan_name}/autostate  body={"sonic-vlan:autostate": "enable"}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure Autostate on Vlan interface. 
+                   Enable  - VLAN Operstatus is dependent on VLAN Member operstatus and VRF-VNI mappings.
+                   Disable - VLAN Operstatus is set as Up once created. 
+               </DESCRIPTION>
+               <USAGE>
+                   sonic-cli(conf-if-Vlan10)# autostate
+               </USAGE>
+               <EXAMPLE summary="autostate">
+                   sonic-cli(config)# interface Vlan 10
+                   sonic-cli(conf-if-Vlan10)# autostate
+               </EXAMPLE>
+           </DOCGEN>
+    </COMMAND>
+    <COMMAND
            name="no mclag-peer-gateway"
            help="Unconfigure MCLAG Peer Gateway on Vlan interface" >
            <ACTION builtin="clish_pyobj">sonic_cli_mclag delete_sonic_mclag_peer_gateway_list ${vlan_name} </ACTION>
@@ -1407,6 +1426,24 @@ limitations under the License.
                <EXAMPLE summary="no mclag-peer-gateway">
                    sonic-cli(config)# interface Vlan 10
                    sonic-cli(conf-if-Vlan10)# no mclag-peer-gateway
+               </EXAMPLE>
+           </DOCGEN>
+    </COMMAND>
+    <COMMAND
+           name="no autostate"
+           help="Unconfigure autostate setting" 
+           dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/autostate=disable" >
+           <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST=${vlan_name}/autostate  body={"sonic-vlan:autostate": "disable"}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure Autostate on Vlan interface. 
+               </DESCRIPTION>
+               <USAGE>
+                   sonic-cli(conf-if-Vlan10)# no autostate
+               </USAGE>
+               <EXAMPLE summary="no autostate">
+                   sonic-cli(config)# interface Vlan 10
+                   sonic-cli(conf-if-Vlan10)# no autostate
                </EXAMPLE>
            </DOCGEN>
     </COMMAND>
@@ -1900,6 +1937,7 @@ limitations under the License.
             />
 
         <MACRO name="INTF_MTU" arg="${iflist}"></MACRO>
+        <MACRO name="VLAN_AUTOSTATE" arg="${iflist}"></MACRO>
         <MACRO name="INTF_RANGE_DESCR" arg="${iflist}"></MACRO>
 
     </VIEW>

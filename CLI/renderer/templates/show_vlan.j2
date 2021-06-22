@@ -4,9 +4,11 @@
 {% set vars = {'tagLetter': ""} %}
 {% set vars = {'status': ""} %}
 {% set vars = {'statusWord': ""} %}
+{% set vars = {'autostate': ""} %}
+{% set vars = {'autostateWord': ""} %}
 {% if json_output -%}
 Q: A - Access (Untagged), T - Tagged
-{{'%-11s'|format("NUM")}}{{'%-12s'|format("Status")}}{{'%-7s'|format("Q Ports")}}
+{{'%-11s'|format("NUM")}}{{'%-12s'|format("Status")}}{{'%-19s'|format("Q Ports")}}{{'%-12s'|format("Autostate")}}
 {% for vlanKey, vlanInfo in json_output.items() %}
 {% if vars.update({'vlanName':vlanKey}) %}{% endif %}
 {% if 'oper_status' in vlanInfo %}
@@ -17,6 +19,16 @@ Q: A - Access (Untagged), T - Tagged
 {% else %}
 {% if vars.update({'statusWord':" Inactive "}) %}{% endif %}
 {% endif %}
+{% if 'autostate' in vlanInfo %}
+{% if vars.update({'autostate':vlanInfo.autostate}) %}{% endif %}
+{% else %}
+{% if vars.update({'autostate':"enable"}) %}{% endif %}
+{% endif %}
+{% if vars.autostate == 'enable' %}
+{% if vars.update({'autostateWord':" Enable "}) %}{% endif %}
+{% else %}
+{% if vars.update({'autostateWord':" Disable "}) %}{% endif %}
+{% endif %}
 {% if vlanInfo.vlanMembers is defined and vlanInfo.vlanMembers|length > 0 %}
 {% for ifKey, ifMode in vlanInfo.vlanMembers.items() %}
 {% if vars.update({'ifName':ifKey}) %}{% endif %}
@@ -26,14 +38,16 @@ Q: A - Access (Untagged), T - Tagged
 {% else %}
 {% if vars.update({'tagLetter':" T "}) %}{% endif %}
 {% endif %}
-{{'%-10s'|format(vars.vlanName)}}{{'%-12s'|format(vars.statusWord)}}{{'%-4s'|format(vars.tagLetter)}}{{'%-11s'|format(vars.ifName)}}
+{{'%-10s'|format(vars.vlanName)}}{{'%-12s'|format(vars.statusWord)}}{{'%-4s'|format(vars.tagLetter)}}{{'%-16s'|format(vars.ifName)}}{{'%-4s'|format(vars.autostateWord)}}
 {% if vars.update({'vlanName':''}) %}{% endif %}
 {% if vars.update({'statusWord':""}) %}{% endif %}
+{% if vars.update({'autostateWord':""}) %}{% endif %}
 {% endfor %}
 {% else %}
-{{'%-10s'|format(vars.vlanName)}}{{'%-12s'|format(vars.statusWord)}}
+{{'%-10s'|format(vars.vlanName)}}{{'%-32s'|format(vars.statusWord)}}{{'%-4s'|format(vars.autostateWord)}}
 {% if vars.update({'vlanName':''}) %}{% endif %}
 {% if vars.update({'statusWord':""}) %}{% endif %}
+{% if vars.update({'autostateWord':""}) %}{% endif %}
 {% endif %}
 {% endfor %}
 {% endif %}
