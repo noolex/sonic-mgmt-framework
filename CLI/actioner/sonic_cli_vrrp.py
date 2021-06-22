@@ -26,6 +26,7 @@ from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
 import ast
 import subprocess
+from natsort import natsorted
 
 def invoke(func, args):
     body = None
@@ -421,6 +422,12 @@ def run(func, args):
 
                 single_instance = response.values()[0][0]
                 if 'config' in single_instance.keys():
+                    try:
+                        response['openconfig-if-ip:vrrp-group'][0]['openconfig-interfaces-ext:vrrp-track'][
+                                 'vrrp-track-interface'] = natsorted(
+                                  response['openconfig-if-ip:vrrp-group'][0]['openconfig-interfaces-ext:vrrp-track']['vrrp-track-interface'], key = lambda i: i["track-intf"])
+                    except KeyError:
+                        pass
                     show_cli_output("show_vrrp.j2", response)
                 return
             else:

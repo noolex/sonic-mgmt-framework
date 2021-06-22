@@ -77,7 +77,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
                 {% if "vrf" in sagIntf and sagIntf["vrf"] != 'default' -%}
                     {% if sagvars.update({'vrf':sagIntf["vrf"]}) -%}{% endif -%}
                 {% endif -%}
-                {% set admin_op = sagvars.admin_state|string() + "/" + sagvars.oper_state|string() -%}
+                {% set admin_op = sagvars.oper_state|string() + "/" + sagvars.oper_state|string() -%}
                 {% if sagvars.update({'admin_oper':admin_op}) -%}{% endif -%}     
                 {% if "mode" in sagIntf and sagIntf["mode"] == "sag" -%}
                     {% if sagvars.update({'flags':"A"}) -%}{% endif -%}
@@ -99,10 +99,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
         {% if "sonic-interface:VLAN_SUB_INTERFACE_LIST" not in json_output -%}
             {% continue %}
         {% endif %}
-        {% if vars.name.startswith('Eth') and "sonic-port:PORT_TABLE_LIST" not in json_output -%}
-            {% continue %}
-        {% endif %}
-        {% if vars.name.startswith('PortChannel') and "sonic-portchannel:LAG_TABLE_LIST" not in json_output -%}
+        {% if "sonic-port:PORT_TABLE_LIST" not in json_output -%}
             {% continue %}
         {% endif %}
         {% set vlanSubIntfList = json_output["sonic-interface:VLAN_SUB_INTERFACE_LIST"] -%}
@@ -253,7 +250,7 @@ Flags: U-Unnumbered interface, A-Anycast IP
                             {% if "oper_status" in vlan %}
                                 {% if vars.update({'oper_state':vlan["oper_status"]}) %}{% endif %}
                             {% endif %}
-                            {% set admin_op = vars.admin_state + "/" + vars.oper_state|string() %}
+                            {% set admin_op = vars.oper_state + "/" + vars.oper_state|string() %}
                             {% if vars.update({'admin_oper':admin_op}) %}{% endif %}
                         {% endif -%}
                     {% endfor -%}
