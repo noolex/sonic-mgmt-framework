@@ -212,7 +212,7 @@ limitations under the License.
       </EXAMPLE>
     </DOCGEN>
   </COMMAND>
-  <COMMAND name="dampening" help="Enable route-flap dampening"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/route_flap_dampen" >
+  <COMMAND name="dampening" help="Enable route-flap dampening"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/route_flap_dampen=true" >
     <PARAM name="halflife" help="Half-life time for the penalty" ptype="RANGE_1_45" optional='true'  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/route_flap_dampen_half_life" >
       <PARAM name="reusethr" help="Value to start reusing a route" ptype="RANGE_1_20000" optional='true' dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/route_flap_dampen_reuse_threshold">
         <PARAM name="suppressthr" help="Value to start suppressing a route" ptype="RANGE_1_20000"  dbpath="sonic-bgp-global:sonic-bgp-global/BGP_GLOBALS_AF/BGP_GLOBALS_AF_LIST/route_flap_dampen_suppress_threshold" >
