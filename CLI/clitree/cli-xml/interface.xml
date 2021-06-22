@@ -212,6 +212,26 @@ limitations under the License.
                      <PARAM name="rate" help="Rate and Utilization Counters of interfaces" ptype="SUBCOMMAND" mode="subcommand" />
                      <PARAM name="phy-if-name" help="Physical Interface" ptype="PHY_INTERFACE" optional="true"/>
 		    <PARAM name ="po-name" help = "PortChannel Interface" ptype="PO_INTERFACE_RANGE" optional = "true"/>
+		    <PARAM 
+                           name ="rif" 
+                           help="Routing Interface" 
+                           ptype="SUBCOMMAND" 
+                           mode="subcommand"
+                    >
+                    <PARAM
+                         name="rif-subcommands"
+                         help="rif counters subcommands"
+                         mode="switch"
+                         ptype="SUBCOMMAND"
+                         optional="true"
+                         >
+                         <PARAM name="phy-if-name" help="Physical Interface" ptype="PHY_INTERFACE" optional="true"/>
+		         <PARAM name ="po-name" help = "PortChannel Interface" ptype="PO_INTERFACE_RANGE" optional = "true"/>
+		         <PARAM name ="vlan-name" help = "PortChannel Interface" ptype="VLAN_INTERFACE_RANGE" optional = "true"/>
+		         <PARAM name ="phy-sub-name" help = "Physical Sub Interface" ptype="PHY_SUB_INTERFACE" optional = "true"/>
+		         <PARAM name ="po-sub-name" help = "PortChannel Sub Interface" ptype="PHY_PO_SUB_INTERFACE" optional = "true"/>
+                        </PARAM>
+                    </PARAM>
                 </PARAM>
              </PARAM>
 
@@ -373,6 +393,20 @@ limitations under the License.
                 python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_interface_counters show_intf_counters_rate.j2 if-name=${phy-if-name}&#xA;
            elif test "${if-cnt-subcommands}" = "po-name"; then&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_interface_counters show_intf_counters.j2 if-name=${po-name}&#xA;
+           elif test "${if-cnt-subcommands}" = "rif"; then&#xA;
+                if test "${rif-subcommands}" = "phy-if-name"; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_rif_counters show_rif_counters.j2 if-name=${phy-if-name}&#xA;
+                elif test "${rif-subcommands}" = "po-name"; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_rif_counters show_rif_counters.j2 if-name=${po-name}&#xA;
+                elif test "${rif-subcommands}" = "vlan-name"; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_rif_counters show_rif_counters.j2 if-name=${vlan-name}&#xA;
+                elif test "${rif-subcommands}" = "phy-sub-name"; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_rif_counters show_rif_counters.j2 if-name=${phy-sub-name}&#xA;
+                elif test "${rif-subcommands}" = "po-sub-name"; then&#xA;
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_rif_counters show_rif_counters.j2 if-name=${po-sub-name}&#xA;
+                else
+                    python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_rif_counters show_rif_counters.j2 if-name=${phy-if-name}&#xA;
+                fi&#xA;
             else&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_if.py rpc_interface_counters show_intf_counters.j2 if-name=${phy-if-name}&#xA;
             fi&#xA;
