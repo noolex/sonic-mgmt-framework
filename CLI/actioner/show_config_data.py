@@ -54,6 +54,7 @@ from show_config_sag import *
 from show_config_vrrp import *
 from show_config_acl import *
 from show_config_xcvr_diag import *
+from show_config_tacacs import *
 
 view_dependency= \
 {'configure-router-bgp':['configure-router-bgp-ipv4', 'configure-router-bgp-ipv6', 'configure-router-bgp-l2vpn',
@@ -267,6 +268,7 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'vlanvrfvnimap'           : show_vlanvrfvnimap,
                   'logging_server_cmd'      : show_logging_server_cmd,
                   'ldap_server_src_intf'    : show_ldap_server_src_intf,
+                  'radius_global_key_config': show_radius_global_key,
                   'radius_statistics_config': show_radius_statistics_config,
                   'radius_host_config'      : show_radius_host_config,
                   'aaa_config'              : show_aaa_config,
@@ -328,7 +330,9 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'line_vty_view_cb'        : show_running_config_line_vty_view_cb,
                   'ipv4_subintf_dhcp_relay'     : show_ipv4_subintf_dhcp_relay,
                   'ipv6_subintf_dhcp_relay'     : show_ipv6_subintf_dhcp_relay,
-                  'show_running_next_hop_group': show_running_next_hop_group 
+                  'show_running_next_hop_group': show_running_next_hop_group,
+                  'tacacs_global_key_config': show_tacacs_global_key,
+                  'tacacs_host_config'      : show_tacacs_host_config
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }
