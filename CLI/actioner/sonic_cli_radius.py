@@ -135,7 +135,8 @@ def invoke_api(func, args):
               "openconfig-system:name": "RADIUS",\
               "openconfig-system:config": {\
                 "openconfig-system:name": "RADIUS",\
-                "openconfig-system-ext:secret-key": (args[0]).replace("\\\\", "\\")\
+                "openconfig-system-ext:secret-key": (args[0]).replace("\\\\", "\\"),\
+                "openconfig-system-ext:encrypted": False if len(args) < 2 else True \
               }\
             }]\
           }\
@@ -165,6 +166,10 @@ def invoke_api(func, args):
         priority = (args[6])[9:]
         vrf = (args[7])[4:]
         source_interface = (args[8])[17:]
+        if len(source_interface) != 0:
+            max_args = 10
+        else:
+            max_args = 9
 
         body = {
 
@@ -193,6 +198,13 @@ def invoke_api(func, args):
         if len(key) != 0:
             body["openconfig-system:server"][0]["openconfig-system:radius"]\
                 ["openconfig-system:config"]["secret-key"] = key
+
+        if len(args) > max_args:
+            body["openconfig-system:server"][0]["openconfig-system:radius"]\
+                ["openconfig-system:config"]["encrypted"] = True
+        else:
+            body["openconfig-system:server"][0]["openconfig-system:radius"]\
+                ["openconfig-system:config"]["encrypted"] = False
 
         if len(timeout) != 0:
             body["openconfig-system:server"][0]["openconfig-system:config"]\

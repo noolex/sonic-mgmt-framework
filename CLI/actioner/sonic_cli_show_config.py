@@ -789,14 +789,16 @@ def render_cli_config(view_name = '', view_keys = {}):
                 showrun_log(logging.WARNING,"render_cli_config: config view {} does not exist, skip rendering", config_view)
                 continue
 
+    rc = False
     # write to output.            
     if CMDS_SAVE_TO_BUFFER:
         CMDS_SAVE_BUFFER += CMDS_STRING
     else:
-        write(CMDS_STRING)
+        rc = write(CMDS_STRING)
     CMDS_STRING = ''
     CMDS_VIEW = ''
     CMDS_VIEW_CHANGED = False
+    return rc
 
 
 def print_cli_views(view_name=''):
@@ -853,8 +855,9 @@ def show_views(func, args = []):
     showrun_log(logging.DEBUG,'view-keys {}' ,viewKV)
 
     for view_name in views:
-        render_cli_config(view_name, viewKV)
-
+        if render_cli_config(view_name, viewKV):
+            #write() returns True if terminated
+            break
 
 def showconfig_views_to_buffer(viewlist):
     global format_read, CMDS_SAVE_TO_BUFFER

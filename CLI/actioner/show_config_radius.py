@@ -19,6 +19,14 @@
 
 from show_config_if_cmd import show_render_if_cmd
 
+# show_radius_global_key renders running config for 'radius-server key'
+def show_radius_global_key(render_tables):
+    cmd = ''
+    entry = get_radius_entry(render_tables)
+    if ('passkey' in entry) and entry['passkey']:
+        cmd = 'radius-server key ' + entry.get('passkey') + ' encrypted'
+    return 'CB_SUCCESS', cmd
+
 # show_radius_statistics_config renders running config for 'radius-server statistics'
 def show_radius_statistics_config(render_tables):
     cmd = ''
@@ -51,6 +59,7 @@ def show_radius_host_config(render_tables):
             cmd += ' retransmit ' + str(entry.get('retransmit'))
         if entry.get('passkey') != None:
             cmd += ' key ' + entry.get('passkey')
+            cmd += ' encrypted '
         if entry.get('auth_type') != None:
             cmd += ' auth-type ' + entry.get('auth_type')
         priority = entry.get('priority')

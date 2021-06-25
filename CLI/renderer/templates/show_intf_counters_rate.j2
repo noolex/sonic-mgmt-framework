@@ -10,10 +10,10 @@
 {% set vars = {'out_utilization': ""} %}
 {% if json_output -%}
 {% if json_output["sonic-counters:output"] %}
--------------------------------------------------------------------------------------------------------------------------------------------------------
-{{'%-15s'|format("Interface")}}{{'%-15s'|format("Rate interval")}}{{'%-16s'|format("RX_MBPS")}}{{'%-16s'|format("RX_MbPS")}}{{'%-16s'|format("RX_PPS")}}{{'%-16s'|format("RX_UTIL")}}{{'%-16s'|format("TX_MBPS")}}{{'%-16s'|format("TX_MbPS")}}{{'%-16s'|format("TX_PPS")}}{{'%-16s'|format("TX_UTIL")}}
-{{'%-15s'|format("")}}{{'%-15s'|format("(seconds)")}}{{'%-16s'|format("(MB/s)")}}{{'%-16s'|format("(Mb/s)")}}{{'%-16s'|format("(Pkts/s)")}}{{'%-16s'|format("(%)")}}{{'%-16s'|format("(MB/s)")}}{{'%-16s'|format("(Mb/s)")}}{{'%-16s'|format("(Pkts/s)")}}{{'%-16s'|format("(%)")}}
--------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+{{'%-15s'|format("Interface")}}{{'%-15s'|format("Rate interval")}}{{'%-22s'|format("RX_MBPS")}}{{'%-22s'|format("RX_MbPS")}}{{'%-22s'|format("RX_PPS")}}{{'%-16s'|format("RX_UTIL")}}{{'%-22s'|format("TX_MBPS")}}{{'%-22s'|format("TX_MbPS")}}{{'%-22s'|format("TX_PPS")}}{{'%-16s'|format("TX_UTIL")}}
+{{'%-15s'|format("")}}{{'%-15s'|format("(seconds)")}}{{'%-22s'|format("(MB/s)")}}{{'%-22s'|format("(Mb/s)")}}{{'%-22s'|format("(Pkts/s)")}}{{'%-16s'|format("(%)")}}{{'%-22s'|format("(MB/s)")}}{{'%-22s'|format("(Mb/s)")}}{{'%-22s'|format("(Pkts/s)")}}{{'%-16s'|format("(%)")}}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {% for key_json in json_output %}
     {% if "interfaces" in json_output[key_json] %}
         {% set interface_list = json_output[key_json]["interfaces"] %}
@@ -40,7 +40,7 @@
                         {% if vars.update({'out_PPS':interface["state"]["counters"]["out-pkts-per-second"]}) %}{% endif %}
                         {% if vars.update({'out_MbPS':interface["state"]["counters"]["out-bits-per-second"]|float / 1000000}) %}{% endif %}
                         {% if vars.update({'out_utilization':interface["state"]["counters"]["out-utilization"]}) %}{% endif %}
-{{'%-15s'|format(vars.name)}}{{'%-15s'|format(vars.rate_interval)}}{{'%-16s'|format(vars.in_MBPS)}}{{'%-16s'|format(vars.in_MbPS)}}{{'%-16s'|format(vars.in_PPS)}}{{'%-16s'|format(vars.in_utilization)}}{{'%-16s'|format(vars.out_MBPS)}}{{'%-16s'|format(vars.out_MbPS)}}{{'%-16s'|format(vars.out_PPS)}}{{'%-16s'|format(vars.out_utilization)}}
+{{'%-15s'|format(vars.name)}}{{'%-15s'|format(vars.rate_interval)}}{{'%-22s'|format(vars.in_MBPS|round(2))}}{{'%-22s'|format(vars.in_MbPS|round(2))}}{{'%-22s'|format(vars.in_PPS)}}{{'%-16s'|format(vars.in_utilization)}}{{'%-22s'|format(vars.out_MBPS|round(2))}}{{'%-22s'|format(vars.out_MbPS|round(2))}}{{'%-22s'|format(vars.out_PPS)}}{{'%-16s'|format(vars.out_utilization)}}
                     {% endif %}
                 {% endif %}
             {% endfor %}
