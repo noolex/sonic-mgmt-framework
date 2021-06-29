@@ -18,7 +18,7 @@ from scripts.render_cli import show_cli_output
 from swsssdk import ConfigDBConnector
 from operator import itemgetter
 from collections import OrderedDict
-from socket import AF_INET,AF_INET6
+from socket import AF_INET, AF_INET6
 
 ALLOW_SYSNAME=False
 """
@@ -123,7 +123,7 @@ context         = 'Default'
 SecurityModels = { 'any' : 'any', 'v1': 'v1', 'v2c': 'v2c', 'v3': 'usm' }
 SecurityLevels = { 'noauth' : 'no-auth-no-priv', 'auth' : 'auth-no-priv', 'priv' : 'auth-priv' }
 ViewOpts       = { 'read' : 'readView', 'write' : 'writeView', 'notify' : 'notifyView'}
-SORTED_ORDER   = ['sysName', 'sysLocation','sysContact', 'engineID', 'traps']
+SORTED_ORDER   = ['sysName', 'sysLocation', 'sysContact', 'engineID', 'traps']
 ipFamily       = {4: AF_INET, 6: AF_INET6}
 
 aa = cc.ApiClient()
@@ -171,14 +171,14 @@ def findKeyForAgentEntry(ipAddr, port, interface):
   keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen')
   entry = "None"
   response = aa.get(keypath)
-  if response.ok() and response.content is not None and 'ietf-snmp:listen' in response.content.keys():
+  if response.ok() and response.content is not None and 'ietf-snmp:listen' in list(response.content.keys()):
     listenList = response.content['ietf-snmp:listen']
     if len(listenList) > 0:
       for listen in listenList:
         iface = ""
         udp = listen['udp']
         if (ipAddr == udp['ip']) and (int(port) == udp['port']):
-          if udp.has_key('ietf-snmp-ext:interface'):
+          if 'ietf-snmp-ext:interface' in udp:
             iface = udp['ietf-snmp-ext:interface']
           if interface == iface:
             entry = listen['name']
@@ -192,10 +192,10 @@ def findNextKeyForAgentEntry():
   key = "agentEntry{}".format(index)
   keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen')
   response=aa.get(keypath)
-  if response.ok() and response.content is not None and 'ietf-snmp:listen' in response.content.keys():
+  if response.ok() and response.content is not None and 'ietf-snmp:listen' in list(response.content.keys()):
     listenList = response.content['ietf-snmp:listen']
     if len(listenList) > 0:
-      while 1:
+      while True:
         for listen in listenList:
           found = False
           if listen['name'] == key:
@@ -217,8 +217,8 @@ def findKeyForTargetEntry(ipAddr):
   keypath = cc.Path('/restconf/data/ietf-snmp:snmp/target')
   response=aa.get(keypath, None, False)
   if response.ok():
-    if 'ietf-snmp:target' in response.content.keys():
-      for key, table in response.content.items():
+    if 'ietf-snmp:target' in list(response.content.keys()):
+      for key, table in list(response.content.items()):
         while len(table) > 0:
           data = table.pop(0)
           udp = data['udp']
@@ -230,7 +230,7 @@ def findNextKeyForTargetEntry(ipAddr):
   """ Find the next available TargetEntry key """
   key = "None"
   index = 1
-  while 1:
+  while True:
     key = "targetEntry{}".format(index)
     index += 1
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/target={name}', name=key)
@@ -260,9 +260,9 @@ def getEngineID():
   engineID = ''
   if response.ok() and response.content is not None and len(response.content) != 0:
     content = response.content
-    if content.has_key('ietf-snmp:engine-id'):
+    if 'ietf-snmp:engine-id' in content:
       engineID = content['ietf-snmp:engine-id']
-    elif content.has_key('engine-id'):
+    elif 'engine-id' in content:
       engineID = content['engine-id']
     engineID = engineID.encode('ascii')
     engineID = engineID.translate(None, ':')
@@ -322,16 +322,16 @@ def getAgentAddresses():
   datam = {}
   keypath = cc.Path('/restconf/data/ietf-snmp:snmp/engine/listen')
   response = aa.get(keypath)
-  if response.ok() and response.content is not None and 'ietf-snmp:listen' in response.content.keys():
+  if response.ok() and response.content is not None and 'ietf-snmp:listen' in list(response.content.keys()):
     listenList = response.content['ietf-snmp:listen']
     if len(listenList) > 0:
       for listen in listenList:
         udp = listen['udp']
         entry = {}
-        entry['udpPort'] = udp[u'port']
-        entry['ipAddr'] = udp[u'ip']
-        if u'ietf-snmp-ext:interface' in udp.keys():
-          entry['ifName']  = udp[u'ietf-snmp-ext:interface']
+        entry['udpPort'] = udp['port']
+        entry['ipAddr'] = udp['ip']
+        if 'ietf-snmp-ext:interface' in list(udp.keys()):
+          entry['ifName']  = udp['ietf-snmp-ext:interface']
         agentAddresses.append(entry)
 
   return agentAddresses
@@ -410,17 +410,17 @@ def invoke(func, args):
     datam = {}
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/contact')
     response = aa.get(keypath)
-    if response.ok() and response.content is not None and 'ietf-snmp-ext:contact' in response.content.keys():
+    if response.ok() and response.content is not None and 'ietf-snmp-ext:contact' in list(response.content.keys()):
         datam['sysContact'] = response.content['ietf-snmp-ext:contact']
 
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/location')
     response = aa.get(keypath)
-    if response.ok() and response.content is not None and 'ietf-snmp-ext:location' in response.content.keys():
+    if response.ok() and response.content is not None and 'ietf-snmp-ext:location' in list(response.content.keys()):
         datam['sysLocation'] = response.content['ietf-snmp-ext:location']
 
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/ietf-snmp-ext:system/trap-enable')
     response = aa.get(keypath)
-    if response.ok() and response.content is not None and 'ietf-snmp-ext:trap-enable' in response.content.keys():
+    if response.ok() and response.content is not None and 'ietf-snmp-ext:trap-enable' in list(response.content.keys()):
       trapEnable = response.content['ietf-snmp-ext:trap-enable']
       if trapEnable == True:
         datam['traps'] = 'enable'
@@ -429,7 +429,7 @@ def invoke(func, args):
     if len(datam) > 0:
       order = []
       for key in SORTED_ORDER:
-        if datam.has_key(key):
+        if key in datam:
           order.append(key)
       tuples = [(key, datam[key]) for key in order]
       datam = OrderedDict(tuples)
@@ -530,8 +530,8 @@ def invoke(func, args):
         if net_if_addrs_dict.get(interface):
           ifValid = True
       if ifValid:
-        ip = ipaddress.ip_address(unicode(ipAddress))
-        for intf, ipaddrs in net_if_addrs_dict.items():
+        ip = ipaddress.ip_address(str(ipAddress))
+        for intf, ipaddrs in list(net_if_addrs_dict.items()):
           for _ip in ipaddrs:
             if ipFamily[ip.version] == _ip.family:
               testAddr = _ip.address
@@ -611,7 +611,7 @@ def invoke(func, args):
     response=aa.get(keypath, None, False)
     data = []
     if response.ok() and len(response.content) != 0:
-      if 'ietf-snmp:community' in response.content.keys():
+      if 'ietf-snmp:community' in list(response.content.keys()):
         communities = response.content['ietf-snmp:community']
         for community in communities:
           if community['security-name'] == 'None':
@@ -663,13 +663,13 @@ def invoke(func, args):
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/vacm/group')
     response = aa.get(keypath, None, False)
     if response.ok() and len(response.content) != 0:
-      if 'ietf-snmp:group' in response.content.keys():
+      if 'ietf-snmp:group' in list(response.content.keys()):
         groupDict = response.content['ietf-snmp:group']
         while len(groupDict) > 0:
           row = groupDict.pop(0)
           group = row['name']
 
-          if 'member' in row.keys():
+          if 'member' in list(row.keys()):
             members = row['member']
             for member in members:
               g = {}
@@ -684,7 +684,7 @@ def invoke(func, args):
             keypath = cc.Path(path, name = group)
             response = aa.get(keypath, None, False)
             if response.ok() and len(response.content) != 0:
-              if 'ietf-snmp:member' in response.content.keys():
+              if 'ietf-snmp:member' in list(response.content.keys()):
                 data = response.content['ietf-snmp:member']
                 while len(data) > 0:
                   entry = data.pop(0)
@@ -736,17 +736,17 @@ def invoke(func, args):
     keypath = cc.Path('/restconf/data/ietf-snmp:snmp/vacm/group')
     response = aa.get(keypath, None, False)
     if response.ok() and len(response.content) != 0:
-      if 'ietf-snmp:group' in response.content.keys():
+      if 'ietf-snmp:group' in list(response.content.keys()):
         groupDict = response.content['ietf-snmp:group']
         while len(groupDict) > 0:
           row = groupDict.pop(0)
           group = row['name']
-          if 'access' in row.keys():
+          if 'access' in list(row.keys()):
             access = row['access']
 
             while len(access) > 0:
               entry = access.pop(0)
-              if 'read-view' in entry.keys():
+              if 'read-view' in list(entry.keys()):
                 g = {}
                 g['name'] = group
                 g['context'] = entry['context']
@@ -786,7 +786,7 @@ def invoke(func, args):
     if len(args) >  index:
       argsList = args[index:]
     viewOpts = { 'read' : 'None', 'write' : 'None', 'notify' : 'None'}
-    argsDict = dict(zip(*[iter(argsList)]*2))
+    argsDict = dict(list(zip(*[iter(argsList)]*2)))
     for key in argsDict:
       viewOpts[key] = argsDict[key]
 
@@ -830,12 +830,12 @@ def invoke(func, args):
     views = []
     if response.ok():
       content = response.content
-      if 'ietf-snmp:view' in response.content.keys():
-        for key, data in response.content.items():
+      if 'ietf-snmp:view' in list(response.content.keys()):
+        for key, data in list(response.content.items()):
           while len(data) > 0:
             row = data.pop(0)
             for action in ['include', 'exclude']:
-              if row.has_key(action):
+              if action in row:
                 for oidTree in row[action]:
                   v = {}
                   v['name'] = row['name']
@@ -870,13 +870,13 @@ def invoke(func, args):
     keypath = cc.Path(path, name=args[0])
     response=aa.get(keypath, None, False)
     if response.ok():
-      if 'ietf-snmp:view' in response.content.keys():
-        for key, data in response.content.items():
+      if 'ietf-snmp:view' in list(response.content.keys()):
+        for key, data in list(response.content.items()):
           while len(data) > 0:
             row = data.pop(0)
             notfound = True
             for action in ['include', 'exclude']:
-              if row.has_key(action):
+              if action in row:
                 notfound = False
             if notfound == True:
               response = aa.delete(keypath)
@@ -890,8 +890,8 @@ def invoke(func, args):
 
     users = []
     if response.ok() and len(response.content) != 0:
-      if 'ietf-snmp:user' in response.content.keys():
-        for key, data in response.content.items():
+      if 'ietf-snmp:user' in list(response.content.keys()):
+        for key, data in list(response.content.items()):
           while len(data) > 0:
             row = data.pop(0)
             u = {}
@@ -904,9 +904,9 @@ def invoke(func, args):
                 break
 
             auth = row['auth']
-            if auth.has_key('md5'):
+            if 'md5' in auth:
               u['auth'] = 'md5'
-            elif auth.has_key('sha'):
+            elif 'sha' in auth:
               u['auth'] = 'sha'
             else:
               u['auth'] = 'None'
@@ -918,11 +918,11 @@ def invoke(func, args):
               u['auth'] = 'None'
 
             u['priv'] = 'None'
-            if row.has_key('priv'):
+            if 'priv' in row:
               priv = row['priv']
-              if priv.has_key('aes'):
+              if 'aes' in priv:
                 u['priv'] = 'aes'
-              elif priv.has_key('des'):
+              elif 'des' in priv:
                 u['priv'] = 'des'
               else:
                 u['priv'] = 'None'
@@ -1056,8 +1056,8 @@ def invoke(func, args):
     hosts6_c = []
     hosts6_u = []
     if response.ok():
-      if 'ietf-snmp:target' in response.content.keys():
-        for key, table in response.content.items():
+      if 'ietf-snmp:target' in list(response.content.keys()):
+        for key, table in list(response.content.items()):
           hosts4_c, hosts6_c, hosts4_u, hosts6_u = ([] for i in range(4))
           while len(table) > 0:
             data = table.pop(0)
@@ -1067,12 +1067,12 @@ def invoke(func, args):
             h['ipaddr'] = udp['ip']
             h['port'] = udp['port']
             h['ip6'] = getIPType(h['ipaddr'])
-            for key, value in data.items():
+            for key, value in list(data.items()):
               if key == 'target-params':
                 path = cc.Path('/restconf/data/ietf-snmp:snmp/target-params={name}', name=data[key])
                 params=aa.get(path, None, False)
                 if response.ok():
-                  if 'ietf-snmp:target-params' in params.content.keys():
+                  if 'ietf-snmp:target-params' in list(params.content.keys()):
                     data = params.content['ietf-snmp:target-params']
                     while len(data) > 0:
                       entry = data.pop(0)
@@ -1290,12 +1290,12 @@ def run(func, args):
       if api_response.status_code == 404:               # Resource not found
         return
       else:
-        print (api_response.error_message())
+        print(api_response.error_message())
 
   except:
     # system/network error
     syslog.syslog(syslog.LOG_ERR, "Exception: " + traceback.format_exc())
-    print "%Error: Transaction Failure"
+    print("%Error: Transaction Failure")
 
 if __name__ == '__main__':
   pipestr().write(sys.argv)
