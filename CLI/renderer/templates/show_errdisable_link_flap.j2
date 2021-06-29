@@ -1,0 +1,43 @@
+{% if json_output -%}
+{% set vars = {'flaps': ""}%}
+{% set vars = {'window': ""} %}
+{% set vars = {'timeout': ""} %}
+{% set vars = {'remaining': ""} %}
+{% set vars = {'status': ""} %}
+{% set vars = {'header': ""} %}
+{% set header = [] %}
+{% for port in json_output['openconfig-errdisable-ext:port'] %}
+{% set vars = {'ifname': port['name']} %}
+{% if port['link-flap'] %}
+{% for field, value in port['link-flap']['config'].iteritems() %}
+{% if 'flap-threshold' in field %}
+{% if vars.update({'flaps':value}) %}{% endif %}
+{% endif %}
+{% if 'sampling-interval' in field %}
+{% if vars.update({'window':value}) %}{% endif %}
+{% endif %}
+{% if 'recovery-interval' in field %}
+{% if vars.update({'timeout':value}) %}{% endif %}
+{% endif %}
+{% if 'error-disable' in field %}
+{% if vars.update({'status':value}) %}{% endif %}
+{% endif %}
+{% endfor %}
+{% if vars.update({'remaining':'N/A'}) %}{% endif %}
+{% if port['link-flap']['state'] %}
+{% for field, value in port['link-flap']['state'].iteritems() %}
+{% if 'time-left' in field %}
+{% if vars.update({'remaining':value}) %}{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if header|length < 1 %}
+{{'Interface   Flap-threshold Sampling-interval Recovery-interval Time-left Status'}}
+{{'-------------------------------------------------------------------------------'}}
+{% if header.append('1') %}{% endif %}
+{% endif %}
+{{'%-12s'|format(vars.ifname)}}{{'%-15s'|format(vars.flaps)}}{{'%-18s'|format(vars.window)}}{{'%-18s'|format(vars.timeout)}}{{'%-10s'|format(vars.remaining)}}{{'%-7s'|format(vars.status[0]|upper+vars.status[1:])}}
+{% endif %}
+{% endfor %}
+{% endif %}
+

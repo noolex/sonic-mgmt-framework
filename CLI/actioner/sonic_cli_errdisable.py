@@ -21,6 +21,8 @@
 from scripts.render_cli import show_cli_output
 import cli_client as cc
 import sys
+import re
+from sonic_cli_if_range import eth_intf_range_expand
 
 aa = cc.ApiClient()
 
@@ -44,7 +46,7 @@ def generic_show_response_handler(output_data, args):
 
 
 def delete_openconfig_errdisable_cause(args):
-    if args[0] not in ["udld", "bpduguard"]:
+    if args[0] not in ["udld", "bpduguard", "link-flap"]:
         print('%Error Invalid cause : {}'.format(args[0]))
         return None
 
@@ -53,6 +55,8 @@ def delete_openconfig_errdisable_cause(args):
         uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/cause=UDLD')  
     elif args[0] == "bpduguard":
         uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/cause=BPDUGUARD')
+    elif args[0] == "link-flap":
+        uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/cause=LINK_FLAP')
     return aa.delete(uri, body)
 
 
@@ -61,13 +65,29 @@ def delete_openconfig_errdisable_interval(args):
     uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/interval')  
     return aa.delete(uri, body)
 
+def delete_openconfig_errdisable_port(args):
+    body = {}
+    uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable-port/port={}/link-flap'.format(args[0]))
+    return aa.delete(uri, body)
+
+def delete_openconfig_errdisable_port_range(args):
+    ifrange = args[0].split("=")[1]
+    if ifrange.startswith("Eth"):
+        ifrangelist = eth_intf_range_expand(ifrange)
+    else:
+        print('%Error: not supported on this interface type')
+    body = {}
+    for intf in ifrangelist:
+        uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable-port/port={}/link-flap'.format(intf))
+        ret = aa.delete(uri, body)
+    return ret
 
 def patch_openconfig_errdisable_cause(args):
-    if args[0] not in ["udld", "bpduguard"]:
+    if args[0] not in ["udld", "bpduguard", "link-flap"]:
         print('%Error Invalid cause : {}'.format(args[0]))
         return None
-
-    body = { "openconfig-errdisable-ext:cause": [args[0].upper()]}
+    param = args[0].replace("-", "_")
+    body = { "openconfig-errdisable-ext:cause": [param.upper()]}
     uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/cause')  
     return aa.patch(uri, body)
 
@@ -77,6 +97,48 @@ def patch_openconfig_errdisable_interval(args):
     uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable/config/interval')  
     return aa.patch(uri, body)
 
+def patch_openconfig_errdisable_port(args):
+    if int(args[2]) >= int(args[3]):
+        print('%Error: recovery-interval should be greater than sampling-interval')
+        return None
+    body = {"openconfig-errdisable-ext:link-flap": {
+                "config": {
+                    "error-disable": "on",
+                    "flap-threshold": int(args[1]),
+                    "sampling-interval": int(args[2]),
+                    "recovery-interval": int(args[3])}
+                 }
+            }
+    uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable-port/port={}/link-flap'.format(args[0]))
+    return aa.patch(uri, body)
+
+def patch_openconfig_errdisable_port_range(args):
+    if int(args[2]) >= int(args[3]):
+        print('%Error: recovery-interval should be greater than sampling-interval')
+        return None
+    ifrange = args[0].split("=")[1]
+    if ifrange.startswith("Eth"):
+        ifrangelist = eth_intf_range_expand(ifrange)
+    else:
+        print('%Error: not supported on this interface type')
+    body = {"openconfig-errdisable-ext:port": []}
+    for intf in ifrangelist:
+        body["openconfig-errdisable-ext:port"].append({
+              "name": intf,
+              "config": {
+                "name": intf },
+               "link-flap": {
+                 "config": {
+                   "error-disable": "on",
+                   "flap-threshold": int(args[1]),
+                   "sampling-interval": int(args[2]),
+                   "recovery-interval": int(args[3])
+                  }
+                }
+              })
+
+    uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable-port/port')
+    return aa.patch(uri, body)
 
 def show_errdisable_recovery(args):
     uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable')  
@@ -87,30 +149,49 @@ def show_errdisable_recovery(args):
     return output
 
 
+def show_errdisable_link_flap(args):
+    uri = cc.Path('/restconf/data/openconfig-errdisable-ext:errdisable-port/port')
+    output = {}
+    api_response = aa.get(uri, None)
+    if api_response.ok() and api_response.content is not None:
+        output.update(api_response.content)
+    return output
+
+
 request_handlers = {
         #show
         'show_errdisable_recovery': show_errdisable_recovery,
+        'show_errdisable_link_flap': show_errdisable_link_flap,
         #config
         #'post_openconfig_errdisable': post_openconfig_errdisable, 
         'patch_openconfig_errdisable_interval': patch_openconfig_errdisable_interval, 
         'patch_openconfig_errdisable_cause': patch_openconfig_errdisable_cause, 
+        'patch_openconfig_errdisable_port': patch_openconfig_errdisable_port,
+        'patch_openconfig_errdisable_port_range': patch_openconfig_errdisable_port_range,
         #delete
         #'delete_openconfig_errdisable': delete_openconfig_errdisable, 
         'delete_openconfig_errdisable_interval': delete_openconfig_errdisable_interval, 
-        'delete_openconfig_errdisable_cause': delete_openconfig_errdisable_cause 
+        'delete_openconfig_errdisable_cause': delete_openconfig_errdisable_cause,
+        'delete_openconfig_errdisable_port': delete_openconfig_errdisable_port,
+        'delete_openconfig_errdisable_port_range': delete_openconfig_errdisable_port_range
 }
 
 response_handlers = {
         #show
         'show_errdisable_recovery': generic_show_response_handler,
+        'show_errdisable_link_flap': generic_show_response_handler,
         #config
         #'post_openconfig_errdisable': generic_set_response_handler, 
         'patch_openconfig_errdisable_interval': generic_set_response_handler, 
         'patch_openconfig_errdisable_cause': generic_set_response_handler, 
+        'patch_openconfig_errdisable_port': generic_set_response_handler, 
+        'patch_openconfig_errdisable_port_range': generic_set_response_handler, 
         #delete
         #'delete_openconfig_errdisable': generic_delete_response_handler, 
         'delete_openconfig_errdisable_interval': generic_delete_response_handler, 
-        'delete_openconfig_errdisable_cause': generic_delete_response_handler 
+        'delete_openconfig_errdisable_cause': generic_delete_response_handler, 
+        'delete_openconfig_errdisable_port': generic_delete_response_handler,
+        'delete_openconfig_errdisable_port_range': generic_delete_response_handler
 }
 
 
@@ -132,7 +213,7 @@ def run(op_str, args):
 
         resp = request_handlers[op_str](new_args)
         if not resp:
-            if 'show_errdisable_recovery' in op_str:
+            if 'show_errdisable_recovery' in op_str or 'show_errdisable_link_flap' in op_str:
                 return 0
             else:
                 return -1
