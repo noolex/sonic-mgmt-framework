@@ -1085,6 +1085,20 @@ def invoke_api(func, args=[]):
             keypath = cc.Path('/restconf/operations/sonic-counters:interface_counters')
         body = {}
         return api.post(keypath, body)
+    elif func == 'rpc_rif_counters':
+        ifname = args[1].split("=")[1]
+        if ifname != "" :
+            keypath = cc.Path('/restconf/operations/sonic-counters:rif_counters')
+            inputs = {"riface":ifname}
+            body = {"sonic-counters:rif_count:input": inputs}
+            response = api.post(keypath, body)
+            return response
+        else:
+            keypath = cc.Path('/restconf/operations/sonic-counters:rif_counters')
+            ifname = "all"
+            inputs = {"riface":ifname}
+            body = {"sonic-counters:rif_count:input": inputs}
+        return api.post(keypath, body)
     elif func == 'showrun':
        arglen =0
        try:
@@ -1241,7 +1255,16 @@ def run(func, args):
                     if 'interface' in interfaces:
                         tup = interfaces['interface']
                         value['interfaces']['interface'] = sorted(tup.items(), key= lambda item: [ifutils.name_to_int_val(item[0])])
-
+            elif func == 'rpc_rif_counters' and 'sonic-counters:output' in api_response:
+                value = api_response['sonic-counters:output']
+                if value["status"] != 0:
+                    print("%Error: Internal error.")
+                    return 1
+                if 'interfaces' in value:
+                    interfaces = value['interfaces']
+                    if 'interface' in interfaces:
+                        tup = interfaces['interface']
+                        value['interfaces']['interface'] = sorted(tup.items(), key= lambda item: [ifutils.name_to_int_val(item[0])])
             elif func == 'delete_phy_if_ip' or func == 'delete_mgmt_if_ip' or func == 'delete_vlan_if_ip' or func == 'delete_po_if_ip' or func == 'delete_lo_if_ip':
                 if 'sonic-interface:output' in api_response:
                     value = api_response['sonic-interface:output']
@@ -1275,6 +1298,8 @@ def run(func, args):
             elif func == 'get_openconfig_relay_agent_relay_agent_detail_dhcpv6':
                 show_cli_output(args[0], api_response)
             elif func == 'rpc_interface_counters':
+                show_cli_output(args[0], api_response)
+            elif func == 'rpc_rif_counters':
                 show_cli_output(args[0], api_response)
 
         else:

@@ -1,0 +1,34 @@
+{% set vars = {} %}
+{% if json_output -%}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+{{'%-18s'|format("Interface")}}{{'%-19s'|format("RX_OK")}}{{'%-19s'|format("RX_BPS")}}{{'%-18s'|format("RX_PPS")}}{{'%-19s'|format("RX_ERR")}}{{'%-19s'|format("TX_OK")}}{{'%-19s'|format("TX_BPS")}}{{'%-18s'|format("TX_PPS")}}{{'%-19s'|format("TX_ERR")}}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+{% for key_json in json_output %}
+    {% if "interfaces" in json_output[key_json] %}
+        {% set interface_list = json_output[key_json]["interfaces"] %}
+        {% if "interface" in interface_list %}
+            {% set interfaces = json_output[key_json]["interfaces"]["interface"] %}
+            {% for interface in interfaces %}
+                {% set key = interface[0] %}
+                {% set intf = interface[1] %}
+                {% if 'state' in intf %}
+                    {% set state = intf['state'] %}
+                    {% if vars.update({'name':key}) %}{% endif %}
+                    {% if "counters" in intf["state"] %}
+                        {% if vars.update({'in_bps':intf["state"]["counters"]["in-octets-per-second"]}) %}{% endif %}
+                        {% if vars.update({'out_bps':intf["state"]["counters"]["out-octets-per-second"]}) %}{% endif %}
+                        {% if vars.update({'in_packets':intf["state"]["counters"]["in-pkts"]}) %}{% endif %}
+                        {% if vars.update({'in_errors':intf["state"]["counters"]["in-errors"]}) %}{% endif %}
+                        {% if vars.update({'in_pps':intf["state"]["counters"]["in-pkts-per-second"]}) %}{% endif %}
+                        {% if vars.update({'out_packets':intf["state"]["counters"]["out-pkts"]}) %}{% endif %}
+                        {% if vars.update({'out_errors':intf["state"]["counters"]["out-errors"]}) %}{% endif %}
+                        {% if vars.update({'out_pps':intf["state"]["counters"]["out-discards"]}) %}{% endif %}
+
+{{'%-20s'|format(vars.name)}}{{'%-19s'|format(vars.in_packets)}}{{'%-19s'|format(vars.in_bps)}}{{'%-19s'|format(vars.in_pps)}}{{'%-19s'|format(vars.in_errors)}}{{'%-19s'|format(vars.out_packets)}}{{'%-19s'|format(vars.out_bps)}}{{'%-19s'|format(vars.out_pps)}}{{'%-19s'|format(vars.out_errors)}}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+{% endif %}
