@@ -22,7 +22,7 @@ import argparse
 import os, sys, io
 import json
 from collections import OrderedDict
-import json_delta
+import utils.json_delta as json_delta
 import pyang
 if pyang.__version__ > '2.4':
     from pyang.repository import FileRepository
@@ -273,8 +273,8 @@ def process(args):
 
 if __name__== "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--sourceRepo', dest='sourcedir', help='Source sonic-mgmt-common directory', required=True)
-    parser.add_argument('--targetRepo', dest='targetdir', help='Target sonic-mgmt-common directory', required=True)
+    parser.add_argument('--sourcedir', dest='sourcedir', help='Source sonic-mgmt-common directory', required=True)
+    parser.add_argument('--targetdir', dest='targetdir', help='Target sonic-mgmt-common directory', required=True)
     parser.add_argument('--unified', dest='unified', action='store_true', help='Prints All URLs, otherwise only Diff Urls are printed')
     parser.add_argument('--shell', dest='shell', action='store_true', help='Starts a command-line interface')
     parser.add_argument('--outdir', dest='outdir', help='The output directory to dump the diff docs')
