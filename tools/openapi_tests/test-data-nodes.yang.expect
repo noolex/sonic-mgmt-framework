@@ -1211,6 +1211,297 @@ paths:
         always present in this list in the operational state,
 
         whether or not they are configured.'
+  /restconf/data/test-data-nodes:interfaces/interface={name}/name:
+    get:
+      tags:
+      - test-data-nodes
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          maxLength: 18446744073709551615
+          minLength: 0
+          type: string
+          x-yang-type: string
+        description: 'The name of the interface.
+
+
+          A device MAY restrict the allowed values for this leaf,
+
+          possibly depending on the type of the interface.
+
+          For system-controlled interfaces, this leaf is the
+
+          device-specific name of the interface.
+
+
+          If a client tries to create configuration for a
+
+          system-controlled interface that is not present in the
+
+          operational state, the server MAY reject the request if
+
+          the implementation does not support pre-provisioning of
+
+          interfaces or if the name refers to an interface that can
+
+          never exist in the system.  A Network Configuration
+
+          Protocol (NETCONF) server MUST reply with an rpc-error
+
+          with the error-tag ''invalid-value'' in this case.
+
+
+          If the device supports pre-provisioning of interface
+
+          configuration, the ''pre-provisioning'' feature is
+
+          advertised.
+
+
+          If the device allows arbitrarily named user-controlled
+
+          interfaces, the ''arbitrary-names'' feature is advertised.
+
+          When a configured user-controlled interface is created by
+
+          the system, it is instantiated with the same name in the
+
+          operational state.
+
+
+          A server implementation MAY map this leaf to the ifName
+
+          MIB object.  Such an implementation needs to use some
+
+          mechanism to handle the differences in size and characters
+
+          allowed between this leaf and ifName.  The definition of
+
+          such a mechanism is outside the scope of this document.'
+      responses:
+        '200':
+          content:
+            application/yang-data+json:
+              schema:
+                $ref: '#/components/schemas/get_test_data_nodes_interfaces_interface_name'
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      operationId: get_test_data_nodes_interfaces_interface_name
+      x-operationIdCamelCase: GetTestDataNodesInterfacesInterfaceName
+      description: 'OperationId: get_test_data_nodes_interfaces_interface_name
+
+        The name of the interface.
+
+
+        A device MAY restrict the allowed values for this leaf,
+
+        possibly depending on the type of the interface.
+
+        For system-controlled interfaces, this leaf is the
+
+        device-specific name of the interface.
+
+
+        If a client tries to create configuration for a
+
+        system-controlled interface that is not present in the
+
+        operational state, the server MAY reject the request if
+
+        the implementation does not support pre-provisioning of
+
+        interfaces or if the name refers to an interface that can
+
+        never exist in the system.  A Network Configuration
+
+        Protocol (NETCONF) server MUST reply with an rpc-error
+
+        with the error-tag ''invalid-value'' in this case.
+
+
+        If the device supports pre-provisioning of interface
+
+        configuration, the ''pre-provisioning'' feature is
+
+        advertised.
+
+
+        If the device allows arbitrarily named user-controlled
+
+        interfaces, the ''arbitrary-names'' feature is advertised.
+
+        When a configured user-controlled interface is created by
+
+        the system, it is instantiated with the same name in the
+
+        operational state.
+
+
+        A server implementation MAY map this leaf to the ifName
+
+        MIB object.  Such an implementation needs to use some
+
+        mechanism to handle the differences in size and characters
+
+        allowed between this leaf and ifName.  The definition of
+
+        such a mechanism is outside the scope of this document.'
+    head:
+      tags:
+      - test-data-nodes
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          maxLength: 18446744073709551615
+          minLength: 0
+          type: string
+          x-yang-type: string
+        description: 'The name of the interface.
+
+
+          A device MAY restrict the allowed values for this leaf,
+
+          possibly depending on the type of the interface.
+
+          For system-controlled interfaces, this leaf is the
+
+          device-specific name of the interface.
+
+
+          If a client tries to create configuration for a
+
+          system-controlled interface that is not present in the
+
+          operational state, the server MAY reject the request if
+
+          the implementation does not support pre-provisioning of
+
+          interfaces or if the name refers to an interface that can
+
+          never exist in the system.  A Network Configuration
+
+          Protocol (NETCONF) server MUST reply with an rpc-error
+
+          with the error-tag ''invalid-value'' in this case.
+
+
+          If the device supports pre-provisioning of interface
+
+          configuration, the ''pre-provisioning'' feature is
+
+          advertised.
+
+
+          If the device allows arbitrarily named user-controlled
+
+          interfaces, the ''arbitrary-names'' feature is advertised.
+
+          When a configured user-controlled interface is created by
+
+          the system, it is instantiated with the same name in the
+
+          operational state.
+
+
+          A server implementation MAY map this leaf to the ifName
+
+          MIB object.  Such an implementation needs to use some
+
+          mechanism to handle the differences in size and characters
+
+          allowed between this leaf and ifName.  The definition of
+
+          such a mechanism is outside the scope of this document.'
+      responses:
+        '200':
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      operationId: head_test_data_nodes_interfaces_interface_name
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesInterfaceName
+      description: 'OperationId: head_test_data_nodes_interfaces_interface_name
+
+        The name of the interface.
+
+
+        A device MAY restrict the allowed values for this leaf,
+
+        possibly depending on the type of the interface.
+
+        For system-controlled interfaces, this leaf is the
+
+        device-specific name of the interface.
+
+
+        If a client tries to create configuration for a
+
+        system-controlled interface that is not present in the
+
+        operational state, the server MAY reject the request if
+
+        the implementation does not support pre-provisioning of
+
+        interfaces or if the name refers to an interface that can
+
+        never exist in the system.  A Network Configuration
+
+        Protocol (NETCONF) server MUST reply with an rpc-error
+
+        with the error-tag ''invalid-value'' in this case.
+
+
+        If the device supports pre-provisioning of interface
+
+        configuration, the ''pre-provisioning'' feature is
+
+        advertised.
+
+
+        If the device allows arbitrarily named user-controlled
+
+        interfaces, the ''arbitrary-names'' feature is advertised.
+
+        When a configured user-controlled interface is created by
+
+        the system, it is instantiated with the same name in the
+
+        operational state.
+
+
+        A server implementation MAY map this leaf to the ifName
+
+        MIB object.  Such an implementation needs to use some
+
+        mechanism to handle the differences in size and characters
+
+        allowed between this leaf and ifName.  The definition of
+
+        such a mechanism is outside the scope of this document.'
   /restconf/data/test-data-nodes:interfaces/interface={name}/description:
     put:
       tags:
@@ -8388,6 +8679,123 @@ paths:
         always present in this list, whether or not they are
 
         configured.'
+  /restconf/data/test-data-nodes:interfaces-state/interface={name}/name:
+    get:
+      tags:
+      - test-data-nodes
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          maxLength: 18446744073709551615
+          minLength: 0
+          type: string
+          x-yang-type: string
+        description: 'The name of the interface.
+
+
+          A server implementation MAY map this leaf to the ifName
+
+          MIB object.  Such an implementation needs to use some
+
+          mechanism to handle the differences in size and characters
+
+          allowed between this leaf and ifName.  The definition of
+
+          such a mechanism is outside the scope of this document.'
+      responses:
+        '200':
+          content:
+            application/yang-data+json:
+              schema:
+                $ref: '#/components/schemas/get_test_data_nodes_interfaces_state_interface_name'
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      x-config: 'false'
+      operationId: get_test_data_nodes_interfaces_state_interface_name
+      x-operationIdCamelCase: GetTestDataNodesInterfacesStateInterfaceName
+      description: 'OperationId: get_test_data_nodes_interfaces_state_interface_name
+
+        The name of the interface.
+
+
+        A server implementation MAY map this leaf to the ifName
+
+        MIB object.  Such an implementation needs to use some
+
+        mechanism to handle the differences in size and characters
+
+        allowed between this leaf and ifName.  The definition of
+
+        such a mechanism is outside the scope of this document.'
+    head:
+      tags:
+      - test-data-nodes
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          maxLength: 18446744073709551615
+          minLength: 0
+          type: string
+          x-yang-type: string
+        description: 'The name of the interface.
+
+
+          A server implementation MAY map this leaf to the ifName
+
+          MIB object.  Such an implementation needs to use some
+
+          mechanism to handle the differences in size and characters
+
+          allowed between this leaf and ifName.  The definition of
+
+          such a mechanism is outside the scope of this document.'
+      responses:
+        '200':
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      x-config: 'false'
+      operationId: head_test_data_nodes_interfaces_state_interface_name
+      x-operationIdCamelCase: HeadTestDataNodesInterfacesStateInterfaceName
+      description: 'OperationId: head_test_data_nodes_interfaces_state_interface_name
+
+        The name of the interface.
+
+
+        A server implementation MAY map this leaf to the ifName
+
+        MIB object.  Such an implementation needs to use some
+
+        mechanism to handle the differences in size and characters
+
+        allowed between this leaf and ifName.  The definition of
+
+        such a mechanism is outside the scope of this document.'
   /restconf/data/test-data-nodes:interfaces-state/interface={name}/type:
     get:
       tags:
@@ -11676,6 +12084,22 @@ components:
     patch_list_test_data_nodes_interfaces_interface:
       allOf:
       - $ref: '#/components/schemas/test_data_nodes_interfaces_interface'
+    test_data_nodes_interfaces_interface_name:
+      type: object
+      properties:
+        test-data-nodes:name:
+          maxLength: 18446744073709551615
+          minLength: 0
+          type: string
+          x-yang-type: string
+    get_test_data_nodes_interfaces_interface_name:
+      type: object
+      properties:
+        test-data-nodes:name:
+          maxLength: 18446744073709551615
+          minLength: 0
+          type: string
+          x-yang-type: string
     test_data_nodes_interfaces_interface_description:
       type: object
       properties:
@@ -12416,6 +12840,14 @@ components:
                     minimum: 0
                     type: integer
                     x-yang-type: uint32
+    get_test_data_nodes_interfaces_state_interface_name:
+      type: object
+      properties:
+        test-data-nodes:name:
+          maxLength: 18446744073709551615
+          minLength: 0
+          type: string
+          x-yang-type: string
     get_test_data_nodes_interfaces_state_interface_type:
       type: object
       properties:

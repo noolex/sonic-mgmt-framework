@@ -591,6 +591,79 @@ paths:
       description: 'OperationId: delete_list_ietf_snmp_snmp_target
 
         List of targets.'
+  /restconf/data/ietf-snmp:snmp/target={name}/name:
+    get:
+      tags:
+      - ietf-snmp
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+        description: Identifies the target.
+      responses:
+        '200':
+          content:
+            application/yang-data+json:
+              schema:
+                $ref: '#/components/schemas/get_ietf_snmp_snmp_target_name'
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      operationId: get_ietf_snmp_snmp_target_name
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetName
+      description: 'OperationId: get_ietf_snmp_snmp_target_name
+
+        Identifies the target.'
+    head:
+      tags:
+      - ietf-snmp
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+        description: Identifies the target.
+      responses:
+        '200':
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      operationId: head_ietf_snmp_snmp_target_name
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetName
+      description: 'OperationId: head_ietf_snmp_snmp_target_name
+
+        Identifies the target.'
   /restconf/data/ietf-snmp:snmp/target={name}/udp:
     put:
       tags:
@@ -3054,6 +3127,79 @@ paths:
       description: 'OperationId: delete_list_ietf_snmp_snmp_target_params
 
         List of target parameters.'
+  /restconf/data/ietf-snmp:snmp/target-params={name}/name:
+    get:
+      tags:
+      - ietf-snmp
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+        description: ''
+      responses:
+        '200':
+          content:
+            application/yang-data+json:
+              schema:
+                $ref: '#/components/schemas/get_ietf_snmp_snmp_target_params_name'
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      operationId: get_ietf_snmp_snmp_target_params_name
+      x-operationIdCamelCase: GetIetfSnmpSnmpTargetParamsName
+      description: 'OperationId: get_ietf_snmp_snmp_target_params_name
+
+        '
+    head:
+      tags:
+      - ietf-snmp
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+        description: ''
+      responses:
+        '200':
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      operationId: head_ietf_snmp_snmp_target_params_name
+      x-operationIdCamelCase: HeadIetfSnmpSnmpTargetParamsName
+      description: 'OperationId: head_ietf_snmp_snmp_target_params_name
+
+        '
   /restconf/data/ietf-snmp:snmp/target-params={name}/v1:
     put:
       tags:
@@ -4426,6 +4572,79 @@ paths:
       description: 'OperationId: delete_list_ietf_snmp_snmp_proxy
 
         List of proxy parameters.'
+  /restconf/data/ietf-snmp:snmp/proxy={name}/name:
+    get:
+      tags:
+      - ietf-snmp
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+        description: Identifies the proxy parameter entry.
+      responses:
+        '200':
+          content:
+            application/yang-data+json:
+              schema:
+                $ref: '#/components/schemas/get_ietf_snmp_snmp_proxy_name'
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      operationId: get_ietf_snmp_snmp_proxy_name
+      x-operationIdCamelCase: GetIetfSnmpSnmpProxyName
+      description: 'OperationId: get_ietf_snmp_snmp_proxy_name
+
+        Identifies the proxy parameter entry.'
+    head:
+      tags:
+      - ietf-snmp
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+        description: Identifies the proxy parameter entry.
+      responses:
+        '200':
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      operationId: head_ietf_snmp_snmp_proxy_name
+      x-operationIdCamelCase: HeadIetfSnmpSnmpProxyName
+      description: 'OperationId: head_ietf_snmp_snmp_proxy_name
+
+        Identifies the proxy parameter entry.'
   /restconf/data/ietf-snmp:snmp/proxy={name}/type:
     put:
       tags:
@@ -6073,6 +6292,79 @@ paths:
       description: 'OperationId: delete_list_ietf_snmp_snmp_community
 
         List of communities.'
+  /restconf/data/ietf-snmp:snmp/community={index}/index:
+    get:
+      tags:
+      - ietf-snmp
+      parameters:
+      - name: index
+        in: path
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+        description: Index into the community list.
+      responses:
+        '200':
+          content:
+            application/yang-data+json:
+              schema:
+                $ref: '#/components/schemas/get_ietf_snmp_snmp_community_index'
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      operationId: get_ietf_snmp_snmp_community_index
+      x-operationIdCamelCase: GetIetfSnmpSnmpCommunityIndex
+      description: 'OperationId: get_ietf_snmp_snmp_community_index
+
+        Index into the community list.'
+    head:
+      tags:
+      - ietf-snmp
+      parameters:
+      - name: index
+        in: path
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+        description: Index into the community list.
+      responses:
+        '200':
+          description: Ok
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '415':
+          description: Unsupported Media Type
+        '500':
+          description: Internal Server Error
+      operationId: head_ietf_snmp_snmp_community_index
+      x-operationIdCamelCase: HeadIetfSnmpSnmpCommunityIndex
+      description: 'OperationId: head_ietf_snmp_snmp_community_index
+
+        Index into the community list.'
   /restconf/data/ietf-snmp:snmp/community={index}/text-name:
     put:
       tags:
@@ -8053,6 +8345,24 @@ components:
     patch_list_ietf_snmp_snmp_target:
       allOf:
       - $ref: '#/components/schemas/ietf_snmp_snmp_target'
+    ietf_snmp_snmp_target_name:
+      type: object
+      properties:
+        ietf-snmp:name:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+    get_ietf_snmp_snmp_target_name:
+      type: object
+      properties:
+        ietf-snmp:name:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
     ietf_snmp_snmp_target_udp:
       type: object
       properties:
@@ -8480,6 +8790,24 @@ components:
     patch_list_ietf_snmp_snmp_target_params:
       allOf:
       - $ref: '#/components/schemas/ietf_snmp_snmp_target_params'
+    ietf_snmp_snmp_target_params_name:
+      type: object
+      properties:
+        ietf-snmp:name:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+    get_ietf_snmp_snmp_target_params_name:
+      type: object
+      properties:
+        ietf-snmp:name:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
     ietf_snmp_snmp_target_params_v1:
       type: object
       properties:
@@ -8734,6 +9062,24 @@ components:
     patch_list_ietf_snmp_snmp_proxy:
       allOf:
       - $ref: '#/components/schemas/ietf_snmp_snmp_proxy'
+    ietf_snmp_snmp_proxy_name:
+      type: object
+      properties:
+        ietf-snmp:name:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+    get_ietf_snmp_snmp_proxy_name:
+      type: object
+      properties:
+        ietf-snmp:name:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
     ietf_snmp_snmp_proxy_type:
       type: object
       properties:
@@ -9018,6 +9364,24 @@ components:
     patch_list_ietf_snmp_snmp_community:
       allOf:
       - $ref: '#/components/schemas/ietf_snmp_snmp_community'
+    ietf_snmp_snmp_community_index:
+      type: object
+      properties:
+        ietf-snmp:index:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
+    get_ietf_snmp_snmp_community_index:
+      type: object
+      properties:
+        ietf-snmp:index:
+          maxLength: 255
+          minLength: 0
+          type: string
+          x-length: 0..255
+          x-yang-type: string
     ietf_snmp_snmp_community_text_name:
       type: object
       properties:

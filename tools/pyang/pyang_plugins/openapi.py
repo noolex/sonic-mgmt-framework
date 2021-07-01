@@ -783,9 +783,6 @@ def walk_child(child):
     pathstr = mk_path_refine(
         child, metadata, keyNodesInPath, False, paramsList)
 
-    if actXpath in keysToLeafRefObjSet:
-        return
-
     if child.keyword == "rpc":
         add_swagger_tag(child.i_module)
         handle_rpc(child, actXpath, pathstr)
@@ -815,7 +812,6 @@ def walk_child(child):
                         child.i_leafref_ptr[0], True)
                     if listKeyPath not in keysToLeafRefObjSet:
                         keysToLeafRefObjSet.add(listKeyPath)
-                return
 
         customName = getOpId(child)
         defName = shortenNodeName(child, customName)
@@ -845,6 +841,11 @@ def walk_child(child):
             schemasDict[defName]["properties"] = copy.deepcopy(payload)
 
             for verb in verbs:
+                if hasattr(child, 'i_is_key') or  \
+                    actXpath in keysToLeafRefObjSet:
+                    if verb not in ["get", "head"]:
+                        continue
+
                 if child.keyword == "leaf-list":
                     metadata_leaf_list = []
                     keyNodesInPath_leaf_list = []
