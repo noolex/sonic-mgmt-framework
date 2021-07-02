@@ -905,6 +905,35 @@ limitations under the License.
         <ACTION builtin="clish_restcl">oper=DELETE url=/restconf/data/openconfig-interfaces:interfaces/interface=${iface_uri}/openconfig-if-ethernet:ethernet/config/port-speed</ACTION>
         </COMMAND>
         <COMMAND
+            name="link-error-disable"
+            help="Configure link error disable">
+            <PARAM name="flap-threshold" help="Set link flap threshold for error disable" ptype="SUBCOMMAND" mode="subcommand">
+                <PARAM name="flaps" help="Link flap threshold for error disable criteria" 
+                    dbpath="sonic-port:sonic-port/PORT/PORT_LIST/flap-threshold"
+                    ptype="RANGE_1_50">
+            		<PARAM name="sampling-interval" help="Set sampling interval for counting link flaps" ptype="SUBCOMMAND" mode="subcommand">
+                        <PARAM name="window" help="Sampling interval in seconds." 
+                              dbpath="sonic-port:sonic-port/PORT/PORT_LIST/sampling-interval"
+                              ptype="RANGE_1_65535">
+                                  <PARAM name="recovery-interval"
+                                     help="Set link flap error disable recovery interval in seconds. 0 for disabling auto recovery."
+									 ptype="SUBCOMMAND" mode="subcommand">
+                                     <PARAM name="interval" help="Recovery interval in seconds"
+                                        dbpath="sonic-port:sonic-port/PORT/PORT_LIST/recovery-interval"
+                                        ptype="RANGE_0_65534"/>
+                                  </PARAM>
+                            </PARAM>
+                       </PARAM>
+                 </PARAM>
+            </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_errdisable patch_openconfig_errdisable_port ${iface} ${flaps} ${window} ${interval} </ACTION>
+        </COMMAND>
+        <COMMAND
+            name="no link-error-disable"
+            help="Turn-off link-error-disable on this interface">
+        <ACTION builtin="clish_pyobj">sonic_cli_errdisable delete_openconfig_errdisable_port ${iface} disable</ACTION>
+        </COMMAND>
+        <COMMAND
             name="fec"
             help="Configure FEC (forward error correction)">
             <PARAM
@@ -1342,6 +1371,79 @@ limitations under the License.
                <EXAMPLE summary="no mclag-separate-ip">
                    sonic-cli(config)# interface Vlan 10
                    sonic-cli(conf-if-Vlan10)# no mclag-separate-ip
+               </EXAMPLE>
+           </DOCGEN>
+    </COMMAND>
+    <COMMAND
+           name="mclag-peer-gateway"
+           help="Configure MCLAG Peer Gateway on Vlan interface"
+           command_tables="sonic-mclag:sonic-mclag/MCLAG_PEER_GATEWAY/MCLAG_PEER_GATEWAY_LIST/if_name={name}"
+           dbpath="sonic-mclag:sonic-mclag/MCLAG_PEER_GATEWAY/MCLAG_PEER_GATEWAY_LIST/peer_gateway=enable" >
+           <ACTION builtin="clish_pyobj">sonic_cli_mclag patch_sonic_mclag_peer_gateway_list ${vlan_name} </ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure MCLAG Peer Gateway on Vlan interface
+               </DESCRIPTION>
+               <USAGE>
+                   sonic-cli(conf-if-Vlan10)# mclag-peer-gateway
+               </USAGE>
+               <EXAMPLE summary="mclag-peer-gateway">
+                   sonic-cli(config)# interface Vlan 10
+                   sonic-cli(conf-if-Vlan10)# mclag-peer-gateway
+               </EXAMPLE>
+           </DOCGEN>
+    </COMMAND>
+    <COMMAND
+           name="autostate"
+           help="Configure autostate setting" >
+           <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST=${vlan_name}/autostate  body={"sonic-vlan:autostate": "enable"}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Configure Autostate on Vlan interface. 
+                   Enable  - VLAN Operstatus is dependent on VLAN Member operstatus and VRF-VNI mappings.
+                   Disable - VLAN Operstatus is set as Up once created. 
+               </DESCRIPTION>
+               <USAGE>
+                   sonic-cli(conf-if-Vlan10)# autostate
+               </USAGE>
+               <EXAMPLE summary="autostate">
+                   sonic-cli(config)# interface Vlan 10
+                   sonic-cli(conf-if-Vlan10)# autostate
+               </EXAMPLE>
+           </DOCGEN>
+    </COMMAND>
+    <COMMAND
+           name="no mclag-peer-gateway"
+           help="Unconfigure MCLAG Peer Gateway on Vlan interface" >
+           <ACTION builtin="clish_pyobj">sonic_cli_mclag delete_sonic_mclag_peer_gateway_list ${vlan_name} </ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure MCLAG Peer Gateway on Vlan interface
+               </DESCRIPTION>
+               <USAGE>
+                   sonic-cli(conf-if-Vlan10)# no mclag-peer-gateway
+               </USAGE>
+               <EXAMPLE summary="no mclag-peer-gateway">
+                   sonic-cli(config)# interface Vlan 10
+                   sonic-cli(conf-if-Vlan10)# no mclag-peer-gateway
+               </EXAMPLE>
+           </DOCGEN>
+    </COMMAND>
+    <COMMAND
+           name="no autostate"
+           help="Unconfigure autostate setting" 
+           dbpath="sonic-vlan:sonic-vlan/VLAN/VLAN_LIST/autostate=disable" >
+           <ACTION builtin="clish_restcl">oper=PATCH url=/restconf/data/sonic-vlan:sonic-vlan/VLAN/VLAN_LIST=${vlan_name}/autostate  body={"sonic-vlan:autostate": "disable"}</ACTION>
+           <DOCGEN>
+               <DESCRIPTION>
+                   Unconfigure Autostate on Vlan interface. 
+               </DESCRIPTION>
+               <USAGE>
+                   sonic-cli(conf-if-Vlan10)# no autostate
+               </USAGE>
+               <EXAMPLE summary="no autostate">
+                   sonic-cli(config)# interface Vlan 10
+                   sonic-cli(conf-if-Vlan10)# no autostate
                </EXAMPLE>
            </DOCGEN>
     </COMMAND>
@@ -1814,6 +1916,7 @@ limitations under the License.
         <MACRO name="INTF_RANGE_SHUT_DESCR" arg="${iflist}"></MACRO>
 	<MACRO name="INTF_RNG_SWITCHPORT" arg="${iflist}"></MACRO>
         <MACRO name="INTF_SPEED" arg="${iflist}"></MACRO>
+        <MACRO name="INTF_ERR_DISABLE" arg="${iflist}"></MACRO>
         <MACRO name="INTF_FEC" arg="${iflist}"></MACRO>
     </VIEW>
 
@@ -1834,6 +1937,7 @@ limitations under the License.
             />
 
         <MACRO name="INTF_MTU" arg="${iflist}"></MACRO>
+        <MACRO name="VLAN_AUTOSTATE" arg="${iflist}"></MACRO>
         <MACRO name="INTF_RANGE_DESCR" arg="${iflist}"></MACRO>
 
     </VIEW>

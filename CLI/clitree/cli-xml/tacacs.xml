@@ -153,16 +153,22 @@ limitations under the License.
              mode="subcommand"
              command_keys="type=global"
              command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/type={type}"
+             render_command_cb="tacacs_global_key_config"
              escape_chars=""
              render_command_viewid="renderCfg_tacacs">
       <PARAM name="secret-key"
              help=""
              ptype="TACACS_KEY"
              dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS/TACPLUS_LIST/passkey">
+             <PARAM name="encrypted"
+                   help = "Key is in encrypted format"
+                   ptype="SUBCOMMAND"
+                   mode="subcommand"
+                   optional="true"
+                   hidden="true">
+             </PARAM>
       </PARAM>
-      <ACTION
-          builtin="clish_restcl">oper=PATCH url=/restconf/data/openconfig-system:system/aaa/server-groups body={ "openconfig-system:server-groups": { "server-group": [{ "name" : "TACACS", "config" : { "name" : "TACACS", "openconfig-system-ext:secret-key": "${#secret-key}"}}]}}
-      </ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_openconfig_tacacs_global_config_key ${#secret-key} ${encrypted} </ACTION>
     </COMMAND>
 
     <!-- tacacs server -->
@@ -171,12 +177,11 @@ limitations under the License.
              ptype="SUBCOMMAND"
              mode="subcommand"
              command_tables="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/ipaddress={addr}"
-             escape_chars=""
-             render_command_viewid="renderCfg_tacacs">
+             render_command_cb="tacacs_host_config"
+             escape_chars="">
       <PARAM name="host"
              help="Hostname (Max: 63 characters) or IPv4/IPv6 address of TACACS+ server"
-             ptype="HOSTNAME_OR_IPADDR"
-             dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/ipaddress">
+             ptype="HOSTNAME_OR_IPADDR">
       </PARAM>
 
       <PARAM name="port"
@@ -186,8 +191,7 @@ limitations under the License.
              optional="true">
         <PARAM name="port-val"
                help="server Port"
-               ptype="TACACS_AUTH_PORT"
-               dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/tcp_port">
+               ptype="TACACS_AUTH_PORT">
         </PARAM>
       </PARAM>
 
@@ -198,8 +202,7 @@ limitations under the License.
              optional="true">
         <PARAM name="timeout-val"
                help="server timeout"
-               ptype="TACACS_TIMEOUT"
-               dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/timeout">
+               ptype="TACACS_TIMEOUT">
         </PARAM>
       </PARAM>
 
@@ -210,8 +213,14 @@ limitations under the License.
              optional="true">
         <PARAM name="key-val"
                help="server key"
-               ptype="TACACS_KEY"
-               dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/passkey">
+               ptype="TACACS_KEY">
+               <PARAM name="encrypted"
+                   help = "Key is in encrypted format"
+                   ptype="SUBCOMMAND"
+                   mode="subcommand"
+                   optional="true"
+                   hidden="true">
+               </PARAM>
         </PARAM>
       </PARAM>
 
@@ -222,8 +231,7 @@ limitations under the License.
              optional="true">
         <PARAM name="type-val"
                help="server authentication type"
-               ptype="AAA_AUTH_TYPE"
-               dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/auth_type">
+               ptype="AAA_AUTH_TYPE">
         </PARAM>
       </PARAM>
 
@@ -234,8 +242,7 @@ limitations under the License.
              optional="true">
         <PARAM name="priority-val"
                help="Server priority"
-               ptype="TACACS_PRIORITY"
-               dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/priority">
+               ptype="TACACS_PRIORITY">
         </PARAM>
       </PARAM>
 
@@ -252,13 +259,12 @@ limitations under the License.
           <PARAM name="mgmt"
                  help="Management VRF name"
                  ptype="SUBCOMMAND"
-                 mode="subcommand"
-                 dbpath="sonic-system-tacacs:sonic-system-tacacs/TACPLUS_SERVER/TACPLUS_SERVER_LIST/vrf=mgmt">
+                 mode="subcommand">
           </PARAM>
         </PARAM>
       </PARAM>
 
-      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${#key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val} vrf:${mgmt}</ACTION>
+      <ACTION builtin="clish_pyobj">sonic_cli_tacacs patch_tacacs_server ${host} port:${port-val} key:${#key-val} timeout:${timeout-val} authtype:${type-val} priority:${priority-val} vrf:${mgmt} encrypted:${encrypted}</ACTION>
     </COMMAND>
 
     <!-- no tacacs server -->

@@ -162,6 +162,22 @@ def invoke(func, args):
                             print("Removing interface "+ str(iname)+" from domain "+str(dmid))
                             keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_INTERFACE/MCLAG_INTERFACE_LIST={domain_id},{if_name}', domain_id=args[0], if_name=iname)
                             aa.delete(keypath)
+                mclag_peer_gw_list  = []
+                if "MCLAG_PEER_GATEWAY" in response["sonic-mclag:sonic-mclag"]:
+                    mclag_peer_gw_list = response['sonic-mclag:sonic-mclag']['MCLAG_PEER_GATEWAY']['MCLAG_PEER_GATEWAY_LIST']
+                    for list_item  in mclag_peer_gw_list:
+                        iname=list_item["if_name"]
+                        print("Removing mclag-peer-gateway from "+ str(iname))
+                        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_PEER_GATEWAY/MCLAG_PEER_GATEWAY_LIST={if_name}', if_name=iname)
+                        aa.delete(keypath)
+                mclag_unique_ip_list  = []
+                if "MCLAG_UNIQUE_IP" in response["sonic-mclag:sonic-mclag"]:
+                    mclag_unique_ip_list = response['sonic-mclag:sonic-mclag']['MCLAG_UNIQUE_IP']['MCLAG_UNIQUE_IP_LIST']
+                    for list_item  in mclag_unique_ip_list:
+                        iname=list_item["if_name"]
+                        print("Removing mclag-separate-ip from "+ str(iname))
+                        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST={if_name}', if_name=iname)
+                        aa.delete(keypath)
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_DOMAIN/MCLAG_DOMAIN_LIST={domain_id}', domain_id=args[0])
         return aa.delete(keypath)
 
@@ -226,6 +242,30 @@ def invoke(func, args):
     #######################################
 
     #######################################
+    # Configure  MCLAG Peer Gateway Table - START
+    #######################################
+    if (func == 'patch_sonic_mclag_peer_gateway_list'):
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_PEER_GATEWAY/MCLAG_PEER_GATEWAY_LIST' )
+        body = {
+            "sonic-mclag:MCLAG_PEER_GATEWAY_LIST": [
+            {
+                "if_name":args[0],
+                "peer_gateway":"enable"
+            }
+          ]
+        }
+        return aa.patch(keypath, body)
+
+    if (func == 'delete_sonic_mclag_peer_gateway_list'):
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_PEER_GATEWAY/MCLAG_PEER_GATEWAY_LIST={if_name}',
+                if_name=args[0])
+        return aa.delete(keypath)
+
+    #######################################
+    # Configure  MCLAG Peer Gateway Table - END
+    #######################################
+
+    #######################################
     # Configure  MCLAG Gateway Mac Table - START
     #######################################
     if (func == 'patch_sonic_mclag_gw_mac_list'):
@@ -279,6 +319,10 @@ def invoke(func, args):
     if func == 'get_sonic_mclag_separate_ip_list':
         keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_UNIQUE_IP/MCLAG_UNIQUE_IP_LIST')
         #keypath = cc.Path('/restconf/data/openconfig-mclag:mclag/vlan-interfaces/vlan-interface')
+        return aa.get(keypath)
+
+    if func == 'get_sonic_mclag_peer_gateway_list':
+        keypath = cc.Path('/restconf/data/sonic-mclag:sonic-mclag/MCLAG_PEER_GATEWAY/MCLAG_PEER_GATEWAY_LIST')
         return aa.get(keypath)
 
     #######################################
@@ -543,6 +587,25 @@ def mclag_show_mclag_separate_ip(args):
 
     return
 
+#show mclag peer_gateway_interfaces
+def mclag_show_mclag_peer_gateway(args):
+
+    api_response = invoke("get_sonic_mclag_peer_gateway_list", args)
+    response = {}
+    if api_response.ok():
+        response = api_response.content
+        if response is not None and len(response) != 0:
+            show_cli_output(args[0], response)
+        else:
+            print("MCLAG Peer Gateway interface not configured")
+
+    else:
+        #error response
+        print api_response
+        print api_response.error_message()
+
+    return
+
 def run(func, args):
 
     #show commands
@@ -556,6 +619,9 @@ def run(func, args):
             return 0
         if func == 'show_mclag_separate_ip':
             mclag_show_mclag_separate_ip(args)
+            return 0
+        if func == 'show_mclag_peer_gateway':
+            mclag_show_mclag_peer_gateway(args)
             return 0
 
     except Exception as e:

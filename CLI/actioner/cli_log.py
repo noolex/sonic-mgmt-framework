@@ -26,8 +26,8 @@ __enable_print = False
 
 
 def log_debug(msg):
-    if not isinstance(msg, basestring):
-        msg = str(msg)
+    if not isinstance(msg, str):
+        msg = "{}".format(msg)
 
     if __enable_debug:
         syslog.syslog(syslog.LOG_DEBUG, msg)
@@ -40,8 +40,8 @@ def log_debug(msg):
 
 
 def log_info(msg):
-    if not isinstance(msg, basestring):
-        msg = str(msg)
+    if not isinstance(msg, str):
+        msg = "{}".format(msg)
 
     syslog.syslog(syslog.LOG_INFO, msg)
 
@@ -53,8 +53,8 @@ def log_info(msg):
 
 
 def log_error(msg):
-    if not isinstance(msg, basestring):
-        msg = str(msg)
+    if not isinstance(msg, str):
+        msg = "{}".format(msg)
 
     syslog.syslog(syslog.LOG_ERR, msg)
 
