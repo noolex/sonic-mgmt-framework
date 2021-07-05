@@ -10,10 +10,10 @@ from scripts.render_cli import show_cli_output
 def prompt(msg):
     prompt_msg = msg + " [y/N]:";
 
-    x = eval(input(prompt_msg))
+    x = raw_input(prompt_msg)
     while x != "y" and  x != "N":
         print ("Invalid input, expected [y/N]")
-        x = eval(input(prompt_msg))
+        x = raw_input(prompt_msg)
     if x == "N":
         return False
     else:
