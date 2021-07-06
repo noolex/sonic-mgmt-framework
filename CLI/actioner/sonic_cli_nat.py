@@ -231,7 +231,7 @@ def get_response_dict(response):
             # Get Command Output
             api_response = response.content
     else:
-        print response.error_message()
+        print(response.error_message())
 
     return api_response
 

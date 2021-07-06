@@ -375,7 +375,7 @@ def build_area_id_list (vrf_name):
             output.sort()
         except  Exception as e:
             log.syslog(log.LOG_ERR, str(e))
-            print "%Error: Internal error"
+            print("%Error: Internal error")
     return output
 
 def invoke_show_api(func, args=[]):
@@ -504,7 +504,7 @@ def invoke_show_api(func, args=[]):
                         body = {"sonic-ospfv2-show:input": { "cmd":full_cmd }}
                         response = cc.ApiClient().post(keypath, body)
                         if not response:
-                            print "No response"
+                            print("No response")
                             return 1
                         if response.ok():
                             if 'sonic-ospfv2-show:output' in response.content and 'response' in response.content['sonic-ospfv2-show:output']:

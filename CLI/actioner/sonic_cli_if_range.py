@@ -439,7 +439,7 @@ def invoke_api(func, args=[]):
         elif iftype == "PortChannel":
             subfunc = "portchannel_config"
         else:
-            print "%Error: Not supported"
+            print("%Error: Not supported")
             return 1
         for intf in ifrangelist:
             intfargs = [intf]+args[1:]
@@ -607,7 +607,7 @@ def run(func, args):
                 intfargs = [intf]+ args[2:]
                 response = invoke_api(subfunc, intfargs)
                 if check_response(response, subfunc, intfargs):
-                    print "%Error: Interface: "+intf
+                    print("%Error: Interface: {}".format(intf))
 
         elif func == 'create_if_range': 
             cmd = args[0].split("=")[1]

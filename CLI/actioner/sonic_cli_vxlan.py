@@ -133,7 +133,7 @@ def invoke(func, args):
                return aa._make_error_response("Error: Please delete all VLAN VNI mappings.");
              
             keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_TUNNEL/VXLAN_TUNNEL_LIST={name}', name=args[0])
-            keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
+            keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_EVPN_NVO/VXLAN_EVPN_NVO_LIST={name}', name='nvo1')
             api_response = aa.get(keypath_nvo)
             response = api_response.content
             if response is not None and len(response) != 0:
@@ -166,9 +166,9 @@ def invoke(func, args):
                   }
             response = aa.patch(keypath, body)
             if response.ok():
-                keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST')
+                keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_EVPN_NVO/VXLAN_EVPN_NVO_LIST')
                 body = {
-                "sonic-vxlan:EVPN_NVO_LIST": [
+                "sonic-vxlan:VXLAN_EVPN_NVO_LIST": [
                     {
                     "name": 'nvo1',
                     "source_vtep": args[0][6:] 
@@ -181,7 +181,7 @@ def invoke(func, args):
         else:
             if is_vlan_vni_mapping_exists() is True:
                return aa._make_error_response("Error: Please delete all VLAN VNI mappings.");
-            keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST={name}', name='nvo1')
+            keypath_nvo = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_EVPN_NVO/VXLAN_EVPN_NVO_LIST={name}', name='nvo1')
             api_response = aa.get(keypath_nvo)
             response = api_response.content
             if response is not None and len(response) != 0:
@@ -294,7 +294,7 @@ def invoke(func, args):
         return aa.get(keypath)
 
     if func == "get_list_sonic_vxlan_sonic_vxlan_evpn_nvo_evpn_nvo_list":
-        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_NVO/EVPN_NVO_LIST')
+        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_EVPN_NVO/VXLAN_EVPN_NVO_LIST')
         return aa.get(keypath)
 
     if func == "get_sonic_loopback_interface_sonic_loopback_interface_loopback_interface":
@@ -314,7 +314,7 @@ def invoke(func, args):
         return aa.get(keypath)
 
     if func == "get_list_sonic_vxlan_sonic_vxlan_evpn_remote_vni_table_evpn_remote_vni_table_list":
-        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/EVPN_REMOTE_VNI_TABLE/EVPN_REMOTE_VNI_TABLE_LIST')
+        keypath = cc.Path('/restconf/data/sonic-vxlan:sonic-vxlan/VXLAN_REMOTE_VNI_TABLE/VXLAN_REMOTE_VNI_TABLE_LIST')
         return aa.get(keypath)
 
     if func == "get_list_sonic_vxlan_sonic_vxlan_fdb_table_vxlan_fdb_table_list":
@@ -519,19 +519,19 @@ def vxlan_show_vxlan_evpn_remote_vni(args):
     if response is None:
         print("no vxlan evpn remote vni entires")
     elif response is not None:
-        if 'sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST' in response:
+        if 'sonic-vxlan:VXLAN_REMOTE_VNI_TABLE_LIST' in response:
             index = 0
-            while (index < len(response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST'])):
-                iter = response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST'][index] 
+            while (index < len(response['sonic-vxlan:VXLAN_REMOTE_VNI_TABLE_LIST'])):
+                iter = response['sonic-vxlan:VXLAN_REMOTE_VNI_TABLE_LIST'][index] 
                 if (arg_length == 3 and (args[2] != iter['remote_vtep'])):
-                    response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST'].pop(index)
+                    response['sonic-vxlan:VXLAN_REMOTE_VNI_TABLE_LIST'].pop(index)
                 else:
                     index = index + 1
             if (args[1] == 'show'):
                 show_cli_output(args[0], response)
             elif (args[1] == 'count'):
-                if 'sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST' in response:
-                    remote_vni_list = response['sonic-vxlan:EVPN_REMOTE_VNI_TABLE_LIST']
+                if 'sonic-vxlan:VXLAN_REMOTE_VNI_TABLE_LIST' in response:
+                    remote_vni_list = response['sonic-vxlan:VXLAN_REMOTE_VNI_TABLE_LIST']
                     remote_vni_list_len = str(len(remote_vni_list))
                     print("Total Count: " + remote_vni_list_len)
                 else:
