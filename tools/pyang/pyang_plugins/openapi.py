@@ -1557,8 +1557,10 @@ def getType(node, typeNodes=[]):
             [prefix, name] = name.split(':', 1)
         if prefix is None or t.i_module.i_prefix == prefix:
             # check local typedefs
-            pmodule = node.i_module
-            typedef = statements.search_typedef(t, name)
+            pmodule = t.i_module
+            typedef = statements.search_typedef(pmodule, name) # typedef is defined at module level
+            if typedef is None:
+                typedef = statements.search_typedef(t, name) # typedef is defined in local hierarchy
         else:
             # this is a prefixed name, check the imported modules
             err = []
