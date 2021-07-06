@@ -1,0 +1,48 @@
+{% if json_output -%}
+
+{{' '}}
+{{'Interface   Type     Vendor           Temp(C) Volt(V) RxPwr(dBm) TxPwr(dBm)'}}
+{{'----------- -------- ---------------- ------- ------- ---------- ----------'}}
+
+{% for ifName in json_output %}
+
+{% set info = json_output[ifName] %}
+
+{% set type = info.get('type') %}
+{% if not type -%}
+{%     set type = "" %}
+{% endif %}
+
+{% set vend = info.get('vendor') %}
+{% if not vend -%}
+{%     set vend = "" %}
+{% endif %}
+
+{% set temp = info.get('temperature') %}
+{% if not temp -%}
+{%     set temp = "" %}
+{% endif %}
+
+{% set volt = info.get('voltage') %}
+{% if not volt -%}
+{%     set volt = "" %}
+{% endif %}
+
+{% set rxpower = info.get('rx-power') %}
+{% if not rxpower -%}
+{%     set rxpower = "" %}
+{% else %}
+{%     set rxpower = rxpower.split(',')[0] %}
+{% endif %}
+
+{% set txpower = info.get('tx-power') %}
+{% if not txpower -%}
+{%     set txpower = "" %}
+{% else %}
+{%     set txpower = txpower.split(',')[0] %}
+{% endif %}
+
+{{ifName.ljust(12)}}{{type.ljust(9)}}{{vend.ljust(17)}}{{temp.ljust(8)}}{{volt.ljust(8)}}{{rxpower.ljust(11)}}{{txpower.ljust(11)}}
+
+{% endfor %}
+{% endif %}
