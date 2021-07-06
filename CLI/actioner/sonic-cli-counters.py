@@ -44,6 +44,12 @@ def invoke(func, args):
     if func == 'rpc_interfaces_clear_counters':
         if args[0] == "all":
             clearit = prompt("Clear all Interface counters")
+        elif args[0] == "rif":
+            keypath = cc.Path('/restconf/operations/sonic-counters:clear_rif_counters')
+            ifname = "all"
+            inputs = {"rif":ifname}
+            body = {"sonic-counters:rif_count:input": inputs}
+            return aa.post(keypath, body)
         elif args[0] == "PortChannel":
             clearit = prompt("Clear all PortChannel interface counters")
         elif args[0] == "Eth" or args[0] == "Ethernet":
@@ -63,7 +69,10 @@ def run(func, args):
     try:
         api_response = invoke(func,args)
         if api_response is not None:
-            status = api_response.content["openconfig-interfaces-ext:output"]
+            if args[0] == "rif":
+                 status = api_response.content["sonic-counters:output"]
+            else:
+                 status = api_response.content["openconfig-interfaces-ext:output"]
             if status["status"] != 0:
                 print status["status-detail"]
     except:

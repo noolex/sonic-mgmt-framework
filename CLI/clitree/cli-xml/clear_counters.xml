@@ -42,6 +42,13 @@ clear counters [interface <interface>]
                             mode="switch"
                             >
                             <PARAM
+                                name="rif"
+                                help="Clear all rif counters"
+                                ptype="SUBCOMMAND"
+                                mode="subcommand"
+                                >
+                            </PARAM>
+                            <PARAM
                                 name="all"
                                 help="Clear all interface counters"
                                 ptype="SUBCOMMAND"
@@ -90,7 +97,7 @@ clear counters [interface <interface>]
                             </PARAM>
                         </PARAM>
                  </PARAM>
-            <ACTION builtin="clish_pyobj">sonic-cli-counters rpc_interfaces_clear_counters ${interface-switch}${ifId}</ACTION>
+            <ACTION builtin="clish_pyobj"> sonic-cli-counters rpc_interfaces_clear_counters ${interface-switch}${ifId}</ACTION>
         </COMMAND>
     </VIEW>
 </CLISH_MODULE>
