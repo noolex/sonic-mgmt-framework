@@ -1,0 +1,27 @@
+{% if json_output -%}
+
+{% for ifName in json_output %}
+
+{% set info = json_output[ifName] %}
+
+{{' '}}
+{{'-----------------------------------------------------------------------'}}
+{{ifName.ljust(14)}}
+{{'-----------------------------------------------------------------------'}}
+
+{% if info -%}
+
+{%     for attr in info.keys() | sort %}
+{%         if attr not in ['ifname'] %}
+{{attr.ljust(32)}}{{info[attr]}}
+{%         endif %}
+{%     endfor %}
+
+{% else %}
+
+{{"None detected"}}
+
+{% endif %}
+
+{% endfor %}
+{% endif %}

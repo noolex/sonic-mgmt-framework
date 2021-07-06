@@ -84,7 +84,7 @@ limitations under the License.
     </VAR>
 
     <VIEW name="enable-view">
-   <!-- show running-configuration interface -->
+     <!-- show running-configuration interface -->
      <COMMAND
          name="show running-configuration interface"
          help="Show interface info"
@@ -324,7 +324,7 @@ limitations under the License.
                 <PARAM
                     name="phy-if-name"
                     help="Interface"
-                    ptype="PHY_INTERFACE"
+                    ptype="ETHER_INTERFACE_RANGE"
                     optional="true"
                     >
                 </PARAM>
@@ -337,33 +337,46 @@ limitations under the License.
                     >
                 </PARAM>
                 <PARAM
-                    name="diagnostics"
-                    help="Transceiver diagnostics info"
+                    name="if-xcvr-subcommands"
+                    help="Interface transceiver subcommands"
+                    mode="switch"
                     ptype="SUBCOMMAND"
-                    mode="subcommand"
                     optional="true"
                     >
                     <PARAM
-                        name="if-xcvr-diag-subcommands"
-                        help="Interface transceiver diagnostics subcommands"
-                        mode="switch"
+                        name="dom"
+                        help="Transceiver DOM info"
                         ptype="SUBCOMMAND"
+                        mode="subcommand"
+                    />
+                    <PARAM
+                        name="diagnostics"
+                        help="Transceiver diagnostics info"
+                        ptype="SUBCOMMAND"
+                        mode="subcommand"
                         >
+                        <PARAM
+                            name="if-xcvr-diag-subcommands"
+                            help="Interface transceiver diagnostics subcommands"
+                            mode="switch"
+                            ptype="SUBCOMMAND"
+                            >
                             <PARAM
                                 name="capability"
                                 help="Show transceiver diagnostics capability"
                                 mode="subcommand"
                                 ptype="SUBCOMMAND"
-                                />
+                            />
                             <PARAM
                                 name="status"
                                 help="Show transceiver diagnostics status"
                                 mode="subcommand"
                                 ptype="SUBCOMMAND"
-                                />
+                            />
+                        </PARAM>
                     </PARAM>
                 </PARAM>
-          </PARAM>
+           </PARAM>
          </PARAM>
    <ACTION>
         if test "${if-subcommands}" = "status"; then&#xA;
@@ -414,7 +427,9 @@ limitations under the License.
                 python $SONIC_CLI_ROOT/sonic_cli_if_range.py get_if_range "${ethiflist_nativeNum}" show_interface_id.j2  ${__full_line}&#xA;
             fi&#xA;
         elif test "${if-subcommands}" = "transceiver"; then&#xA;
-            if test "${diagnostics}" != ""; then&#xA;
+            if test "${dom}" != ""; then&#xA;
+                python $SONIC_CLI_ROOT/sonic_cli_xcvr_dom.py ${__full_line}&#xA;
+            elif test "${diagnostics}" != ""; then&#xA;
                 python $SONIC_CLI_ROOT/sonic_cli_xcvr_diag.py ${__full_line}&#xA;
             elif test "${summary}" = "summary"; then&#xA;
                 if test "${phy-if-name}" != ""; then&#xA;
