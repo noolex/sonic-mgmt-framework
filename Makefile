@@ -143,6 +143,5 @@ cleanall: clean
 	$(RM) tools/swagger_codegen/swagger-codegen*.jar
 
 go-clean:
-	test -d $(GOPATH)/pkg && chmod -R u+w $(GOPATH)/pkg || true
-	$(RM) -r $(GOPATH)/pkg $${HOME}/.cache/go-build $${HOME}/.cache/staticcheck
+	$(MAKE) -C $(MGMT_COMMON_DIR) go-clean
 
