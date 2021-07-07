@@ -216,7 +216,7 @@
         <COMMAND name="udld" help="UDLD configuration"/>
         <COMMAND name="no udld" help="UDLD configuration"/>
         <COMMAND name = "udld enable"
-            help = "Enables UDLD at global level"
+            help = "Enable UDLD at global level"
             command_tables="sonic-udld:sonic-udld/UDLD/UDLD_LIST/id={id}"
             command_keys="id=GLOBAL"
             dbpath="sonic-udld:sonic-udld/UDLD/UDLD_LIST/id=GLOBAL">
@@ -234,7 +234,7 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND name = "no udld enable"
-            help = "Disables UDLD at global level">
+            help = "Disable UDLD at global level">
             <ACTION builtin="clish_pyobj">sonic_cli_udld delete_sonic_udld_sonic_udld_udld</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -249,7 +249,7 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND name = "udld aggressive"
-            help = "Enables aggressive UDLD mode at global level"
+            help = "Enable aggressive UDLD mode at global level"
             command_tables="sonic-udld:sonic-udld/UDLD/UDLD_LIST/id={id}"
             command_keys="id=GLOBAL"
             dbpath="sonic-udld:sonic-udld/UDLD/UDLD_LIST/aggressive=true">
@@ -267,7 +267,7 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND name = "no udld aggressive"
-            help = "Disables aggressive UDLD mode at global level">
+            help = "Disable aggressive UDLD mode at global level">
             <ACTION builtin="clish_pyobj">sonic_cli_udld patch_sonic_udld_sonic_udld_udld_udld_list_aggressive false</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -282,7 +282,7 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND name = "udld message-time"
-            help = "Configures UDLD message time"
+            help = "Configure UDLD message time"
             command_tables="sonic-udld:sonic-udld/UDLD/UDLD_LIST/id">
             <PARAM
                 name="msg-time"
@@ -304,7 +304,7 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND name = "no udld message-time" help = "Resets UDLD message time">
+        <COMMAND name = "no udld message-time" help = "Reset UDLD message time">
             <ACTION builtin="clish_pyobj">sonic_cli_udld patch_sonic_udld_sonic_udld_udld_udld_list_msg_time 0</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -320,7 +320,7 @@
         </COMMAND>
 
         <COMMAND name = "udld multiplier"
-            help = "Configures UDLD multiplier"
+            help = "Configure UDLD multiplier"
             command_tables="sonic-udld:sonic-udld/UDLD/UDLD_LIST/id">
             <PARAM
                 name="multiplier"
@@ -342,7 +342,7 @@
                 </EXAMPLE>
             </DOCGEN>
         </COMMAND>
-        <COMMAND name = "no udld multiplier" help = "Resets UDLD multiplier">
+        <COMMAND name = "no udld multiplier" help = "Reset UDLD multiplier">
             <ACTION builtin="clish_pyobj">sonic_cli_udld patch_sonic_udld_sonic_udld_udld_udld_list_multiplier 0</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -364,7 +364,7 @@
         <COMMAND name="udld" help="UDLD configuration"/>
         <COMMAND name="no udld" help="UDLD configuration"/>
         <COMMAND name = "udld enable"
-            help = "Enables UDLD at interface level"
+            help = "Enable UDLD at interface level"
             command_tables="sonic-udld:sonic-udld/UDLD_PORT/UDLD_PORT_LIST/ifname={name}"
             dbpath="sonic-udld:sonic-udld/UDLD_PORT/UDLD_PORT_LIST/admin_enable=true">
             <ACTION builtin="clish_pyobj">sonic_cli_udld post_list_sonic_udld_sonic_udld_udld_port_udld_port_list ${iface}</ACTION>
@@ -382,7 +382,7 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND name = "no udld enable"
-            help = "Disables UDLD at interface level">
+            help = "Disable UDLD at interface level">
             <ACTION builtin="clish_pyobj">sonic_cli_udld delete_sonic_udld_sonic_udld_udld_port_udld_port_list ${iface}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>
@@ -398,7 +398,7 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND name = "udld aggressive"
-            help = "Enables aggressive mode UDLD at interface level"
+            help = "Enable aggressive mode UDLD at interface level"
             command_tables="sonic-udld:sonic-udld/UDLD_PORT/UDLD_PORT_LIST/ifname={name}"
             dbpath="sonic-udld:sonic-udld/UDLD_PORT/UDLD_PORT_LIST/aggressive=true">
             <ACTION builtin="clish_pyobj">sonic_cli_udld patch_sonic_udld_sonic_udld_udld_port_udld_port_list_aggressive true ${iface}</ACTION>
@@ -416,7 +416,7 @@
             </DOCGEN>
         </COMMAND>
         <COMMAND name = "no udld aggressive"
-            help = "Disables aggressive mode UDLD at interface level">
+            help = "Disable aggressive mode UDLD at interface level">
             <ACTION builtin="clish_pyobj">sonic_cli_udld patch_sonic_udld_sonic_udld_udld_port_udld_port_list_aggressive false ${iface}</ACTION>
             <DOCGEN>
                 <DESCRIPTION>

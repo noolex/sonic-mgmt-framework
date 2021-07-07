@@ -23,14 +23,14 @@ limitations under the License.
     http://www.dellemc.com/sonic/XMLSchema/clish.xsd"
     >
     <VIEW name="enable-view">
-      <COMMAND help="Displays SSH server information" name="show ssh-server">
+      <COMMAND help="Display SSH server information" name="show ssh-server">
       </COMMAND>
 
-      <COMMAND name="show ssh-server vrf" help="Displays SSH server status for VRF">
+      <COMMAND name="show ssh-server vrf" help="Display SSH server status for VRF">
         <PARAM name="vrf-switch" help="" ptype="SUBCOMMAND" mode="switch">
           <PARAM 
             name = "all"
-            help = "Displays SSH server status for all VRFs"
+            help = "Show SSH server status for all VRFs"
             ptype = "SUBCOMMAND"
             mode = "subcommand"
             />
@@ -61,7 +61,7 @@ limitations under the License.
     </VIEW>
 
     <VIEW name="hidden-view">
-      <COMMAND name="show ssh-server vrfs" help="Displays SSH server status for all VRFs">
+      <COMMAND name="show ssh-server vrfs" help="Display SSH server status for all VRFs">
         <ACTION  builtin="clish_pyobj">sonic_cli_ssh_vrf get_openconfig_system_ssh_server_vrfs</ACTION>
       </COMMAND>
     </VIEW>
@@ -69,11 +69,11 @@ limitations under the License.
     <VIEW name="configure-view">
       <!-- ssh -->
     <COMMAND name="ssh-server"
-             help="Configures SSH server"/>
+             help="Configure SSH server"/>
     <!-- vrf configuration commands -->
     <COMMAND
       name="ssh-server vrf"
-      help="Enables SSH server on a VRF"
+      help="Enable SSH server on a VRF"
       mode="subcommand"
       ptype="SUBCOMMAND"
       command_tables="sonic-ssh-server-vrf:sonic-ssh-server-vrf/SSH_SERVER_VRF/SSH_SERVER_VRF_LIST/vrf_name"
@@ -97,10 +97,10 @@ limitations under the License.
 
     <!-- no vrf commands -->
     <COMMAND name="no ssh-server"
-             help="Disables SSH server"/>
+             help="Disable SSH server"/>
     <COMMAND
       name="no ssh-server vrf"
-      help="Disables SSH server on a VRF"
+      help="Disable SSH server on a VRF"
       mode="subcommand"
       ptype="SUBCOMMAND"
       >

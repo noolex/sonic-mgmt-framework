@@ -69,6 +69,10 @@ def invoke_api(func, args=[]):
         path = cc.Path('/restconf/data/sonic-portchannel-interface:sonic-portchannel-interface/PORTCHANNEL_INTERFACE/PORTCHANNEL_INTERFACE_IPADDR_LIST')
         return api.get(path)
 
+    if func == 'get_openconfig_interfaces_interfaces_interface_state_mac':
+        path = cc.Path('/restconf/data/openconfig-interfaces:interfaces/interface={name}/state/mac-address', name=args[0])
+        return api.get(path)
+
     return api.cli_not_implemented(func)
 
 def filter_address(api_response,lagName):
@@ -180,6 +184,21 @@ def get_lacp_data(lagName):
 
     return resp
 
+def get_mac_address(lagName,lag_list):
+    output ={}
+    pc_name = lagName
+    if lagName is 'all':
+        if len(lag_list)!=0:
+            pc_name = lag_list['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0]['lagname']
+	else:
+	    return
+
+    response = invoke_api('get_openconfig_interfaces_interfaces_interface_state_mac',[pc_name])
+    if response.ok():
+	if response.content is not None:
+	    output = response.content
+
+    return output
 
 def get_counters(api_response):
 
@@ -270,7 +289,10 @@ def run():
             else:
                 api_response1['openconfig-lacp:interfaces']['interface'] = lacp_list
 
-    response = {"portchannel": api_response, "lacp":api_response1 , "global": global_config_response}
+    api_response_mac = get_mac_address(iflist[0],api_response)
+
+    response = {"portchannel": api_response, "lacp":api_response1 , "global": global_config_response, 
+                "mac":api_response_mac}
     if 'LAG_TABLE_LIST' not in response['portchannel']['sonic-portchannel:LAG_TABLE'] or \
         'admin_status' not in response['portchannel']['sonic-portchannel:LAG_TABLE']['LAG_TABLE_LIST'][0].keys():
         response = {}

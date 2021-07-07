@@ -21,19 +21,19 @@ limitations under the License.
                         http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
 
    <VIEW name="enable-view">
-    <COMMAND name="show ip prefix-list" help="IPv4 prefix list">
+    <COMMAND name="show ip prefix-list" help="Display IPv4 prefix-list">
         <PARAM name="list-name" help="Name of prefix-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_ip_prefix ip_prefix_show_specific show_ip_prefix.j2 ${list-name}</ACTION>
     </COMMAND>
-    <COMMAND name="show ipv6 prefix-list" help="IPv6 prefix list">
+    <COMMAND name="show ipv6 prefix-list" help="Display IPv6 prefix-list">
         <PARAM name="list-name" help="Name of prefix-list" ptype="STRING_63" optional="true"> </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_ip_prefix ipv6_prefix_show_specific show_ipv6_prefix.j2 ${list-name}</ACTION>
     </COMMAND>
-    <COMMAND name="show running-configuration ip prefix-list" help="Show current IPv4 prefix-list configuration">
+    <COMMAND name="show running-configuration ip prefix-list" help="Display current IPv4 prefix-list configuration">
         <PARAM name="prefix-list-name" help="Name of prefix-list" ptype="STRING_63" optional="true"> </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=renderCfg_v4prefix_lists view_keys="prefix-list-name=${prefix-list-name}"</ACTION>
     </COMMAND>
-    <COMMAND name="show running-configuration ipv6 prefix-list" help="Show current IPv6 prefix-list configuration">
+    <COMMAND name="show running-configuration ipv6 prefix-list" help="Display current IPv6 prefix-list configuration">
         <PARAM name="prefix-list-name" help="Name of prefix-list" ptype="STRING_63" optional="true"> </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=renderCfg_v6prefix_lists view_keys="prefix-list-name=${prefix-list-name}"</ACTION>
     </COMMAND>
@@ -45,7 +45,7 @@ limitations under the License.
     <!-- interface commands -->
     <COMMAND
         name="ip prefix-list"
-        help="Build a prefix list"
+        help="Build a prefix-list"
         command_keys="name=*,seqno=*,prefix=*,mask=*"
         command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST/set_name={name},sequence_number={seqno},ip_prefix={prefix},masklength_range={mask};sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST/name={name}"
         render_command_cb="v4prefix_lists_cmd"
@@ -164,7 +164,7 @@ limitations under the License.
 
     <COMMAND
         name="ipv6 prefix-list"
-        help="Build a prefix list"
+        help="Build a prefix-list"
         command_keys="name=*,seqno=*,prefix=*,mask=*"
         command_tables="sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX/PREFIX_LIST/set_name={name},sequence_number={seqno},ip_prefix={prefix},masklength_range={mask};sonic-routing-policy-sets:sonic-routing-policy-sets/PREFIX_SET/PREFIX_SET_LIST/name={name}"
         render_command_cb="v6prefix_lists_cmd"
@@ -282,7 +282,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="no ip prefix-list"
-        help="Delete a prefix list"
+        help="Delete a prefix-list"
         >
         <PARAM
             name="prefix-name"
@@ -398,7 +398,7 @@ limitations under the License.
 
     <COMMAND
         name="no ipv6 prefix-list"
-        help="Delete IPv6 prefix list"
+        help="Delete IPv6 prefix-list"
         >
         <PARAM
             name="prefix-name"

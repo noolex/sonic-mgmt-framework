@@ -24,7 +24,7 @@ limitations under the License.
     >
     <VIEW name="enable-view">
     <!--show mirror-session -->
-    <COMMAND name="show mirror-session" help="Show mirror session information">
+    <COMMAND name="show mirror-session" help="Display mirror session information">
         <PARAM
             name="session-name"
             help="Mirror session name"
@@ -54,7 +54,7 @@ limitations under the License.
    </COMMAND>
 
     <!-- show running-configuration mirror-session -->
-    <COMMAND name="show running-configuration mirror-session" help="Show mirror session info">
+    <COMMAND name="show running-configuration mirror-session" help="Display mirror session info">
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-mirror </ACTION>
       </COMMAND>
 

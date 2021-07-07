@@ -23,7 +23,7 @@ limitations under the License.
 <VIEW name="enable-view">
     <COMMAND
         name="show mac"
-        help="Show MAC"
+        help="Display MAC"
         >
     </COMMAND>
 
@@ -60,7 +60,7 @@ limitations under the License.
 <!--====================show mac address-table address <mac-address> command ======================-->
     <COMMAND
         name="show mac address-table address"
-        help="Show MAC address-table address for MAC address"
+        help="Display MAC address-table address for MAC address"
         >
         <PARAM
             name="mac-addr"
@@ -76,7 +76,7 @@ limitations under the License.
 <!--====================show mac address-table vlan <vlan-id> command ======================-->
     <COMMAND
         name="show mac address-table Vlan"
-        help="Show MAC address-table for VLAN"
+        help="Display MAC address-table for VLAN"
         >
         <PARAM
             name="vlan-id"
@@ -92,7 +92,7 @@ limitations under the License.
 <!--====================show mac address-table interface <p-id> command ======================-->
     <COMMAND
         name="show mac address-table interface"
-        help="Show MAC address-table for interfaces">
+        help="Display MAC address-table for interfaces">
         <PARAM
             name="if-subcommands"
             help="Interface subcommands"
@@ -272,12 +272,12 @@ limitations under the License.
         fi
     </ACTION>
     </COMMAND>
-    <COMMAND name="show mac dampening" help="Show MAC dampening configuration" >
+    <COMMAND name="show mac dampening" help="Display MAC dampening configuration" >
     <ACTION>
         python $SONIC_CLI_ROOT/sonic-cli-mac.py get_list_sonic_mac_dampening_sonic_mac_dampening_mac_dampening_mac_dampening_list show_mac_dampening.j2 ${__full_line__}
     </ACTION>
     </COMMAND>
-    <COMMAND name="show mac dampening-disabled-ports" help="Show MAC dampening-disabled-ports" >
+    <COMMAND name="show mac dampening-disabled-ports" help="Display MAC dampening-disabled-ports" >
         <ACTION>
             python $SONIC_CLI_ROOT/sonic-cli-mac.py get_openconfig_mac_dampening_network_instances_network_instance_mac_dampening_state show_mac_dampening.j2 ${__full_line__}
         </ACTION>
@@ -308,7 +308,7 @@ limitations under the License.
             >
             <PARAM
                 name="all"
-                help="clearing dynamic mac address"
+                help="Clear dynamic mac address"
                 ptype="SUBCOMMAND"
                 mode="subcommand"
                 >
@@ -386,7 +386,7 @@ limitations under the License.
     </COMMAND>
   <COMMAND name="clear mac dampening-disabled-ports" help="Clear MAC dampening disabled ports">
    <PARAM  name="damp-subcommands" help="subcommands" mode="switch" ptype="SUBCOMMAND">
-      <PARAM name="all" help="clearing all mac dampening disabled ports" ptype="SUBCOMMAND" mode="subcommand">
+      <PARAM name="all" help="Clear all mac dampening disabled ports" ptype="SUBCOMMAND" mode="subcommand">
       </PARAM>
       <PARAM name="PORT_ID" help="Ethernet interface" ptype="PHY_INTERFACE" mode="subcommand">
       </PARAM>

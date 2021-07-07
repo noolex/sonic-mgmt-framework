@@ -23,14 +23,14 @@ limitations under the License.
 
   <VIEW name="enable-view">
     <!-- clear logging  -->
-    <COMMAND help="Displays in-memory-logging information" name="show in-memory-logging">
+    <COMMAND help="Display in-memory-logging information" name="show in-memory-logging">
         <ACTION builtin="clish_pyobj">sonic_cli_in_memory_logging get_openconfig_system_in_memory_logging tpcm.j2</ACTION>
     </COMMAND>
     <COMMAND help="Output of last NUM lines" name="show in-memory-logging lines">
         <PARAM name="lines" help="Output of last NUM lines" optional="true" ptype="LOGGING_COUNT" default ="0" > </PARAM>
         <ACTION builtin="clish_pyobj">sonic_cli_in_memory_logging get_openconfig_system_in_memory_logging tpcm.j2 ${lines} </ACTION>
     </COMMAND>
-    <COMMAND help="total number of in-memory-logging" name="show in-memory-logging count">
+    <COMMAND help="Total number of in-memory-logging" name="show in-memory-logging count">
         <ACTION builtin="clish_pyobj">sonic_cli_in_memory_logging get_openconfig_system_in_memory_logging_count infra_reboot.j2</ACTION>
     </COMMAND>
   </VIEW>

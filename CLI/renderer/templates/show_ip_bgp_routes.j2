@@ -66,8 +66,8 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
         {% endif %}
     {% endif %}
   {% endif %}
-  {% if "openconfig-bgp-ext:attr-sets" in key %}
-    {% set attr_sets = route[key] %}
+  {% if "openconfig-bgp-deviation:attr-sets" in key %}
+    {% set attr_sets = route[key]["state"] %}
     {% if attr_sets["origin"] %}
         {% if attr_sets["origin"] == 'IGP' %}
             {% if vars.update({'origin':"i"}) %}{% endif %}

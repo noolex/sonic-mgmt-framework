@@ -8,7 +8,7 @@
 ]>
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
   <VIEW name="enable-view">
-    <COMMAND name="show interface breakout" help="Show port breakout information">
+    <COMMAND name="show interface breakout" help="Display port breakout information">
         <PARAM
              name="dpb-subcommands"
              help="Breakout subcommands"

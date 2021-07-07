@@ -86,16 +86,16 @@ def get_keypath(func,args):
         path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/global'
 
         if inputDict.get('jpi'):
-            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"join-prune-interval": float(inputDict.get('jpi'))}}}
+            body = {"openconfig-network-instance:global": {"config": {"join-prune-interval": float(inputDict.get('jpi'))}}}
         elif inputDict.get('kat'):
-            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"keep-alive-timer": float(inputDict.get('kat'))}}}
+            body = {"openconfig-network-instance:global": {"config": {"keep-alive-timer": float(inputDict.get('kat'))}}}
         elif inputDict.get('pln'):
             body = {"openconfig-network-instance:global": {"ssm": {"config": {"ssm-ranges": inputDict.get('pln')}}}}
         #as rebalance is a child of ecmp, check it first
         elif inputDict.get('rebalance'):
-            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-rebalance-enabled": True}}}
+            body = {"openconfig-network-instance:global": {"config": {"ecmp-rebalance-enabled": True}}}
         elif inputDict.get('ecmp'):
-            body = {"openconfig-network-instance:global": {"openconfig-pim-ext:config": {"ecmp-enabled": True}}}
+            body = {"openconfig-network-instance:global": {"config": {"ecmp-enabled": True}}}
 
     ##############################################################
     #del global config
@@ -111,16 +111,16 @@ def get_keypath(func,args):
 
         #generate del request based on the input
         if inputDict.get('jpi'):
-            path = path + "/openconfig-pim-ext:config/join-prune-interval"
+            path = path + "/config/join-prune-interval"
         elif inputDict.get('kat'):
-            path = path + "/openconfig-pim-ext:config/keep-alive-timer"
+            path = path + "/config/keep-alive-timer"
         elif inputDict.get('pln'):
             path = path + "/ssm/config/ssm-ranges"
         #as rebalance is a child of ecmp, check it first
         elif inputDict.get('rebalance'):
-            path = path + "/openconfig-pim-ext:config/ecmp-rebalance-enabled"
+            path = path + "/config/ecmp-rebalance-enabled"
         elif inputDict.get('ecmp'):
-            path = path + "/openconfig-pim-ext:config/ecmp-enabled"
+            path = path + "/config/ecmp-enabled"
 
     ##############################################################
     #interface level config common code
@@ -167,9 +167,9 @@ def get_keypath(func,args):
     if func.endswith('config_bfd'):
         if func.startswith('patch'):
             path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces'
-            body = {"openconfig-network-instance:interfaces": {"interface": [{"interface-id": intf, "config": {"interface-id": intf, "bfd-enabled": True}}]}}
+            body = {"openconfig-network-instance:interfaces": {"interface": [{"interface-id": intf, "config": {"interface-id": intf}, "enable-bfd": {"config": {"enabled": True}}}]}}
         elif func.startswith('del'):
-            path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf_uri + '/config/openconfig-pim-ext:bfd-enabled'
+            path = path_prefix + vrf + '/protocols/protocol=PIM,pim/pim/interfaces/interface=' + intf_uri + '/enable-bfd/config/enabled'
 
     ##############################################################
     #show config
@@ -189,11 +189,11 @@ def get_keypath(func,args):
         if (inputDict.get('ssm')):
             path = path + "/global/ssm"
         if (inputDict.get('srcAddr')):
-            path = path + "/global/openconfig-pim-ext:tib/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr') + "/state/src-entries/src-entry=" + inputDict.get('srcAddr') + ",SG"
+            path = path + "/global/tib/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr') + "/src-entries/src-entry=" + inputDict.get('srcAddr') + ",SG"
         elif (inputDict.get('grpAddr')):
-            path = path + "/global/openconfig-pim-ext:tib/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr')
+            path = path + "/global/tib/ipv4-entries/ipv4-entry=" + inputDict.get('grpAddr')
         elif (inputDict.get('topology')):
-            path = path + "/global/openconfig-pim-ext:tib"
+            path = path + "/global/tib"
         elif (inputDict.get('rpf')):
             path = "/restconf/operations/sonic-pim-show:show-pim"
             body = {"sonic-pim-show:input":{"vrf-name": vrf, "address-family": "IPV4_UNICAST", "query-type": "RPF", "rpf": True}}
@@ -306,15 +306,15 @@ def show_intf_info(response):
         elif enabled == True:
             intfState = "up"
 
-        localAddr = state.get('openconfig-pim-ext:local-address')
+        localAddr = state.get('local-address')
         if localAddr is None:
             localAddr = ""
 
-        nbrCount = state.get('openconfig-pim-ext:nbrs-count')
+        nbrCount = state.get('nbrs-count')
         if nbrCount is None:
             nbrCount = ""
 
-        pimDrAddr = state.get('openconfig-pim-ext:dr-address')
+        pimDrAddr = state.get('dr-address')
         if pimDrAddr is None:
             pimDrAddr = ""
 
@@ -359,7 +359,7 @@ def show_topology_src_info(response):
 
     grpAddr = inputDict.get('grpAddr')
     try:
-        srcList = response.get('openconfig-pim-ext:src-entry')
+        srcList = response.get('openconfig-network-instance:src-entry')
         if srcList is None:
             return
 
@@ -393,7 +393,7 @@ def show_topology_src_info(response):
             inIntf = "-"
 
         rpfNbr = ""
-        rpfInfo = srcState.get('rpf-info')
+        rpfInfo = srcList[0].get('rpf-info')
         if rpfInfo:
             rpfState = rpfInfo.get('state')
             if rpfState:
@@ -401,7 +401,7 @@ def show_topology_src_info(response):
                 if rpfNbr is None:
                     rpfNbr = ""
 
-        oilContainer = srcState.get('oil-info-entries')
+        oilContainer = srcList[0].get('oil-info-entries')
         if oilContainer:
             oilList = oilContainer.get('oil-info-entry')
             if oilList:
@@ -470,9 +470,9 @@ def show_topology_info(response):
 
     try:
         if inputDict.get('grpAddr'):
-            ipList = response.get('openconfig-pim-ext:ipv4-entry')
+            ipList = response.get('openconfig-network-instance:ipv4-entry')
         else:
-            tmpContainer = response.get('openconfig-pim-ext:tib')
+            tmpContainer = response.get('openconfig-network-instance:tib')
             if tmpContainer is None:
                 return
             tmpContainer = tmpContainer.get('ipv4-entries')
@@ -494,7 +494,7 @@ def show_topology_info(response):
             if grpAddr is None:
                 continue
 
-            srcEntries = state.get('src-entries')
+            srcEntries = ip.get('src-entries')
             if srcEntries is None:
                 continue
 
@@ -533,7 +533,7 @@ def show_topology_info(response):
                     inIntf = "-"
 
                 rpfNbr = ""
-                rpfInfo = srcState.get('rpf-info')
+                rpfInfo = src.get('rpf-info')
                 if rpfInfo:
                     rpfState = rpfInfo.get('state')
                     if rpfState:
@@ -541,7 +541,7 @@ def show_topology_info(response):
                         if rpfNbr is None:
                             rpfNbr = ""
 
-                oilContainer = srcState.get('oil-info-entries')
+                oilContainer = src.get('oil-info-entries')
                 if oilContainer is not None:
                     oilList = oilContainer.get('oil-info-entry')
                     if oilList is not None:
@@ -730,11 +730,11 @@ def show_nbr_info(response):
             else:
                 expiryTime = seconds_to_wdhm_str(expiryTime, False)
 
-            pimDrPrio = nbrState.get('openconfig-pim-ext:dr-priority')
+            pimDrPrio = nbrState.get('dr-priority')
             if pimDrPrio is None:
                 pimDrPrio = ""
 
-            pimNbrBfdState = nbrState.get('openconfig-pim-ext:bfd-session-status')
+            pimNbrBfdState = nbrState.get('bfd-session-status')
             if pimNbrBfdState is None:
                 pimNbrBfdState = "-"
             elif pimNbrBfdState == "UP":

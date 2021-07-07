@@ -31,7 +31,7 @@ limitations under the License.
 <VIEW name="enable-view">
     <COMMAND
         name="show ldap-server"
-        help="Show LDAP information"
+        help="Display LDAP information"
         >
     <ACTION builtin="clish_pyobj">sonic_cli_show_ldap get_sonic_ldap</ACTION>
     <DOCGEN>

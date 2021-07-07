@@ -165,7 +165,7 @@ limitations under the License.
         >
         <PARAM name = "match-evpn-cmd-type" help = "" ptype = "SUBCOMMAND" mode="switch" >
             <PARAM name="default-route"
-                         help="default EVPN type-5 route"
+                         help="Default EVPN type-5 route"
                          ptype="SUBCOMMAND"
                          mode="subcommand" />
             <PARAM name="route-type"
@@ -263,11 +263,11 @@ limitations under the License.
               ptype="PO_INTERFACE_SUBIF">
            </PARAM>
            <PARAM name="Vlan" 
-              help="Vlan Interface Configuration" 
+              help="VLAN Interface Configuration" 
               mode="subcommand" 
               ptype="SUBCOMMAND">
               <PARAM name="vlan-id" 
-                 help="Vlan identifier" 
+                 help="VLAN identifier" 
                  ptype="VLAN_ID"
               />
            </PARAM>
@@ -376,11 +376,11 @@ limitations under the License.
               ptype="PO_INTERFACE_SUBIF">
            </PARAM>
            <PARAM name="Vlan" 
-              help="Vlan Interface Configuration" 
+              help="VLAN Interface Configuration" 
               mode="subcommand" 
               ptype="SUBCOMMAND">
               <PARAM name="vlan-id" 
-                 help="Vlan identifier" 
+                 help="VLAN identifier" 
                  ptype="VLAN_ID"
               />
            </PARAM>

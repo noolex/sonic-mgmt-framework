@@ -18,7 +18,7 @@ limitations under the License.
 
 <CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
   <VIEW name="enable-view">
-    <COMMAND name="show sflow" help="Show sFlow information">
+    <COMMAND name="show sflow" help="Display sFlow information">
       <ACTION builtin="clish_pyobj">sonic_cli_sflow get_sonic_sflow_sonic_sflow show_sflow.j2 ${__full_line} </ACTION>
       <DOCGEN>
           <DESCRIPTION>Show global sFlow configuration</DESCRIPTION>
@@ -34,7 +34,7 @@ limitations under the License.
           </EXAMPLE>
       </DOCGEN>
     </COMMAND>
-    <COMMAND name="show sflow interface" help="Show sFlow interface information">
+    <COMMAND name="show sflow interface" help="Display sFlow interface information">
       <ACTION builtin="clish_pyobj">sonic_cli_sflow get_sonic_sflow_sonic_sflow_sflow_session_table show_sflow_intf.j2 ${__full_line} </ACTION>
       <DOCGEN>
           <DESCRIPTION>Show sFlow interface configuration</DESCRIPTION>
@@ -118,7 +118,7 @@ limitations under the License.
     <COMMAND name="sflow agent-id" help="Collector agent interface" ptype="SUBCOMMAND" mode="subcommand" command_keys="sflow_key=global" command_tables="sonic-sflow:sonic-sflow/SFLOW/SFLOW_LIST/sflow_key={sflow_key}" render_command_cb="sflow_source_if">
       <PARAM name="if-switch" help="agent interface" mode="switch" ptype="STRING">
         <PARAM name="phy-if-name" help="Physical interface" ptype="PHY_INTERFACE"/>
-        <PARAM name="vlan-if-name" help="Vlan indentifer" ptype="VLAN_INTERFACE"/>
+        <PARAM name="vlan-if-name" help="VLAN indentifer" ptype="VLAN_INTERFACE"/>
         <PARAM name="loop-if-name" help="Loopback identifier" ptype="LOOPBACK_INTERFACE"/>
       </PARAM>
       <ACTION builtin="clish_pyobj">sonic_cli_sflow patch_sonic_sflow_sonic_sflow_sflow_sflow_list_agent_id ${phy-if-name}${vlan-if-name}${loop-if-name}</ACTION>

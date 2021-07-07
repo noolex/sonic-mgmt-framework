@@ -16,10 +16,10 @@
              help="SONiC logging severity level setting"
              mode="subcommand"
              ptype="SUBCOMMAND">
-             <PARAM name="loglevel" help="loglvel value" ptype="SUBCOMMAND" mode="subcommand" >
+             <PARAM name="loglevel" help="loglevel value" ptype="SUBCOMMAND" mode="subcommand" >
                    <PARAM name="loglevel_value" help="for loglevel value" ptype="STRING">
                    </PARAM>
-                    <PARAM name="component" help="component name in DB for which loglevel is applied" ptype="SUBCOMMAND" mode="subcommand" >
+                    <PARAM name="component" help="Component name in DB for which loglevel is applied" ptype="SUBCOMMAND" mode="subcommand" >
                          <PARAM name="component_name" help="for component name in DB" ptype="STRING">
                          </PARAM>
                          <PARAM name="sai_component" help="for SAI api component" ptype="SUBCOMMAND" mode="subcommand" optional = "true" >

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ROOT>
     <MACRODEF name="SERVICE-POLICY-INTERFACE-OPTIONS">
-        <PARAM name="interface-options" help="Show policies applied for interface" ptype="SUBCOMMAND" mode="switch">
+        <PARAM name="interface-options" help="Display policies applied for interface" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="eth-if-id" help="Ethernet interface" ptype="PHY_INTERFACE" />
             <PARAM name="po-if-id" help="PortChannel interface" ptype="PO_INTERFACE" />
-            <PARAM name="vlan-if-id" help="Vlan interface" ptype="VLAN_INTERFACE" />
+            <PARAM name="vlan-if-id" help="VLAN interface" ptype="VLAN_INTERFACE" />
             <PARAM name="eth-sub-if-id" help="Ethernet sub-interface" ptype="PHY_INTERFACE_SUBIF" />
             <PARAM name="po-sub-if-id" help="PortChannel sub-interface" ptype="PO_INTERFACE_SUBIF" />
             <PARAM name="CPU" help="CPU interface" ptype="SUBCOMMAND" mode="subcommand"/>
@@ -98,7 +98,7 @@
     </MACRODEF>
 
     <MACRODEF name="POLICY-FLOW-DESCRIPTION">
-        <COMMAND name="description" help="Configures flow description">
+        <COMMAND name="description" help="Configure flow description">
             <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs set_flow_description ${fbs-policy-name} ${fbs-class-name} description ${description-value}</ACTION>
             <DOCGEN>
@@ -155,7 +155,7 @@
            </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="no service-policy" help="Removes ingress or egress policy">
+        <COMMAND name="no service-policy" help="Remove ingress or egress policy">
             <MACRO name="FBS-POLICY-TYPES" arg="false,arg1" />
             <MACRO name="FBS-DIRECTION-TYPES" arg="arg2"/>
              <ACTION builtin="clish_pyobj">sonic_cli_fbs unbind_policy ${fbs-policy-type} ${fbs-direction-type} ${iface} ${vlan_name} ${po_name} arg2</ACTION>
@@ -224,12 +224,12 @@
         <PARAM name="egress-intf-options" help="" ptype="SUBCOMMAND" mode="switch">
             <PARAM name="null" help="Drop traffic" ptype="SUBCOMMAND" mode="subcommand"/>
             <PARAM name="port-id" help="Port number" ptype="PHY_INTERFACE" completion="false"/> 
-            <PARAM name="portchannel-id" help="Lag number" ptype="PO_INTERFACE" completion="false"/>
+            <PARAM name="portchannel-id" help="LAG number" ptype="PO_INTERFACE" completion="false"/>
         </PARAM>
     </MACRODEF>
 
     <MACRODEF name="FBS-NEXT-HOP-GROUP-CLIS">
-        <COMMAND name="entry" help="Configured next-hop group member at specified index">
+        <COMMAND name="entry" help="Configure next-hop group member at specified index">
             <PARAM name="entry-index" help="Entry index" ptype="RANGE_1_65535">
                 <PARAM name="next-hop" help="Next hop" ptype="SUBCOMMAND" mode="subcommand" order="true"/>
                 <PARAM name="ip-address" help="arg1 address Value" ptype="arg2" order="true"/>
@@ -253,7 +253,7 @@
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_next_hop_group_member ${fbs-nh-grp-name} ${__params}</ACTION>
         </COMMAND>
 
-        <COMMAND name="description" help="Configures next hop group description">
+        <COMMAND name="description" help="Configure next hop group description">
             <PARAM name="description-value" help="String" ptype="DESCRIPTION"/>
             <ACTION builtin="clish_pyobj">sonic_cli_fbs create_next_hop_group_description ${fbs-nh-grp-name} description ${description-value}</ACTION>
             <DOCGEN>
@@ -269,7 +269,7 @@
            </DOCGEN>
         </COMMAND>
 
-        <COMMAND name="no description" help="Deletes next hop group description">
+        <COMMAND name="no description" help="Delete next hop group description">
             <ACTION builtin="clish_pyobj">sonic_cli_fbs delete_next_hop_group_description ${fbs-nh-grp-name}</ACTION>
             <DOCGEN>
               <DESCRIPTION>

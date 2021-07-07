@@ -26,10 +26,10 @@ limitations under the License.
 
 <VIEW name="enable-view">   
 
-    <COMMAND name = "show bfd" help = "Show BFD commands" >
+    <COMMAND name = "show bfd" help = "Display BFD commands" >
     </COMMAND>
     
-    <COMMAND name = "show bfd peer" help = "Displays specific BFD peer" >
+    <COMMAND name = "show bfd peer" help = "Display specific BFD peer" >
             <PARAM name = "address" help = "" ptype = "SUBCOMMAND" mode="switch" >
                 <PARAM name = "peer_ipv4" help = "IPv4 peer address" ptype = "IP_ADDR" > </PARAM>
                 <PARAM name = "peer_ipv6" help = "IPv6 peer address" ptype = "IPV6_ADDR"> </PARAM>
@@ -103,7 +103,7 @@ limitations under the License.
 	</DOCGEN>
     </COMMAND>
 
-    <COMMAND name = "show bfd peer counters" help = "Displays specific BFD peer counters information" >
+    <COMMAND name = "show bfd peer counters" help = "Display specific BFD peer counters information" >
             <PARAM name = "address" help = "" ptype = "SUBCOMMAND" mode="switch" >
                 <PARAM name = "peer_ipv4" help = "IPv4 peer address" ptype = "IP_ADDR" > </PARAM>
                 <PARAM name = "peer_ipv6" help = "IPv6 peer address" ptype = "IPV6_ADDR"> </PARAM>
@@ -151,13 +151,13 @@ limitations under the License.
     </DOCGEN> 
     </COMMAND>
   
-    <COMMAND name = "show bfd peers" help = "Displays all BFD peers" >
-            <PARAM name = "vrf" help = "Displays BFD peers associated with the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
+    <COMMAND name = "show bfd peers" help = "Display all BFD peers" >
+            <PARAM name = "vrf" help = "Display BFD peers associated with the VRF" optional = "true" ptype="SUBCOMMAND" mode="subcommand" >
                 <PARAM name = "vrfname" help = "VRF name (prefixed by Vrf)" ptype = "STRING" default="all"> </PARAM>
             </PARAM>
             <PARAM name = "showtype" help = "" ptype = "SUBCOMMAND" mode="switch" optional = "true" >
-                <PARAM name = "brief" help = "Displays BFD peers information in tabular form" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
-                <PARAM name = "counters" help = "Displays BFD peers counters information" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
+                <PARAM name = "brief" help = "Display BFD peers information in tabular form" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
+                <PARAM name = "counters" help = "Display BFD peers counters information" optional = "true" ptype="SUBCOMMAND" mode="subcommand" ></PARAM>
             </PARAM>
         <ACTION builtin="clish_pyobj"> sonic_cli_bfd get_bfd_peers show_bfd_peers_brief.j2 ${showtype} ${vrfname} </ACTION>
     <DOCGEN>
@@ -241,7 +241,7 @@ limitations under the License.
     </DOCGEN>
     </COMMAND>
 
-    <COMMAND name="show running-configuration bfd" help="Show all BFD configurations">
+    <COMMAND name="show running-configuration bfd" help="Display all BFD configurations">
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_multi_views views=configure-bfd</ACTION>
         <DOCGEN>
             <DESCRIPTION>
@@ -339,7 +339,7 @@ limitations under the License.
               help="Negate a command or set its defaults">
     </COMMAND>
     
-    <COMMAND name="show configuration" help="show BFD configuration">
+    <COMMAND name="show configuration" help="Display BFD configuration">
         <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-bfd </ACTION>
         <DOCGEN>
             <DESCRIPTION>
