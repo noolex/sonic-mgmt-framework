@@ -16,16 +16,16 @@
 <VIEW name="enable-view">
     <COMMAND
         name="show ip igmp"
-        help="Show Internet Group Management Protocol (IGMP)">
+        help="Display Internet Group Management Protocol (IGMP)">
         <PARAM
             name="snooping"
-            help="Displays IGMP snooping configurations"
+            help="Display IGMP snooping configurations"
             ptype="SUBCOMMAND"
             mode="subcommand"
         >        
             <PARAM
             name="vlan"
-            help="Displays IGMP snooping configurations for VLAN"
+            help="Display IGMP snooping configurations for VLAN"
             ptype="SUBCOMMAND"
             mode="subcommand"
 						optional="true"
@@ -39,14 +39,14 @@
 					 
 	        <PARAM
 	            name="groups"
-	            help="Displays IGMP snooping multicast table"
+	            help="Display IGMP snooping multicast table"
 	            ptype="SUBCOMMAND"
 	            mode="subcommand"
 	            optional="true"
 	         >
 	            <PARAM
 	            name="vlan"
-	            help="Displays IGMP snooping multicast table for VLAN"
+	            help="Display IGMP snooping multicast table for VLAN"
 	            ptype="SUBCOMMAND"
 	            mode="subcommand"
 							optional="true"
@@ -149,7 +149,7 @@
     </COMMAND>
 
     <COMMAND name = "ip igmp snooping" 
-             help="Enables IGMP snooping"
+             help="Enable IGMP snooping"
              command_tables="sonic-igmp-snooping:sonic-igmp-snooping/CFG_L2MC_TABLE/CFG_L2MC_TABLE_LIST/vlan-name={name};sonic-igmp-snooping:sonic-igmp-snooping/CFG_L2MC_MROUTER_TABLE/CFG_L2MC_MROUTER_TABLE_LIST/mrouter-intf={mrtr-intf};sonic-igmp-snooping:sonic-igmp-snooping/CFG_L2MC_STATIC_MEMBER_TABLE/CFG_L2MC_STATIC_MEMBER_TABLE_LIST/vlan-name={name},group-addr={group-addr},source-addr={source-addr},out-intf={out-intf}"
              render_command_cb='igmp_snooping_config'
              ptype="SUBCOMMAND"
@@ -165,7 +165,7 @@
 							    
 				                <PARAM
                                     name="querier"
-				                    help="Enables IGMP snooping querier"
+				                    help="Enable IGMP snooping querier"
 				                    ptype="SUBCOMMAND"
                                     mode="subcommand"
                                     >
@@ -173,7 +173,7 @@
 				
 				                <PARAM
                                     name="fast-leave"
-				                    help="Enables IGMP fast leave processing"
+				                    help="Enable IGMP fast leave processing"
 				                    ptype="SUBCOMMAND"
 				                    mode="subcommand"
 				                   >
@@ -181,7 +181,7 @@
 				
 				                <PARAM
 				                    name="query-interval"
-				                    help="Configures IGMP query interval"
+				                    help="Configure IGMP query interval"
                                     ptype="SUBCOMMAND"
                                     mode="subcommand"
 				                   >
@@ -194,7 +194,7 @@
 				
 				                <PARAM
 				                    name="last-member-query-interval"
-				                    help="Configures IGMP last member query interval"
+				                    help="Configure IGMP last member query interval"
 				                    ptype="SUBCOMMAND"
 				                    mode="subcommand"
 				                    >
@@ -207,7 +207,7 @@
 				
 				                <PARAM
 				                    name="query-max-response-time"
-				                    help="Configures IGMP max query response time"
+				                    help="Configure IGMP max query response time"
 				                    ptype="SUBCOMMAND"
 				                    mode="subcommand"
 				                   >
@@ -220,7 +220,7 @@
 
 											<PARAM
 				                    name="version"
-				                    help="Configures IGMP snooping version"
+				                    help="Configure IGMP snooping version"
 				                    ptype="SUBCOMMAND"
 				                    mode="subcommand"
 				                   >
@@ -233,7 +233,7 @@
 				
 			                <PARAM
 			                    name="mrouter"
-			                    help="Configures multicast router port"
+			                    help="Configure multicast router port"
 			                    ptype="SUBCOMMAND"
                                 mode="subcommand"
                                 >
@@ -254,7 +254,7 @@
 										
 		                <PARAM
 		                    name="static-group"
-		                    help="Configures multicast static group"
+		                    help="Configure multicast static group"
 		                    ptype="SUBCOMMAND"
 		                    mode="subcommand"
 		                   >
@@ -364,7 +364,7 @@
         <ACTION builtin="clish_pyobj">sonic_cli_if patch_openconfig_if_ip_disable_igmp ${vlan_name}</ACTION>
     </COMMAND>
     <COMMAND name = "no ip igmp snooping" 
-             help="Disables IGMP snooping"
+             help="Disable IGMP snooping"
              ptype="SUBCOMMAND"
              mode="subcommand">
 
@@ -378,7 +378,7 @@
 							    
 				                <PARAM
 				                    name="querier"
-				                    help="Disables IGMP snooping querier"
+				                    help="Disable IGMP snooping querier"
 				                    ptype="SUBCOMMAND"
 				                    mode="subcommand"
 				                   >
@@ -386,7 +386,7 @@
 				
 				                <PARAM
 				                    name="fast-leave"
-				                    help="Disables fast leave processing"
+				                    help="Disable fast leave processing"
 				                    ptype="SUBCOMMAND"
 				                    mode="subcommand"
 				                   >
@@ -394,35 +394,35 @@
 				
 				                <PARAM
 				                    name="query-interval"
-				                    help="Unconfigures IGMP query interval"
+				                    help="Unconfigure IGMP query interval"
 				                    ptype="SUBCOMMAND"
 				                    mode="subcommand"
 				                   />
 				
 				                <PARAM
 				                    name="last-member-query-interval"
-				                    help="Unconfigures IGMP last member query interval"
+				                    help="Unconfigure IGMP last member query interval"
 				                    ptype="SUBCOMMAND"
 				                    mode="subcommand"
 				                    />
 				
 				                <PARAM
 				                    name="query-max-response-time"
-				                    help="Unconfigures IGMP max query response time"
+				                    help="Unconfigure IGMP max query response time"
 				                    ptype="SUBCOMMAND"
 				                    mode="subcommand"
 				                   />
 
 											<PARAM
 				                    name="version"
-				                    help="Unconfigures IGMP snooping version"
+				                    help="Unconfigure IGMP snooping version"
 				                    ptype="SUBCOMMAND"
 				                    mode="subcommand"
 				                   />
 				
 			                <PARAM
 			                    name="mrouter"
-			                    help="Unconfigures multicast router port"
+			                    help="Unconfigure multicast router port"
 			                    ptype="SUBCOMMAND"
 			                    mode="subcommand"
 			                   >
@@ -442,7 +442,7 @@
 										  
 		                <PARAM
 		                    name="static-group"
-		                    help="Unconfigures multicast static group"
+		                    help="Unconfigure multicast static group"
 		                    ptype="SUBCOMMAND"
 		                    mode="subcommand"
 		                   >

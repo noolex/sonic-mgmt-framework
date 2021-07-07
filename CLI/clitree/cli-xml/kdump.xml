@@ -150,11 +150,11 @@
     <VIEW name="enable-view">
         <COMMAND
             name="show kdump"
-            help="Show kdump status">
+            help="Display kdump status">
         </COMMAND>
         <COMMAND
             name="show kdump status"
-            help="Show kdump status">
+            help="Display kdump status">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_oc_kdump status show_oc_kdump_status.j2
             </ACTION>
@@ -184,7 +184,7 @@
         </COMMAND>
         <COMMAND
             name="show kdump memory"
-            help="Show memory reserved for kdump">
+            help="Display memory reserved for kdump">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_oc_kdump memory show_oc_kdump_memory.j2
             </ACTION>
@@ -207,7 +207,7 @@
         </COMMAND>
         <COMMAND
             name="show kdump num-dumps"
-            help="Show maximum number of kernel core dump files which can be stored locally">
+            help="Display maximum number of kernel core dump files which can be stored locally">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_oc_kdump num_dumps show_oc_kdump_num_dumps.j2
             </ACTION>
@@ -231,7 +231,7 @@
         </COMMAND>
        <COMMAND
             name="show kdump files"
-            help="Show kdump kernel core dump files">
+            help="Display kdump kernel core dump files">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_oc_kdump files show_oc_kdump_files.j2
             </ACTION>
@@ -258,7 +258,7 @@
         </COMMAND>
         <COMMAND
             name="show kdump log"
-            help="Show kdump kernel core dump file kernel log">
+            help="Display kdump kernel core dump file kernel log">
             <PARAM name="record" help="kdump dump file record number" ptype="GET_RANGE_1_9" optional="false"/>
             <PARAM name="lines" help="Number of lines retrieved from kernel log file" ptype="RANGE_5_100" optional="true"/>
             <ACTION

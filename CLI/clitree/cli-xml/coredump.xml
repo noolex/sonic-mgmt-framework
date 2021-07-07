@@ -74,11 +74,11 @@
     <VIEW name="enable-view">
         <COMMAND
             name="show core"
-            help="Show core files information">
+            help="Display core files information">
         </COMMAND>
         <COMMAND
             name="show core list"
-            help="Show core files list">
+            help="Display core files list">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_coredump list show_coredump_list.j2
             </ACTION>
@@ -113,7 +113,7 @@
         </COMMAND>
         <COMMAND
             name="show core config"
-            help="Show coredump configuration">
+            help="Display coredump configuration">
             <ACTION
                 builtin="clish_pyobj">sonic_cli_coredump config show_coredump_config.j2
             </ACTION>
@@ -136,7 +136,7 @@
         </COMMAND>
         <COMMAND
             name="show core info"
-            help="Show detailed core file information">
+            help="Display detailed core file information">
             <PARAM name="key" help="PID or executable name" ptype="STRING" optional="false"/>
             <ACTION
                 builtin="clish_pyobj">sonic_cli_coredump info show_coredump_info.j2 ${key}

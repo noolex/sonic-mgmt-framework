@@ -300,7 +300,7 @@
 <VIEW name="enable-view">
 <!--show ip load-share -->
     <COMMAND name = "show ip load-share"
-        help = "Shows ECMP load-share information"
+        help = "Display ECMP load-share information"
         >
         <ACTION builtin="clish_pyobj">
             sonic_cli_ip_loadshare get_load_share

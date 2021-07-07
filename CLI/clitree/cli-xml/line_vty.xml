@@ -72,8 +72,8 @@ limitations under the License.
 
     <!--============================== EXEC MODE COMMANDS =======================-->
     <VIEW name="enable-view">
-        <COMMAND name="show running-configuration line" help="Show current session configuration"/>
-        <COMMAND name="show running-configuration line vty" help="Show current session configuration">
+        <COMMAND name="show running-configuration line" help="Display current session configuration"/>
+        <COMMAND name="show running-configuration line vty" help="Display current session configuration">
             <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-line-vty</ACTION>
         </COMMAND>
     </VIEW>

@@ -95,14 +95,14 @@ limitations under the License.
         completion="false"
         />
 
-     <COMMAND name="show configuration" help="show tc-queue-map configuration">
+     <COMMAND name="show configuration" help="Display tc-queue-map configuration">
       <ACTION builtin="clish_pyobj">sonic_cli_show_config show_view views=configure-tc-queue-map view_keys="name=${map_name}"</ACTION>
      </COMMAND>
 
      <COMMAND name="traffic-class" help="Traffic Class value" mode="subcommand" ptype="SUBCOMMAND" >
         <PARAM name="tc_list" help="(-) or (,) separated individual Traffic-class and ranges of TC's; for example, 0,2-7" ptype="VAL_0_7_RANGE">
-            <PARAM name="queue" help="Queue id" mode="subcommand" ptype="SUBCOMMAND" >
-                <PARAM name="qid" help="Queue id" ptype="RANGE_0_7" >
+            <PARAM name="queue" help="Queue ID" mode="subcommand" ptype="SUBCOMMAND" >
+                <PARAM name="qid" help="Queue ID" ptype="RANGE_0_7" >
                 </PARAM>
             </PARAM>
         </PARAM>
@@ -150,7 +150,7 @@ limitations under the License.
   <VIEW name="enable-view">
 
     <!--show forwarding-group-queue-map -->
-    <COMMAND name="show qos map tc-queue" help="Show configured traffic-class-queue-map">
+    <COMMAND name="show qos map tc-queue" help="Display configured traffic-class-queue-map">
       <PARAM name="name" help="Name of the traffic-class-queue-map" ptype="STRING_32" optional="true"> </PARAM>
       <ACTION>
           if test "${name}" = "" ; then&#xA;

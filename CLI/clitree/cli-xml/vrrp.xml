@@ -26,7 +26,7 @@ limitations under the License.
 <VIEW name="enable-view">
 <!--show vrrp -->
     <COMMAND name = "show vrrp"
-        help = "Shows IPv4 VRRP instance information"
+        help = "Display IPv4 VRRP instance information"
         >
         <PARAM
             name="interface"
@@ -100,7 +100,7 @@ limitations under the License.
 
 <!--show vrrp6 -->
     <COMMAND name = "show vrrp6"
-        help = "Shows IPv6 VRRP instance information"
+        help = "Display IPv6 VRRP instance information"
         >
         <PARAM
             name="interface"
@@ -180,7 +180,7 @@ limitations under the License.
 <!-- vrrp -->
    <COMMAND
          name="vrrp"
-         help="Configures VRRP"
+         help="Configure VRRP"
          view_keys="ifname=*|idkey=*"
          command_tables="sonic-vrrp:sonic-vrrp/VRRP/VRRP_LIST/ifname={iface},idkey={vrrp-id};sonic-vrrp:sonic-vrrp/VRRP6/VRRP6_LIST/ifname={iface},idkey={vrrp-id};sonic-vrrp:sonic-vrrp/VRRP_TRACK;sonic-vrrp:sonic-vrrp/VRRP6_TRACK"
          render_command_cb="vrrp_config"
@@ -253,7 +253,7 @@ limitations under the License.
 
 <!-- no vrrp -->
    <COMMAND name="no vrrp"
-         help="Removes VRRP"
+         help="Remove VRRP"
      >
          <PARAM name="vrrp-id"
              help="VRRP ID (1 to 255)"
@@ -338,7 +338,7 @@ limitations under the License.
 
     <COMMAND
         name="no preempt"
-        help="Disables preempt"
+        help="Disable preempt"
         >
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_preempt ${iface} ${vrrp-id} false ipv4
@@ -358,7 +358,7 @@ limitations under the License.
 
     <COMMAND
         name="preempt"
-        help="Enables preempt"
+        help="Enable preempt"
         >
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_preempt ${iface} ${vrrp-id} true ipv4
@@ -378,7 +378,7 @@ limitations under the License.
 
     <COMMAND
         name="no use-v2-checksum"
-        help="Disables checksum compatibility"
+        help="Disable checksum compatibility"
         >
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_use_v2_checksum ${iface} ${vrrp-id} false ipv4
@@ -398,7 +398,7 @@ limitations under the License.
 
     <COMMAND
         name="use-v2-checksum"
-        help="Enables checksum compatibility"
+        help="Enable checksum compatibility"
         >
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_use_v2_checksum ${iface} ${vrrp-id} true ipv4
@@ -467,7 +467,7 @@ limitations under the License.
 
     <COMMAND
         name="advertisement-interval"
-        help="Configures advertisement interval"
+        help="Configure advertisement interval"
         >
         <PARAM
             name="adv_interval"
@@ -492,7 +492,7 @@ limitations under the License.
 
     <COMMAND
         name="no advertisement-interval"
-        help="Resets advertisement interval"
+        help="Reset advertisement interval"
         >
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_advertisement_interval ${iface} ${vrrp-id} ipv4
@@ -516,7 +516,7 @@ limitations under the License.
 
     <COMMAND
         name="version"
-        help="Configures version"
+        help="Configure version"
         >
         <PARAM
             name="ver"
@@ -545,7 +545,7 @@ limitations under the License.
 
     <COMMAND
         name="no version"
-        help="Resets version"
+        help="Reset version"
         >
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp delete_openconfig_interfaces_ext_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_version ${iface} ${vrrp-id} ipv4
@@ -567,7 +567,7 @@ limitations under the License.
     </COMMAND>
     <COMMAND
         name="vip"
-        help="Configures virtual IPv4 address"
+        help="Configure virtual IPv4 address"
         >
         <PARAM
             name="vip_addr"
@@ -593,7 +593,7 @@ limitations under the License.
 
     <COMMAND
         name="no vip"
-        help="Removes virtual IPv4 address"
+        help="Remove virtual IPv4 address"
         >
         <PARAM
             name="vip_addr"
@@ -618,7 +618,7 @@ limitations under the License.
 
     <COMMAND
         name="track-interface"
-        help="Configures track interface for priority change"
+        help="Configure track interface for priority change"
         >
         <PARAM
             name="interface-name"
@@ -664,7 +664,7 @@ limitations under the License.
 
     <COMMAND
         name="no track-interface"
-        help="Removes track interface for priority change"
+        help="Remove track interface for priority change"
         >
         <PARAM
             name="interface-name"
@@ -715,7 +715,7 @@ limitations under the License.
 
     <COMMAND
         name="no preempt"
-        help="Disables preempt"
+        help="Disable preempt"
         >
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_preempt ${iface} ${vrrp-id} false ipv6
@@ -735,7 +735,7 @@ limitations under the License.
 
     <COMMAND
         name="preempt"
-        help="Enables preempt"
+        help="Enable preempt"
         >
         <ACTION builtin="clish_pyobj">
             sonic_cli_vrrp patch_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_preempt ${iface} ${vrrp-id} true ipv6
@@ -755,7 +755,7 @@ limitations under the License.
 
     <COMMAND
         name="priority"
-        help="Configures priority for MASTER election"
+        help="Configure priority for MASTER election"
         >
         <PARAM
             name="priority-value"
@@ -780,7 +780,7 @@ limitations under the License.
 
     <COMMAND
         name="no priority"
-        help="Resets priority for MASTER election"
+        help="Reset priority for MASTER election"
         >
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_priority ${iface} ${vrrp-id} ipv6
@@ -803,7 +803,7 @@ limitations under the License.
 
     <COMMAND
         name="advertisement-interval"
-        help="Configures advertisement interval"
+        help="Configure advertisement interval"
         >
         <PARAM
             name="adv_interval"
@@ -828,7 +828,7 @@ limitations under the License.
 
     <COMMAND
         name="no advertisement-interval"
-        help="Resets advertisement interval"
+        help="Reset advertisement interval"
         >
             <ACTION builtin="clish_pyobj">
                 sonic_cli_vrrp delete_openconfig_if_ip_interfaces_interface_subinterfaces_subinterface_ip_addresses_address_vrrp_vrrp_group_config_advertisement_interval ${iface} ${vrrp-id} ipv6
@@ -852,7 +852,7 @@ limitations under the License.
 
     <COMMAND
         name="vip"
-        help="Configures virtual IPv6 address"
+        help="Configure virtual IPv6 address"
         >
         <PARAM
             name="vip_addr"
@@ -878,7 +878,7 @@ limitations under the License.
 
     <COMMAND
         name="no vip"
-        help="Removes virtual IPv6 address"
+        help="Remove virtual IPv6 address"
         >
         <PARAM
             name="vip_addr"
@@ -903,7 +903,7 @@ limitations under the License.
 
     <COMMAND
         name="track-interface"
-        help="Configures track interface for priority change"
+        help="Configure track interface for priority change"
         >
         <PARAM
             name="interface-name"
@@ -949,7 +949,7 @@ limitations under the License.
 
     <COMMAND
         name="no track-interface"
-        help="Removes track interface for priority change"
+        help="Remove track interface for priority change"
         >
         <PARAM
             name="interface-name"
@@ -983,7 +983,7 @@ limitations under the License.
    <!-- vrrp -->
    <COMMAND
          name="vrrp"
-         help="Configures VRRP"
+         help="Configure VRRP"
          view_keys="ifname=*|idkey=*"
          command_tables="sonic-vrrp:sonic-vrrp/VRRP/VRRP_LIST/ifname={po_name},idkey={vrrp-id};sonic-vrrp:sonic-vrrp/VRRP6/VRRP6_LIST/ifname={po_name},idkey={vrrp-id};sonic-vrrp:sonic-vrrp/VRRP_TRACK;sonic-vrrp:sonic-vrrp/VRRP6_TRACK"
          render_command_cb="vrrp_config"
@@ -1054,7 +1054,7 @@ limitations under the License.
 
 <!-- no vrrp -->
    <COMMAND name="no vrrp"
-         help="Removes IPv4 VRRP"
+         help="Remove IPv4 VRRP"
      >
      <PARAM name="vrrp-id"
          help="VRRP ID (1 to 255)"
@@ -1122,7 +1122,7 @@ limitations under the License.
    <!-- vrrp -->
    <COMMAND
          name="vrrp"
-         help="Configures VRRP"
+         help="Configure VRRP"
          view_keys="ifname=*|idkey=*"
          command_tables="sonic-vrrp:sonic-vrrp/VRRP/VRRP_LIST/ifname={vlan_name},idkey={vrrp-id};sonic-vrrp:sonic-vrrp/VRRP6/VRRP6_LIST/ifname={vlan_name},idkey={vrrp-id};sonic-vrrp:sonic-vrrp/VRRP_TRACK;sonic-vrrp:sonic-vrrp/VRRP6_TRACK"
          render_command_cb="vrrp_config"
@@ -1194,7 +1194,7 @@ limitations under the License.
 
 <!-- no vrrp -->
    <COMMAND name="no vrrp"
-         help="Removes IPv4 VRRP"
+         help="Remove IPv4 VRRP"
      >
      <PARAM name="vrrp-id"
          help="VRRP ID (1 to 255)"
@@ -1262,7 +1262,7 @@ limitations under the License.
 <!-- vrrp -->
    <COMMAND
          name="vrrp"
-         help="Configures VRRP"
+         help="Configure VRRP"
          view_keys="ifname=*|idkey=*"
          command_tables="sonic-vrrp:sonic-vrrp/VRRP/VRRP_LIST/ifname={iface},idkey={vrrp-id};sonic-vrrp:sonic-vrrp/VRRP6/VRRP6_LIST/ifname={iface},idkey={vrrp-id};sonic-vrrp:sonic-vrrp/VRRP_TRACK;sonic-vrrp:sonic-vrrp/VRRP6_TRACK"
          render_command_cb="vrrp_config"
@@ -1335,7 +1335,7 @@ limitations under the License.
 
 <!-- no vrrp -->
    <COMMAND name="no vrrp"
-         help="Removes VRRP"
+         help="Remove VRRP"
      >
          <PARAM name="vrrp-id"
              help="VRRP ID (1 to 255)"

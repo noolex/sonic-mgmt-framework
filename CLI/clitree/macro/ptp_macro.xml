@@ -28,10 +28,10 @@
 		<PARAM name="cfg-if-type" help="Interface type" mode="switch" ptype="SUBCOMMAND">
 			<PARAM name="Ethernet" help="Ethernet interface type" ptype="PHY_INTERFACE" >
 			<PARAM name="cfg_ptp_mt_subcommands" help="PTP master-table subcommands" mode="switch" ptype="SUBCOMMAND">
-				<PARAM name="add" help="Adds master nodes" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="add" help="Add master nodes" ptype="SUBCOMMAND" mode="subcommand">
 					<MACRO name="PTP-DEST-NODE" arg=""/>
 				</PARAM>
-				<PARAM name="del" help="Deletes master nodes" ptype="SUBCOMMAND" mode="subcommand">
+				<PARAM name="del" help="Delete master nodes" ptype="SUBCOMMAND" mode="subcommand">
 					<MACRO name="PTP-CLEAN-DEST-NODE" arg=""/>
 				</PARAM>
 			</PARAM>

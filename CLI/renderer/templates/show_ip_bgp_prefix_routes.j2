@@ -28,8 +28,8 @@
 {% endif %}
 {% if json_output -%}
   {% for key in json_output %}
-     {% if "openconfig-rib-bgp-ext:route" in key %}
-        {% set routeList = json_output["openconfig-rib-bgp-ext:route"] %}
+     {% if "openconfig-bgp-ext:route" in key %}
+        {% set routeList = json_output["openconfig-bgp-ext:route"] %}
         {% if routeList %}
          {% for route in routeList %}
          {% if vars.update({'prefix':route["prefix"]}) %}{% endif %}
@@ -72,8 +72,8 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
 {% endif %}
 {% if json_output and vars.numpaths -%}
   {% for key in json_output %}
-     {% if "openconfig-rib-bgp-ext:route" in key %}
-         {% set routeList = json_output["openconfig-rib-bgp-ext:route"] %}
+     {% if "openconfig-bgp-ext:route" in key %}
+         {% set routeList = json_output["openconfig-bgp-ext:route"] %}
          {% if routeList %}
          {% for route in routeList %}
          {% set prefixPathsList = route["loc-rib-prefix-paths"] %}
@@ -98,7 +98,7 @@ Paths: ({{ vars.numpaths }} available, best #{{ vars.bestpaths }}, table default
                     {% if vars.update({'routerId':path["state"]["remote-router-id"]}) %}{% endif %}
                  {% endif %}
                  {% if "attr-sets" in key %}
-                    {% set attr_sets = path[key] %}
+                    {% set attr_sets = path[key]["state"] %}
                     {% if vars.update({'origin':attr_sets["origin"]}) %}{% endif %}
                     {% if vars.origin == 'IGP' %}
                     {% if vars.update({'origin':"IGP"}) %}{% endif %}
