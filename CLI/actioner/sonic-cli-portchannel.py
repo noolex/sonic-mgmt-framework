@@ -78,7 +78,7 @@ def run(func, args):
                 # Get members for all PortChannels
                 members_resp = invoke_api('get_sonic_portchannel_sonic_portchannel_lag_member_table')
                 if not members_resp.ok():
-                    print members_resp.error_message()
+                    print(members_resp.error_message())
                     return
 
                 api_response_members = members_resp.content
@@ -101,7 +101,7 @@ def run(func, args):
             else:
                 return
     else:
-        print response.error_message()
+        print(response.error_message())
 
 if __name__ == '__main__':
 

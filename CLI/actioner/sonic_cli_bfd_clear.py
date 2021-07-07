@@ -34,20 +34,20 @@ def clear_bfd_api(args):
 
     for arg in args:
         if "vrf" == arg:
-           vrfname = args[i+1]
+            vrfname = args[i+1]
         elif "peer" == arg:
-           remoteaddress = args[i+1]
+            remoteaddress = args[i+1]
         elif "interface" == arg:
-           ifname = args[i+1]
+            ifname = args[i+1]
         elif "multihop" == arg:
             mhop = "multihop"
         elif "local-address" == arg:
-           localaddress = args[i+1]
+            localaddress = args[i+1]
         else:
-           pass
+            pass
         i = i + 1
     keypath = cc.Path('/restconf/operations/sonic-bfd-clear:clear-bfd')
-    body = {"sonic-bfd-clear:input": { "remote-address": remoteaddress, "vrf": vrfname, "interface": ifname, "local-address": localaddress, "multihop": mhop}}
+    body = {"sonic-bfd-clear:input":{"remote-address": remoteaddress, "vrf": vrfname, "interface": ifname, "local-address": localaddress, "multihop": mhop}}
     return api.post(keypath, body)
 
 def run(func, args):
@@ -61,10 +61,10 @@ def run(func, args):
                     print("Failed")
                     sys.exit(1)
         else:
-            print response.error_message()
+            print(response.error_message())
             sys.exit(1)
     else:
-       return
+        return
 
 if __name__ == '__main__':
 

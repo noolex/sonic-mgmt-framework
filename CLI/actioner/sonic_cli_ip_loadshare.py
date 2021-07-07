@@ -18,14 +18,9 @@
 ###########################################################################
 
 import sys
-import json
-import collections
-import re
 import cli_client as cc
 from rpipe_utils import pipestr
 from scripts.render_cli import show_cli_output
-import ast
-import subprocess
 
 
 def invoke(func, args):
@@ -121,7 +116,7 @@ def run(func, args):
             response = api_response.content
             if response is None:
                 pass
-            elif 'openconfig-loadshare-mode-ext:loadshare' in response.keys():
+            elif 'openconfig-loadshare-mode-ext:loadshare' in list(response.keys()):
                 show_cli_output("show_ip_loadshare.j2", response)
                 return
         else:

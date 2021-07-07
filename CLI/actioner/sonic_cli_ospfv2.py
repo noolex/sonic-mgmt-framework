@@ -45,12 +45,12 @@ def get_ospf_router_uri(vrf_name, instance_id='ospfv2'):
 def add_key_to_config_data(cfg_body, key_data):
     if len(cfg_body) == 0:
         cfg_body.update({ "config" : key_data })
-    elif "config" in cfg_body.keys():
+    elif "config" in list(cfg_body.keys()):
         cfg_body["config"].update(key_data)
 
 def add_cfg_body_to_uri_body(uri_body, cfg_body):
     ospf_cli_log("add_cfg_body_to_uri_body: {} {}".format(uri_body, cfg_body))
-    for key, data in cfg_body.items() :
+    for key, data in list(cfg_body.items()) :
         uri_body.update({ key : data })
     ospf_cli_log("add_cfg_body_to_uri_body: updated uri body {}".format(uri_body))
 
@@ -565,7 +565,7 @@ def cli_to_db_protocol_map(cli_protocol):
                      "connected" : "DIRECTLY_CONNECTED",
                      "table" : "DEFAULT_ROUTE" }
     if cli_protocol != None :
-        if cli_protocol in protocol_map.keys() :
+        if cli_protocol in list(protocol_map.keys()) :
             db_protocol = protocol_map[cli_protocol]
     return db_protocol
 
@@ -1437,12 +1437,12 @@ def invoke_api(func, args=[]):
         auth_type_map = { "null" : "NONE", "message-digest" : "MD5HMAC" }
 
         if len(args) == 2 :
-           if args[1] in auth_type_map.keys() :
+           if args[1] in list(auth_type_map.keys()) :
                auth_type = auth_type_map[args[1]]
            else :
                if_address = args[1] if (args[1] != "") else "0.0.0.0"
         elif len(args) >= 3 :
-           if args[1] in auth_type_map.keys() :
+           if args[1] in list(auth_type_map.keys()) :
                auth_type = auth_type_map[args[1]]
            if_address = args[2] if (len(args) >= 3 and args[2] != "") else "0.0.0.0"
 
@@ -1456,7 +1456,7 @@ def invoke_api(func, args=[]):
         auth_type_map = { "null" : "NONE", "message-digest" : "MD5HMAC" }
 
         if len(args) == 2 :
-           if  args[1] not in auth_type_map.keys() :
+           if  args[1] not in list(auth_type_map.keys()) :
                if_address = args[1] if (args[1] != "") else "0.0.0.0"
         elif len(args) >= 3 :
            if_address = args[2] if (len(args) >= 3 and args[2] != "") else "0.0.0.0"
@@ -1664,7 +1664,7 @@ def run(func, args):
 	if response.content is not None:
 	    print("Failed")
     else:
-        print(response.error_message())
+        print((response.error_message()))
 
 if __name__ == '__main__':
 

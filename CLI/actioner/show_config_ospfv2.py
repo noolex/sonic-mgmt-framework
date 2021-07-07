@@ -41,7 +41,7 @@ def ospf_generate_command(in_map, key_name, cmd_prefix, match_value={}, cmd_suff
     #ospf_debug_print("ospf_generate_command: key {} inmap {} ".format(key_name, in_map))
     if key_name in in_map :
         if len(match_value) :
-            for key, value in match_value.items() :
+            for key, value in list(match_value.items()) :
                 if in_map[key_name] == key :
                     if value != '' :
                         cmd_str = '{} {} {}'.format(cmd_prefix, value, cmd_suffix)
@@ -677,7 +677,7 @@ def show_router_ospf_distribute_route_config(render_tables):
         if protocol_p == False :
             continue
 
-        if protocol_v not in protocol_map.keys() :
+        if protocol_v not in list(protocol_map.keys()) :
             continue
 
         direction_p, _, direction_v = ospf_get_key_value(tbl_rec, 'direction')
@@ -699,7 +699,7 @@ def show_router_ospf_distribute_route_config(render_tables):
                 temp_cmd += ' metric {}'.format(metric_v)
 
             mtype_p, _, mtype_v = ospf_get_key_value(tbl_rec, 'metric-type')
-            if mtype_p and mtype_v in metric_type_map.keys() :
+            if mtype_p and mtype_v in list(metric_type_map.keys()) :
                 temp_cmd += ' metric-type {}'.format(metric_type_map[mtype_v])
 
             rmap_p, _, rmap_v = ospf_get_key_value(tbl_rec, 'route-map')
