@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE CLISH_MODULE [
+<!ENTITY START_PORT_ID "1">
+<!ENTITY MAX_PORT_ID "32">
+]>
+<CLISH_MODULE xmlns="http://www.dellemc.com/sonic/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xi="http://www.w3.org/2001/XInclude" xsi:schemaLocation="http://www.dellemc.com/sonic/XMLSchema http://www.dellemc.com/sonic/XMLSchema/clish.xsd">
+  <VIEW name="configure-view">
+    <COMMAND name="no interface media-fec" help="Change the port media-fec mode to default">
+       <PARAM name="port" help="port where media-fec applied" ptype="SUBCOMMAND" mode="subcommand">
+            <PARAM name="slotport" help="Front-panel port" ptype="FRONT_PANEL_PORT"/>
+        </PARAM>
+            <ACTION builtin="clish_pyobj">sonic_cli_media_fec delete_openconfig_platform_port_components_component_port_config_media_fec_mode ${slotport}</ACTION>
+    </COMMAND>
+    <COMMAND name="interface media-fec" help="Port media-fec configuration"
+            command_tables="sonic-port:sonic-port/PORT/PORT_LIST/ifname={name}"
+            command_keys="name=*"
+            render_command_cb="show_running_media_fec_mode" >
+       <PARAM name="port" help="port where media-fec applied" ptype="SUBCOMMAND" mode="subcommand">
+            <PARAM name="slotport" help="Front-panel port" ptype="FRONT_PANEL_PORT" dbpath="sonic-port:sonic-port/PORT/PORT_LIST/port" />
+       </PARAM>
+       <PARAM name="mode" help="media-fec mode" ptype="SUBCOMMAND" mode="subcommand">
+            <PARAM name="media-fec-mode" help="media-fec mode" ptype="MEDIA_FEC_MODE" dbpath="sonic-port:sonic-port/PORT/PORT_LIST/media-fec-mode"  />
+        </PARAM>
+      <ACTION builtin="clish_pyobj">sonic_cli_media_fec patch_openconfig_platform_port_components_component_port_config_media_fec_mode ${slotport} ${media-fec-mode}</ACTION>
+      <DOCGEN>
+          <DESCRIPTION>
+              Configure Media FEC on a port
+          </DESCRIPTION>
+          <USAGE>
+              Use this command to conifgure media-fec a port or undo media-fec configuration.
+                interface media-fec port front-panel-port mode media-fec-mode
+                no interface media-fec port front-panel-port
+          </USAGE>
+          <EXAMPLE>
+              sonic# configure terminal
+              sonic(config)# interface media-fec port 1/1 mode custom
+              media-fec on port in-progress, use 'show interface interface-name' to check status.
+              sonic(config)# no interface media-fec port 1/1
+             media-fec on port in-progress, use 'show interface interface-name' to check status.
+          </EXAMPLE>
+      </DOCGEN>
+    </COMMAND>
+  </VIEW>
+</CLISH_MODULE>
