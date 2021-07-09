@@ -1506,6 +1506,13 @@ limitations under the License.
         help=""
         />
     <!--=======================================================-->
+    <PTYPE
+        name="MEDIA_FEC_MODE"
+        method="select"
+        pattern="ieee custom"
+        help="Media FEC (forward error correction) mode"
+        />
+    <!--=======================================================-->
         <PTYPE
         name="DPB_MODE"
         method="select"
