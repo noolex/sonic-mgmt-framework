@@ -52,6 +52,7 @@ from show_config_bfd import *
 from show_config_swresource import *
 from show_config_sag import *
 from show_config_vrrp import *
+from sonic_cli_media_fec import show_running_media_fec_mode
 from show_config_acl import *
 from show_config_xcvr_diag import *
 from show_config_tacacs import *
@@ -332,7 +333,8 @@ render_cb_dict  = {'router_bgp'             : show_router_bgp_cmd,
                   'ipv6_subintf_dhcp_relay'     : show_ipv6_subintf_dhcp_relay,
                   'show_running_next_hop_group': show_running_next_hop_group,
                   'tacacs_global_key_config': show_tacacs_global_key,
-                  'tacacs_host_config'      : show_tacacs_host_config
+                  'tacacs_host_config'      : show_tacacs_host_config,
+                  'show_running_media_fec_mode': show_running_media_fec_mode
  }
 
 table_sort_cb_dict = {'PORT_LIST' : natsort_list }

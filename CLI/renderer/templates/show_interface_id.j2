@@ -13,6 +13,7 @@
 {% set vars = {'mode6': "not-set"} %}
 {% set vars = {'speed': ""} %}
 {% set vars = {'fec': ""} %}
+{% set vars = {'media_fec_mode': "none"} %}
 {% set vars = {'in_pkts':""} %}
 {% set vars = {'in_octets':""} %}
 {% set vars = {'in_bytes_per_sec': ""} %}
@@ -43,8 +44,15 @@
 {% set vars = {'ip_prim':""} %}
 {% set ip_sec_list = [] %}
 {% if json_output -%}
-{% for interfaces in json_output %}
-{% set interface_list = json_output[interfaces] %}
+{% if vars.update({'media_fec_mode':""}) %}{% endif %}
+{% if "media-fec-mode" in json_output %}
+    {% if vars.update({'media_fec_mode':json_output["media-fec-mode"][0]}) %}{% endif %}
+{% endif %}
+{% for key_top in json_output %}
+{% if key_top == "media-fec-mode" %}
+    {% continue %}
+{% endif %}
+{% set interface_list = json_output[key_top] %}
 {% for interface in interface_list %}
     {{ ' ' }}
     {% for key in interface %}
@@ -176,8 +184,12 @@ Interface IPv6 oper status: {{ vars.ipv6_status }}
 {% endif %}
 IP MTU {{ vars.mtu }} bytes
 LineSpeed {{ vars.speed }}, Auto-negotiation off
+{% if vars.media_fec_mode != "" %}
+Media FEC: {{ vars.media_fec_mode }}
+{% else %}
 {% if vars.fec != "" %}
 FEC: {{ vars.fec }}
+{% endif %}
 {% endif %}
 {% if vars.found_counters == True %}
 {% if vars.last_clear != "0" %}
