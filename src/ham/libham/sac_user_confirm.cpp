@@ -22,7 +22,7 @@ bool sac_user_confirm(const char * login_p, const char * roles_p)
         std::string errmsg = sac.user_confirm(login_p, split(roles_p, ','));
         success = errmsg.empty(); // empty error message means success
         if (!success)
-            sd_journal_print(LOG_ERR, "SAC - user_confirm() - User \"%s\": Error! %s", login_p, errmsg);
+            sd_journal_print(LOG_ERR, "SAC - user_confirm() - User \"%s\": Error! %s", login_p, errmsg.c_str());
     }
     catch (DBus::Error & ex)
     {
