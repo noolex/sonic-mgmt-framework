@@ -10,7 +10,7 @@ KLISH_SRC = $(SONIC_CLI_ROOT)/klish-$(KLISH_VERSION)
 
 KLISH_LIBS     ?= -l:libcurl-gnutls.so.4 -lpython2.7 -lcjson #$(LIBCJSON_PATH)/libcjson.a
 KLISH_CFLAGS   ?= $(CFLAGS) -g -I/usr/include/python2.7 -I/usr/include/cjson
-KLISH_CXXFLAGS ?= $(CXXFLAGS)
+KLISH_CXXFLAGS ?= $(CXXFLAGS) -I/usr/include/cjson
 KLISH_LDFLAGS  ?= $(LDFLAGS)
 
 SRC_REPLACEMENTS:=$(shell find patches -type f)
