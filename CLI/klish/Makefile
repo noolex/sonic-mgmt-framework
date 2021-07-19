@@ -8,8 +8,8 @@ LIBCJSON_PATH ?= /usr/lib
 
 KLISH_SRC = $(SONIC_CLI_ROOT)/klish-$(KLISH_VERSION)
 
-KLISH_LIBS     ?= -l:libcurl-gnutls.so.4 -lpython2.7 $(LIBCJSON_PATH)/libcjson.a
-KLISH_CFLAGS   ?= $(CFLAGS) -g -I/usr/include/python2.7
+KLISH_LIBS     ?= -l:libcurl-gnutls.so.4 -lpython2.7 -lcjson #$(LIBCJSON_PATH)/libcjson.a
+KLISH_CFLAGS   ?= $(CFLAGS) -g -I/usr/include/python2.7 -I/usr/include/cjson
 KLISH_CXXFLAGS ?= $(CXXFLAGS)
 KLISH_LDFLAGS  ?= $(LDFLAGS)
 
