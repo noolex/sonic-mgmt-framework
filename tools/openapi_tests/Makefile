@@ -3,7 +3,7 @@
 TOPDIR             := ../..
 PYANG_PLUGINS_DIR  := $(TOPDIR)/tools/pyang/pyang_plugins
 
-all: test-rpc test-data-nodes test-complex-model test-complex-model-no-oneof test-notification
+all: test-rpc test-data-nodes test-notification
 
 # This will cover RPC statements with only input, only output and with
 # both input and output
